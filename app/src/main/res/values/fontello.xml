@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ic_heart">&#xe800;</string>/* '' */
+    <string name="ic_heart_empty">&#xe801;</string>/* '' */
+    <string name="ic_comment">&#xe802;</string>/* '' */
+    <string name="ic_retweet">&#xe803;</string>/* '' */
+    <string name="ic_trash_empty">&#xe804;</string>/* '' */
+    <string name="ic_user">&#xe805;</string>/* '' */
+    <string name="ic_search">&#xe806;</string>/* '' */
+    <string name="ic_th_list">&#xe807;</string>/* '' */
+    <string name="ic_home">&#xe808;</string>/* '' */
+    <string name="ic_info_circled">&#xe809;</string>/* '' */
+    <string name="ic_link">&#xe80a;</string>/* '' */
+    <string name="ic_lock">&#xe80b;</string>/* '' */
+    <string name="ic_lock_open">&#xe80c;</string>/* '' */
+    <string name="ic_tag">&#xe80d;</string>/* '' */
+    <string name="ic_attention">&#xe80e;</string>/* '' */
+    <string name="ic_attention_circled">&#xe80f;</string>/* '' */
+    <string name="ic_cog">&#xe810;</string>/* '' */
+    <string name="ic_clock">&#xe811;</string>/* '' */
+    <string name="ic_tags">&#xe812;</string>/* '' */
+    <string name="ic_location">&#xe813;</string>/* '' */
+    <string name="ic_spin1">&#xe830;</string>/* '' */
+    <string name="ic_spin2">&#xe831;</string>/* '' */
+    <string name="ic_spin5">&#xe838;</string>/* '' */
+    <string name="ic_link_ext">&#xf08e;</string>/* '' */
+    <string name="ic_menu">&#xf0c9;</string>/* '' */
+    <string name="ic_comment_empty">&#xf0e5;</string>/* '' */
+    <string name="ic_plus_squared">&#xf0fe;</string>/* '' */
+    <string name="ic_laptop">&#xf109;</string>/* '' */
+    <string name="ic_tablet">&#xf10a;</string>/* '' */
+    <string name="ic_mobile">&#xf10b;</string>/* '' */
+    <string name="ic_direction">&#xf124;</string>/* '' */
+    <string name="ic_help">&#xf128;</string>/* '' */
+    <string name="ic_info">&#xf129;</string>/* '' */
+    <string name="ic_calendar_empty">&#xf133;</string>/* '' */
+    <string name="ic_ellipsis">&#xf141;</string>/* '' */
+    <string name="ic_ellipsis_vert">&#xf142;</string>/* '' */
+    <string name="ic_minus_squared">&#xf146;</string>/* '' */
+    <string name="ic_compass">&#xf14e;</string>/* '' */
+    <string name="ic_female">&#xf182;</string>/* '' */
+    <string name="ic_male">&#xf183;</string>/* '' */
+    <string name="ic_trash">&#xf1f8;</string>/* '' */
+    <string name="ic_user_secret">&#xf21b;</string>/* '' */
+    <string name="ic_user_plus">&#xf234;</string>/* '' */
+    <string name="ic_user_times">&#xf235;</string>/* '' */
+    <string name="ic_battery_4">&#xf240;</string>/* '' */
+    <string name="ic_battery_3">&#xf241;</string>/* '' */
+    <string name="ic_battery_2">&#xf242;</string>/* '' */
+    <string name="ic_battery_1">&#xf243;</string>/* '' */
+    <string name="ic_battery_0">&#xf244;</string>/* '' */
+    ;
+</resources>

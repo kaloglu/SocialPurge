@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="View">
+        <attr name="textType" format="enum">
+            <enum name="none" value="-1"/>
+            <enum name="normal" value="0"/>
+            <enum name="font_icon" value="1"/>
+        </attr>
+
+        <attr name="fontDrawableSize" format="dimension|reference"/>
+        <attr name="fontDrawableSrc" format="string"/>
+        <attr name="fontDrawableLeft" format="string"/>
+        <attr name="fontDrawableRight" format="string"/>
+        <attr name="fontDrawableTop" format="string"/>
+        <attr name="fontDrawableBottom" format="string"/>
+        <attr name="fontDrawableColor" format="color|reference"/>
+        <attr name="fontDrawableLeftColor" format="color|reference"/>
+        <attr name="fontDrawableTopColor" format="color|reference"/>
+        <attr name="fontDrawableRightColor" format="color|reference"/>
+        <attr name="fontDrawableBottomColor" format="color|reference"/>
+
+        <attr name="gaEventCategory" format="string"/>
+        <attr name="gaEventAction" format="string"/>
+        <attr name="gaEventActionError" format="string"/>
+        <attr name="gaEventLabel" format="string"/>
+        <attr name="gaEventValue" format="integer"/>
+        <attr name="gaEventInterraction" format="boolean"/>
+    </declare-styleable>
+</resources>

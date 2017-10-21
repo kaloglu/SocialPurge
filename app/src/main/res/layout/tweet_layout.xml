@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.zsk.androtweet.MainActivity">
+
+    <!--<ImageView-->
+        <!--android:id="@+id/retweed_icon"-->
+        <!--android:layout_width="25dp"-->
+        <!--android:layout_height="25dp"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--tools:src="@drawable/retweet" />-->
+
+    <!--<ImageView-->
+        <!--android:id="@+id/favorited_icon"-->
+        <!--android:layout_width="25dp"-->
+        <!--android:layout_height="25dp"-->
+        <!--app:layout_constraintLeft_toRightOf="@id/retweed_icon"-->
+        <!--tools:src="@drawable/favorites" />-->
+
+    <ImageView
+        android:id="@+id/profile_pic"
+        style="@style/StandartView.ImageView_Profile_Pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@mipmap/ic_launcher" />
+
+    <com.zsk.androtweet.components.CustomTextView
+        android:id="@+id/real_name"
+        style="@style/StandartView.TextView_RealName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/profile_pic"
+        app:layout_constraintTop_toTopOf="@id/profile_pic"
+        tools:text="RealName RealSurname" />
+
+    <com.zsk.androtweet.components.CustomTextView
+        android:id="@+id/user_name"
+        style="@style/StandartView.TextView_UserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="@id/profile_pic"
+        app:layout_constraintLeft_toRightOf="@id/profile_pic"
+        tools:text="UserName" />
+
+    <com.zsk.androtweet.components.CustomTextView
+        android:id="@+id/tweet_text"
+        style="@style/StandartView.TextView_Tweet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="280"
+        android:textStyle="normal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_pic"
+        tools:text="Buraya 280 karakter uzunluğunda bir metin gelebilir. Buraya 280 karakter uzunluğunda bir metin gelebilir.Buraya 280 karakter uzunluğunda bir metin gelebilir." />
+
+    <com.zsk.androtweet.components.CustomTextView
+        android:id="@+id/time"
+        style="@style/StandartView.TextView_Time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tweet_text"
+        tools:text="23:59 - 16 Ekim 2017" />
+
+    <com.zsk.androtweet.components.CustomTextView
+        android:id="@+id/ff"
+        style="@style/StandartView.TextView_Tweet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="280"
+        android:textStyle="normal"
+        app:textType="font_icon"
+        app:layout_constraintLeft_toRightOf="@id/time"
+        app:layout_constraintTop_toBottomOf="@id/time"
+        tools:text="@string/ic_attention" />
+</android.support.constraint.ConstraintLayout>
