@@ -32,10 +32,6 @@ class AndroTweetApp : Application() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
 
     /**
      * Gets the default [Tracker] for this [Application].
@@ -107,7 +103,7 @@ class AndroTweetApp : Application() {
         if (!interraction)
             eventBuilder.setNonInteraction(false)
 
-        mTracker?.send(eventBuilder.build()) //Google Analytics Sender
+        mTracker.send(eventBuilder.build()) //Google Analytics Sender
         Answers.getInstance().logCustom(customEvent) //Crashlytics Sender
 
         Log.d("Tuttur3x GA Events", "sendEvent: \nCategory: [" + category + "] "

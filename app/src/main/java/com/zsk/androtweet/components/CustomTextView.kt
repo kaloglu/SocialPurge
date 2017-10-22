@@ -2,17 +2,21 @@ package com.zsk.androtweet.components
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
-import android.widget.TextView
 import com.zsk.androtweet.R
 import com.zsk.androtweet.Sealed.Enums
 
 /**
- * Created by kaloglu on 21/10/2017.
+ * Created by kaloglu on 22/10/2017.
  */
-class CustomTextView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : TextView(context, attrs, defStyleAttr, defStyleRes) {
+
+/**
+ * Created by kaloglu on 22/10/2017.
+ */
+
+class CustomTextView : AppCompatTextView {
 
     private var eventCategory: String? = ""
     private var eventAction: String? = ""
@@ -21,27 +25,30 @@ class CustomTextView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,
     private var eventValue = Integer.MIN_VALUE.toLong()
     private var eventInterraction = true
     private var attrs: AttributeSet? = null
-    internal var packageName: String = "";
+    internal var packageName: String = ""
+
+    constructor(context: Context?) : this(context, null)
+    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        this.attrs = attrs
+    }
 
 
     init {
-        packageName = getContext().packageName
+        if (attrs != null) {
+            packageName = context.packageName
+            val a = context.theme.obtainStyledAttributes(attrs, R.styleable.View, 0, 0)
 
-        this.attrs = attrs
-        val a = getContext().theme.obtainStyledAttributes(attrs, R.styleable.View, 0, 0)
-
-        val fontType = Enums.FontType.values()[a.getInteger(R.styleable.View_textType, 0)]
-        setCustomTypeFace(getContext(), fontType)
-        init_ga_event_tags(a) //google analytics events).
-        a.recycle()
-
+            val fontType = Enums.FontType.values()[a.getInteger(R.styleable.View_textType, 0)]
+            if (fontType == Enums.FontType.FONT_ICON) setCustomTypeFace(context, fontType)
+            init_ga_event_tags(a) //google analytics events).
+            a.recycle()
+        }
     }
 
     fun setCustomTypeFace(context: Context, fontType: Enums.FontType) {
         typeface = CustomTypeFace.getTypeFace(context, fontType)
     }
-
-    fun getAttributeSet(): AttributeSet? = attrs
 
     private fun init_ga_event_tags(gaEvents: TypedArray) {
 
@@ -86,7 +93,7 @@ class CustomTextView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,
         setFontIcon(fontIcon, 0)
     }
 
-    fun setFontIcon(value: String?, @ColorRes color: Int) {
+    fun setFontIcon(value: String?, color: Int) {
         var fontIcon = value
         var fontIconColor = color
 
@@ -115,7 +122,7 @@ class CustomTextView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,
             }
         }
 
-        setText(fontIcon)
+        text = fontIcon
 
 
     }
@@ -126,4 +133,3 @@ class CustomTextView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,
     private fun getStringRes(fontIcon: String): Int =
             context.resources.getIdentifier(fontIcon, "string", packageName)
 }
-

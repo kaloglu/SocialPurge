@@ -16,7 +16,6 @@ class SendEventCustomTextView(private val onClickListener: View.OnClickListener?
                     cButton.getEventValue(),
                     cButton.isEventInterraction()
             )
-
         onClickListener?.onClick(v)
     }
 
