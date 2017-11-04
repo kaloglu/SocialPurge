@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -17,13 +17,15 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="StandartView.TextView_Tweet"></style>
+    <style name="StandartView.TextView_Tweet">
+    </style>
 
     <style name="StandartView.TextView_RealName"></style>
 
     <style name="StandartView.TextView_UserName"></style>
 
     <style name="StandartView.TextView_Time">
+        <item name="android:textColor">@color/silver</item>
     </style>
 
     <style name="StandartView.ImageView_Profile_Pic"></style>

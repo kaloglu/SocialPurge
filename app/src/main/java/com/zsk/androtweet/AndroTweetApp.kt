@@ -11,20 +11,31 @@ import com.crashlytics.android.answers.CustomEvent
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
+import com.mikepenz.materialdrawer.AccountHeader
+import com.mikepenz.materialdrawer.Drawer
 
 /**
  * Created by kaloglu on 22/10/2017.
  */
 class AndroTweetApp : Application() {
-    val instance = this
     private var mTracker: Tracker? = null
+    val instance = this
+
+    private object Holder {
+        val INSTANCE = AndroTweetApp()
+    }
+
+    lateinit var accountHeader: AccountHeader
+    lateinit var navigationDrawer: Drawer
 
     companion object {
+        val instance: AndroTweetApp by lazy { Holder.INSTANCE }
         var daysAgo: Int = 0
         var userName: String? = null
         var tweetId: String? = null
         private val tweetID: Any? = null
     }
+
 
     private val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.CAMERA,
@@ -113,4 +124,5 @@ class AndroTweetApp : Application() {
                 "\nNonInterraction: [" + !interraction + "]")
 
     }
+
 }
