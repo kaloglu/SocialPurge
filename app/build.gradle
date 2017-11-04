@@ -38,21 +38,37 @@ android {
 }
 
 dependencies {
+    ext.anko_version = '0.10.1'
+    ext.android_version = "26+"
+    ext.google_version = "11.4.2"
+    ext.firebase_version = "11.4.2"
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    compile "org.jetbrains.anko:anko:$anko_version"
+
+    //google libraries
+    compile "com.google.firebase:firebase-database:$firebase_version"
+    compile "com.google.android.gms:play-services-analytics:$google_version"
+
+    //android libraries
+    compile "com.android.support:appcompat-v7:$android_version"
+    compile "com.android.support:design:$android_version"
+    compile "com.android.support:recyclerview-v7:$android_version"
+    compile "com.android.support:support-annotations:$android_version"
+    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
         transitive = true;
     }
-    compile 'com.android.support:appcompat-v7:26.+'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.firebase:firebase-database:10.0.1'
-    compile 'com.google.android.gms:play-services-analytics:10.0.1'
-    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
-    compile 'com.android.support:design:26.+'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.anko:anko:$anko_version"
+
+    compile("com.mikepenz:materialdrawer:6.0.0@aar") {
+        transitive = true
+    }
+    compile 'com.squareup.picasso:picasso:2.5.0'
     testCompile 'junit:junit:4.12'
 }
 repositories {
