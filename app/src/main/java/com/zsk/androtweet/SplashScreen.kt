@@ -1,4 +1,4 @@
-package com.zsk.androtweet
+package com.zsk.androtweet2
 
 import android.app.Activity
 import android.content.Intent

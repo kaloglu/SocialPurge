@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:64575397446:android:95bb5503dd36dd32",
         "android_client_info": {
-          "package_name": "com.zsk.androtweet"
+          "package_name": "com.zsk.androtweet2"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "64575397446-g9j7lde7nhsd2nujjbf1ejkjaustuai2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.zsk.androtweet",
+            "package_name": "com.zsk.androtweet2",
             "certificate_hash": "6825ed1e0e9bd9d40bf096bdab9832e7f30a0b24"
           }
         },

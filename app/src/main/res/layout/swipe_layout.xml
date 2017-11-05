@@ -19,7 +19,7 @@
             android:orientation="vertical"
             android:padding="@dimen/h_margin">
 
-            <com.zsk.androtweet.components.CustomTextView
+            <com.zsk.androtweet2.components.CustomTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"

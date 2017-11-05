@@ -1,4 +1,4 @@
-package com.zsk.androtweet.Sealed
+package com.zsk.androtweet2.Sealed
 
 /**
  * Created by kaloglu on 21/10/2017.

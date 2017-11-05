@@ -1,7 +1,7 @@
-package com.zsk.androtweet.components
+package com.zsk.androtweet2.components
 
 import android.view.View
-import com.zsk.androtweet.AndroTweetApp
+import com.zsk.androtweet2.AndroTweetApp
 
 class SendEventCustomTextView(private val onClickListener: View.OnClickListener?) : View.OnClickListener {
 
