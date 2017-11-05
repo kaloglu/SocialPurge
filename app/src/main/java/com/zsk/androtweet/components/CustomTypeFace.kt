@@ -1,8 +1,8 @@
-package com.zsk.androtweet.components
+package com.zsk.androtweet2.components
 
 import android.content.Context
 import android.graphics.Typeface
-import com.zsk.androtweet.Sealed.Enums
+import com.zsk.androtweet2.Sealed.Enums
 import java.util.*
 
 /**

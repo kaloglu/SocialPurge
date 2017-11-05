@@ -17,12 +17,12 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <com.zsk.androtweet.components.CustomTextView
+        <com.zsk.androtweet2.components.CustomTextView
             android:id="@+id/real_name"
             style="@style/StandartView.TextView_RealName"
             tools:text="RealName RealSurname" />
 
-        <com.zsk.androtweet.components.CustomTextView
+        <com.zsk.androtweet2.components.CustomTextView
             android:id="@+id/user_name"
             style="@style/StandartView.TextView_UserName"
             android:textStyle="normal"

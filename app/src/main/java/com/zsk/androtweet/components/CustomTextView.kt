@@ -1,12 +1,12 @@
-package com.zsk.androtweet.components
+package com.zsk.androtweet2.components
 
 import android.content.Context
 import android.content.res.TypedArray
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.widget.TextView
-import com.zsk.androtweet.R
-import com.zsk.androtweet.Sealed.Enums
+import com.zsk.androtweet2.R
+import com.zsk.androtweet2.Sealed.Enums
 
 /**
  * Created by kaloglu on 21/10/2017.

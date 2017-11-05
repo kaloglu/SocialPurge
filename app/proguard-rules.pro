@@ -31,6 +31,6 @@
 # This rule will properly ProGuard all the model classes in
 # the package com.yourcompany.models. Modify to fit the structure
 # of your app.
--keepclassmembers class com.zsk.androtweet.models.** {
+-keepclassmembers class com.zsk.androtweet2.models.** {
   *;
 }
