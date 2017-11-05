@@ -73,7 +73,7 @@ class CustomTextView : TextView {
 
 
 //    fun setFontDrawableColor(fontDrawableColor: Int) {
-//        CustomLayoutInflaterFactory.getInstance(context).setupTextViewCustomAttributes(this, fontDrawableColor)
+//        CustomLayoutInflaterFactory.getBaseActivity(context).setupTextViewCustomAttributes(this, fontDrawableColor)
 //    }
 
 
