@@ -1,4 +1,4 @@
-package com.zsk.androtweet.models
+package com.zsk.androtweet2.models
 
 /**
  * Created by kaloglu on 11/11/2017.

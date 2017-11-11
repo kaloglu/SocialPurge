@@ -12,8 +12,6 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
 import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
 import com.twitter.sdk.android.core.DefaultLogger
@@ -33,13 +31,6 @@ class AndroTweetApp : Application() {
 
     lateinit var accountHeader: AccountHeader
     lateinit var navigationDrawer: Drawer
-    var currentUser: FirebaseUser? = null
-        get() {
-            if (field == null)
-                field = FirebaseAuth.getInstance().currentUser
-
-            return field
-        }
 
     companion object {
         val instance: AndroTweetApp by lazy { Holder.INSTANCE }

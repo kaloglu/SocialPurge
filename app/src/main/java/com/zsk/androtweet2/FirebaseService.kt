@@ -1,4 +1,4 @@
-package com.zsk.androtweet
+package com.zsk.androtweet2
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -22,9 +22,6 @@ class FirebaseService {
     val RETWEETS: String? = "retweets"
     val TWEET_DETAILS: String? = "tweet_details"
 
-
-//    fun getDatabaseReference(string: String?): DatabaseReference =
-//            firebaseDatabase.getReference(string)
 
     fun String?.getDatabaseReference(): DatabaseReference =
             firebaseDatabase.getReference(this)
