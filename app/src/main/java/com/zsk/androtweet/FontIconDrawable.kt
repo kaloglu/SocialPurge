@@ -85,16 +85,16 @@ class FontIconDrawable : Drawable {
 
 
     @JvmOverloads constructor(context: Context, icon: String = "", isResourceName: Boolean = context.resources.getIdentifier("ic_" + icon, "string", context.packageName) != 0) {
-        var icon = icon
+        var iconstr = icon
         mContext = context
         color = ContextCompat.getColor(context, R.color.colorPrimary)
 
         prepare()
         CustomTypeFace.getTypeFace(context, Enums.FontType.FONT_ICON)?.let { typeface(it) }
         if (isResourceName)
-            icon = mContext!!.getString(context.resources.getIdentifier("ic_" + icon, "string", context.packageName))
+            iconstr = mContext!!.getString(context.resources.getIdentifier("ic_" + iconstr, "string", context.packageName))
 
-        icon(icon)
+        icon(iconstr)
 
     }
 

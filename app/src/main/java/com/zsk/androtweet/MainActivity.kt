@@ -5,40 +5,142 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.firebase.ui.auth.AuthUI
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
-import org.jetbrains.anko.toast
+import com.twitter.sdk.android.core.*
+import com.twitter.sdk.android.core.models.User
+import com.zsk.androtweet.FirebaseService
+import com.zsk.androtweet.models.TwitterAccount
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
-
     lateinit var toolbar: Toolbar
+    var firebaseService = FirebaseService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_main)
         toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
+        super.onCreate(savedInstanceState)
         DrawerImageLoader.init(PicassoLoader())
-
         createNavigationDrawer(savedInstanceState, toolbar)
 
-        super.onCreate(savedInstanceState)
+    }
+
+    override fun addEventListenerForFirebase() {
+        super.addEventListenerForFirebase()
+        with(firebaseService) {
+            TWITTER_ACCOUNTS.getDatabaseReference().child(currentUser?.uid).addChildEventListener(object : ChildEventListener {
+                override fun onCancelled(databaseError: DatabaseError?) {
+                }
+
+                override fun onChildMoved(dataSnapShot: DataSnapshot?, p1: String?) {
+                }
+
+                override fun onChildChanged(dataSnapShot: DataSnapshot?, p1: String?) {
+
+                    dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
+                            ?.let { account ->
+                                androTweetApp.accountHeader.updateProfile(
+                                        ProfileDrawerItem().withIdentifier(account.id)
+                                                .withName(account.name)
+                                                .withEmail(account.realname)
+                                                .withIcon(account.profilePic)
+                                )
+                            }
+                }
+
+                override fun onChildAdded(dataSnapShot: DataSnapshot?, p1: String?) {
+                    dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
+                            ?.let { account ->
+                                androTweetApp.accountHeader.addProfiles(
+                                        ProfileDrawerItem().withIdentifier(account.id)
+                                                .withName(account.name)
+                                                .withEmail(account.realname)
+                                                .withIcon(account.profilePic)
+                                )
+                            }
+                }
+
+                override fun onChildRemoved(dataSnapShot: DataSnapshot?) {
+                    dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
+                            ?.let { account ->
+                                androTweetApp.accountHeader.removeProfileByIdentifier(account.id)
+                            }
+                }
+            })
+        }
+
     }
 
 
-    private fun createNavigationDrawer(toolbar: Toolbar) {
-        createNavigationDrawer(null, toolbar)
+    override fun initializeScreenObject() {
+
+        twitterLogin.callback = object : Callback<TwitterSession>() {
+            override fun success(result: Result<TwitterSession>?) {
+                if (result?.data == null)
+                    return
+
+                val session = result.data
+                val authToken: TwitterAccount.CustomAuthToken = TwitterAccount.CustomAuthToken(session.authToken)
+
+                TwitterApiClient(session).accountService.verifyCredentials(true, true, true)
+                        .enqueue(object : Callback<User>() {
+                            override fun success(result: Result<User>?) {
+                                val user: User? = result?.data
+                                if (user != null) {
+                                    Log.d(TAG, "user: " + (user.screenName ?: "olmazdı"))
+                                    with(firebaseService) {
+                                        TWITTER_ACCOUNTS?.update(user.id.toString(),
+                                                TwitterAccount(
+                                                        user.id,
+                                                        user.screenName,
+                                                        user.name,
+                                                        user.profileImageUrl,
+                                                        authToken
+                                                )
+                                        )
+                                    }
+                                }
+
+                            }
+
+                            override fun failure(exception: TwitterException?) {
+                                Log.e(TAG, "exception", exception)
+                            }
+                        })
+
+            }
+
+            override fun failure(exception: TwitterException?) {
+            }
+
+        }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Pass the activity result to the login button.
+        twitterLogin.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun createNavigationDrawer(savedInstanceState: Bundle?, toolbar: Toolbar) {
@@ -51,8 +153,6 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
                 .withActivity(this)
                 .withHeaderBackground(R.color.md_red_500)
                 .addProfiles(
-                        /**ProfileDrawerItem().withName("User added not yet").withIdentifier(NO_USER),*/
-
 //                        Settings for Account
                         ProfileSettingDrawerItem().withName("Add Account")
                                 .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus))),
@@ -95,8 +195,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
         when (drawerItem?.identifier) {
             baseActivity.LOGOUT -> signOut()
         }
-
-        view?.context?.toast("clicked ${drawerItem?.identifier} +++ ${view.id} (${AndroTweetApp.instance.accountHeader.activeProfile?.name})")
+//        view?.context?.toast("clicked ${drawerItem?.identifier} +++ ${view.id} (${AndroTweetApp.instance.accountHeader.activeProfile?.name})")
         return false
     }
 
@@ -122,3 +221,4 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
         */
     }
 }
+

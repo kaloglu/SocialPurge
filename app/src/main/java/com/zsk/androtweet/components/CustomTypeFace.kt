@@ -15,7 +15,7 @@ internal class CustomTypeFace {
         private val cache = Hashtable<String, Typeface>()
 
         fun getTypeFace(context: Context, fontType: Enums.FontType): Typeface? {
-            val assetPath: String="font/fontello.ttf"
+            val assetPath: String=fontType.path()
 
             synchronized(cache) {
                 if (!cache.containsKey(assetPath)) {

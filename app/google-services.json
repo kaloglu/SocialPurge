@@ -8,14 +8,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:64575397446:android:95bb5503dd36dd32",
+        "mobilesdk_app_id": "1:64575397446:android:43ac01d4aba401cf",
         "android_client_info": {
           "package_name": "com.zsk.androtweet2"
         }
       },
       "oauth_client": [
         {
-          "client_id": "64575397446-g9j7lde7nhsd2nujjbf1ejkjaustuai2.apps.googleusercontent.com",
+          "client_id": "64575397446-g4us8vcrl9mjf4bhgiv3bdung6sgl2a8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.zsk.androtweet2",
