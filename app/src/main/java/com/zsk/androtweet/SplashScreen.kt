@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
-import com.google.firebase.auth.FirebaseAuth
+import com.zsk.androtweet.FirebaseService
 import java.util.*
 
 class SplashScreen : BaseActivity() {
@@ -21,8 +21,7 @@ class SplashScreen : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen)
 
-        val auth = FirebaseAuth.getInstance()
-        if (auth.currentUser != null) {
+        if (FirebaseService().currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))
         } else {
             val build = AuthUI.getInstance()

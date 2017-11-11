@@ -11,22 +11,35 @@ import com.crashlytics.android.answers.CustomEvent
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
+import com.twitter.sdk.android.core.DefaultLogger
+import com.twitter.sdk.android.core.Twitter
+import com.twitter.sdk.android.core.TwitterAuthConfig
+import com.twitter.sdk.android.core.TwitterConfig
+
 
 /**
  * Created by kaloglu on 22/10/2017.
  */
 class AndroTweetApp : Application() {
     private var mTracker: Tracker? = null
-    val instance = this
-
     private object Holder {
         val INSTANCE = AndroTweetApp()
     }
 
     lateinit var accountHeader: AccountHeader
     lateinit var navigationDrawer: Drawer
+    var currentUser: FirebaseUser? = null
+        get() {
+            if (field == null)
+                field = FirebaseAuth.getInstance().currentUser
+
+            return field
+        }
 
     companion object {
         val instance: AndroTweetApp by lazy { Holder.INSTANCE }
@@ -36,13 +49,27 @@ class AndroTweetApp : Application() {
         private val tweetID: Any? = null
     }
 
-
     private val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
+    override fun onCreate() {
+        super.onCreate()
+        initTwitter()
+        FirebaseApp.initializeApp(this)
+    }
+
+    private fun initTwitter() {
+        val twitterAuthConfig = TwitterAuthConfig(getString(R.string.com_twitter_sdk_android_CONSUMER_KEY), getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET))
+        val config = TwitterConfig.Builder(this)
+                .logger(DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(twitterAuthConfig)
+                .debug(true)
+                .build()
+        Twitter.initialize(config)
+    }
 
     /**
      * Gets the default [Tracker] for this [Application].
