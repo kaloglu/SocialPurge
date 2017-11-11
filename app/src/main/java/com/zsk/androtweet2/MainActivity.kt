@@ -25,8 +25,7 @@ import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.models.User
-import com.zsk.androtweet.FirebaseService
-import com.zsk.androtweet.models.TwitterAccount
+import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 
 

@@ -1,4 +1,4 @@
-package com.zsk.androtweet.models
+package com.zsk.androtweet2.models
 
 import com.twitter.sdk.android.core.TwitterAuthToken
 
