@@ -6,7 +6,6 @@
     style="@style/StandartView.TextView_Tweet"
     android:layout_width="match_parent"
     android:ems="280"
-    android:textStyle="normal"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/profile_pic"

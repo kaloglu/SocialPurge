@@ -20,6 +20,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
+import com.mikepenz.materialdrawer.model.interfaces.IProfile
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
@@ -29,7 +30,8 @@ import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
+open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
+
     lateinit var toolbar: Toolbar
     var firebaseService = FirebaseService()
 
@@ -58,10 +60,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
                     dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                             ?.let { account ->
                                 androTweetApp.accountHeader.updateProfile(
-                                        ProfileDrawerItem().withIdentifier(account.id)
-                                                .withName(account.name)
-                                                .withEmail(account.realname)
-                                                .withIcon(account.profilePic)
+                                        getProfileDrawerItem(account)
                                 )
                             }
                 }
@@ -69,11 +68,14 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
                 override fun onChildAdded(dataSnapShot: DataSnapshot?, p1: String?) {
                     dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                             ?.let { account ->
-                                androTweetApp.accountHeader.addProfiles(
-                                        ProfileDrawerItem().withIdentifier(account.id)
-                                                .withName(account.name)
-                                                .withEmail(account.realname)
-                                                .withIcon(account.profilePic)
+                                var index = 0
+                                with(androTweetApp.accountHeader.profiles) {
+                                    if (count() >= 2)
+                                        index = count() - 2
+                                }
+                                androTweetApp.accountHeader.addProfile(
+                                        getProfileDrawerItem(account),
+                                        index
                                 )
                             }
                 }
@@ -89,50 +91,17 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
 
     }
 
+    private fun getProfileDrawerItem(account: TwitterAccount): IProfile<*> {
+        return ProfileDrawerItem().withIdentifier(account.id)
+                .withName(account.name)
+                .withEmail(account.realname)
+                .withIcon(account.profilePic)
+    }
+
 
     override fun initializeScreenObject() {
 
-        twitterLogin.callback = object : Callback<TwitterSession>() {
-            override fun success(result: Result<TwitterSession>?) {
-                if (result?.data == null)
-                    return
-
-                val session = result.data
-                val authToken: TwitterAccount.CustomAuthToken = TwitterAccount.CustomAuthToken(session.authToken)
-
-                TwitterApiClient(session).accountService.verifyCredentials(true, true, true)
-                        .enqueue(object : Callback<User>() {
-                            override fun success(result: Result<User>?) {
-                                val user: User? = result?.data
-                                if (user != null) {
-                                    Log.d(TAG, "user: " + (user.screenName ?: "olmazdı"))
-                                    with(firebaseService) {
-                                        TWITTER_ACCOUNTS?.update(user.id.toString(),
-                                                TwitterAccount(
-                                                        user.id,
-                                                        user.screenName,
-                                                        user.name,
-                                                        user.profileImageUrl,
-                                                        authToken
-                                                )
-                                        )
-                                    }
-                                }
-
-                            }
-
-                            override fun failure(exception: TwitterException?) {
-                                Log.e(TAG, "exception", exception)
-                            }
-                        })
-
-            }
-
-            override fun failure(exception: TwitterException?) {
-            }
-
-        }
-
+        twitterLogin.callback = object : TwitterLoginCallBack(firebaseService) {}
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -154,11 +123,14 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
                 .addProfiles(
 //                        Settings for Account
                         ProfileSettingDrawerItem().withName("Add Account")
+                                .withIdentifier(baseActivity.ADD_TWITTER_ACCOUNT)
                                 .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus))),
                         ProfileSettingDrawerItem().withName("Manage Account")
+                                .withIdentifier(baseActivity.MANAGE_TWITTER_ACCOUNT)
                                 .withDescription("Add / Remove your accounts")
                                 .withIcon(FontIconDrawable(this, getString(R.string.ic_cog)))
                 )
+                .withOnAccountHeaderListener(this)
                 .withAlternativeProfileHeaderSwitching(true)
                 .withCurrentProfileHiddenInList(true)
                 .withThreeSmallProfileImages(true)
@@ -192,10 +164,64 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
 
     override fun onItemClick(view: View?, position: Int, drawerItem: IDrawerItem<*, *>?): Boolean {
         when (drawerItem?.identifier) {
-            baseActivity.LOGOUT -> signOut()
+            LOGOUT -> signOut()
+            ADD_TWITTER_ACCOUNT -> twitterLogin.callOnClick()
+            MANAGE_TWITTER_ACCOUNT -> getManageActivity()
         }
-//        view?.context?.toast("clicked ${drawerItem?.identifier} +++ ${view.id} (${AndroTweetApp.instance.accountHeader.activeProfile?.name})")
         return false
+    }
+
+    private fun getManageActivity() {
+        startActivity(Intent(this, ManageTwitterAccounts::class.java))
+    }
+
+    override fun onProfileChanged(view: View?, profile: IProfile<*>?, current: Boolean): Boolean {
+        if (profile is IDrawerItem<*, *>) {
+            return onItemClick(view, -1, profile)
+        }
+
+        return false
+    }
+
+    open class TwitterLoginCallBack(firebaseServ: FirebaseService) : Callback<TwitterSession>() {
+        var firebaseService = firebaseServ
+        override fun success(result: Result<TwitterSession>?) {
+            if (result?.data == null)
+                return
+
+            val session = result.data
+            val authToken: TwitterAccount.CustomAuthToken = TwitterAccount.CustomAuthToken(session.authToken)
+
+            TwitterApiClient(session).accountService.verifyCredentials(true, true, true)
+                    .enqueue(object : Callback<User>() {
+                        override fun success(result: Result<User>?) {
+                            val user: User? = result?.data
+                            if (user != null) {
+                                with(firebaseService) {
+                                    TWITTER_ACCOUNTS?.update(user.id.toString(),
+                                            TwitterAccount(
+                                                    user.id,
+                                                    user.screenName,
+                                                    user.name,
+                                                    user.profileImageUrl,
+                                                    authToken
+                                            )
+                                    )
+                                }
+                            }
+
+                        }
+
+                        override fun failure(exception: TwitterException?) {
+                            Log.e(baseActivity.TAG, "exception", exception)
+                        }
+                    })
+
+        }
+
+        override fun failure(exception: TwitterException?) {
+        }
+
     }
 
     class PicassoLoader : AbstractDrawerImageLoader() {
@@ -220,4 +246,5 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener {
         */
     }
 }
+
 

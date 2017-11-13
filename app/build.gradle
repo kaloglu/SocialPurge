@@ -79,7 +79,7 @@ dependencies {
     compile 'com.twitter.sdk.android:twitter:3.1.1'
     compile 'com.twitter.sdk.android:twitter-core:3.1.1'
     compile 'com.twitter.sdk.android:tweet-ui:3.1.1'
-
+    compile 'com.firebaseui:firebase-ui-database:3.1.0'
 
     testCompile 'junit:junit:4.12'
 }

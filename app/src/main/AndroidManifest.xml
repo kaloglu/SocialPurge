@@ -19,6 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
+        <activity android:name=".BaseActivity" />
+        <activity android:name=".ManageTwitterAccounts"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>
