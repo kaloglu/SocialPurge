@@ -1,10 +1,12 @@
 package com.zsk.androtweet2
 
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
 
 /**
  * Created by kaloglu on 11/11/2017.
@@ -28,5 +30,15 @@ class FirebaseService {
 
     fun String?.update(id: String, value: Any): Task<Void>? =
             this.getDatabaseReference().child(currentUser!!.uid).child(id).setValue(value)
+
+    fun isSignedIn(): Boolean = FirebaseAuth.getInstance().currentUser != null
+
+    fun <T>recyclerOptions(receiver: Class<T>, activity: BaseActivity, query: Query?): FirebaseRecyclerOptions<T> {
+        return FirebaseRecyclerOptions.Builder<T>()
+                .setQuery(query,receiver)
+                .setLifecycleOwner(activity)
+                .build()
+    }
+
 
 }

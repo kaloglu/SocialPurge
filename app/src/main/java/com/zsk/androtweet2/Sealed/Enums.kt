@@ -9,7 +9,7 @@ open class Enums {
             override fun path() = ""
         },
         FONT_ICON {
-            override fun path() = "font/fontello.ttf"
+            override fun path() = "font/Fontello.ttf"
         };
 
         abstract fun path(): String

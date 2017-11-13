@@ -19,8 +19,10 @@ class CustomTextView : TextView {
         packageName = getContext().packageName
         this.attrs = attrs
         val a = getContext().theme.obtainStyledAttributes(attrs, R.styleable.View, 0, 0)
-        val fontType = Enums.FontType.values()[a.getInteger(R.styleable.View_textType, 0)]
-        setCustomTypeFace(getContext(), fontType)
+        val fontTypeId = a.getInteger(R.styleable.View_textType, 0)
+        val fontType = Enums.FontType.values()[fontTypeId]
+        if (fontTypeId > 0)
+            setCustomTypeFace(getContext(), fontType)
         init_ga_event_tags(a)
         a.recycle()
     }
