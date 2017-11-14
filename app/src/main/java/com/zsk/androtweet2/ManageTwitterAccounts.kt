@@ -16,9 +16,7 @@ import com.google.firebase.database.Query
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_manage_twitter_accounts.*
-import kotlinx.android.synthetic.main.owner_tweet_layout.view.*
-
-
+import kotlinx.android.synthetic.main.twitter_user_layout.view.*
 
 
 /**
@@ -111,10 +109,17 @@ class ManageTwitterAccounts : BaseActivity() {
 
     inner class TwitterAccountHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(twitterAccount: TwitterAccount) {
-            with(itemView) {
-                real_name.text = twitterAccount.realname
-                user_name.text = twitterAccount.name
-                profile_pic.loadFromUrl(this@ManageTwitterAccounts, twitterAccount.profilePic)
+            itemView.let { iv ->
+                iv.real_name.text = twitterAccount.realname
+                iv.user_name.text = twitterAccount.name
+                iv.profile_pic.loadFromUrl(this@ManageTwitterAccounts, twitterAccount.profilePic)
+
+                iv.delete_account.setOnClickListener {
+                    with(firebaseService) {
+                        TWITTER_ACCOUNTS.remove(twitterAccount.id.toString())
+
+                    }
+                }
 
             }
         }
@@ -122,3 +127,4 @@ class ManageTwitterAccounts : BaseActivity() {
     }
 
 }
+

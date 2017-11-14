@@ -31,6 +31,9 @@ class FirebaseService {
     fun String?.update(id: String, value: Any): Task<Void>? =
             this.getDatabaseReference().child(currentUser!!.uid).child(id).setValue(value)
 
+    fun String?.remove(id: String): Task<Void>? =
+            this.getDatabaseReference().child(currentUser!!.uid).child(id).removeValue()
+
     fun isSignedIn(): Boolean = FirebaseAuth.getInstance().currentUser != null
 
     fun <T>recyclerOptions(receiver: Class<T>, activity: BaseActivity, query: Query?): FirebaseRecyclerOptions<T> {
