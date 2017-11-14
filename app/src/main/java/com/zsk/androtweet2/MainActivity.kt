@@ -32,14 +32,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
 
-    lateinit var toolbar: Toolbar
     var firebaseService = FirebaseService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_main)
-        toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
         super.onCreate(savedInstanceState)
+        setSupportActionBar(toolbar!!)
         DrawerImageLoader.init(PicassoLoader())
         createNavigationDrawer(savedInstanceState, toolbar)
 
@@ -201,7 +199,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                                     TWITTER_ACCOUNTS?.update(user.id.toString(),
                                             TwitterAccount(
                                                     user.id,
-                                                    user.screenName,
+                                                    "@" + user.screenName,
                                                     user.name,
                                                     user.profileImageUrl,
                                                     authToken
