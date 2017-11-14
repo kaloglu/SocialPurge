@@ -18,6 +18,6 @@
         android:id="@+id/twitter_accounts_rw"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/owner_tweet_layout" />
+        tools:listitem="@layout/twitter_user_layout" />
 
 </LinearLayout>

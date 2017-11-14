@@ -2,6 +2,8 @@ package com.zsk.androtweet2
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
@@ -15,6 +17,8 @@ import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_manage_twitter_accounts.*
 import kotlinx.android.synthetic.main.owner_tweet_layout.view.*
+
+
 
 
 /**
@@ -63,6 +67,11 @@ class ManageTwitterAccounts : BaseActivity() {
 
         twitter_accounts_rw.adapter = adapter
         twitter_accounts_rw.layoutManager = LinearLayoutManager(this)
+
+        val itemDecorator = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider))
+
+        twitter_accounts_rw.addItemDecoration(itemDecorator)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -87,7 +96,7 @@ class ManageTwitterAccounts : BaseActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TwitterAccountHolder {
             return TwitterAccountHolder(LayoutInflater.from(parent.context)
-                    .inflate(R.layout.owner_tweet_layout, parent, false))
+                    .inflate(R.layout.twitter_user_layout, parent, false))
         }
 
         override fun onBindViewHolder(holder: TwitterAccountHolder, position: Int, model: TwitterAccount) {
