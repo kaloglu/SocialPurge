@@ -1,1 +1,1 @@
-include ':androtweet_app_module'
+include ':app'
