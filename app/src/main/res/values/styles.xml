@@ -20,15 +20,24 @@
     <style name="StandartView.TextView_Tweet">
     </style>
 
-    <style name="StandartView.TextView_RealName"></style>
+    <style name="StandartView.TextView_RealName">
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:focusable">false</item>
+    </style>
 
-    <style name="StandartView.TextView_UserName"></style>
+    <style name="StandartView.TextView_UserName">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:focusable">false</item>
+    </style>
 
     <style name="StandartView.TextView_Time">
         <item name="android:textColor">@color/silver</item>
     </style>
 
-    <style name="StandartView.ImageView_Profile_Pic"></style>
+    <style name="StandartView.ImageView_Profile_Pic">
+        <item name="android:layout_width">@dimen/profile_height</item>
+        <item name="android:layout_height">@dimen/profile_height</item>
+    </style>
 
     <style name="StandartView">
         <item name="android:layout_marginLeft">@dimen/h_margin_half</item>
@@ -38,13 +47,18 @@
     </style>
 
     <style name="StandartView.TextView_Interraction_Count">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/composer_char_count_height</item>
+        <item name="android:layout_marginRight">@dimen/composer_spacing_medium</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/md_grey_500</item>
+        <item name="android:textSize">@dimen/composer_font_size_small</item>
+        <item name="android:textAlignment">center</item>
         <item name="android:layout_marginLeft">0dp</item>
-        <item name="android:gravity">center</item>
     </style>
 
     <style name="StandartView.TextView_FontIcon">
         <item name="textType">font_icon</item>
         <item name="android:gravity">center</item>
     </style>
-
 </resources>
