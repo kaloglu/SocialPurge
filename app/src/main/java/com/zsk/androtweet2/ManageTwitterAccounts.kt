@@ -17,6 +17,7 @@ import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_manage_twitter_accounts.*
 import kotlinx.android.synthetic.main.twitter_user_layout.view.*
+import org.jetbrains.anko.alert
 
 
 /**
@@ -116,7 +117,13 @@ class ManageTwitterAccounts : BaseActivity() {
 
                 iv.delete_account.setOnClickListener {
                     with(firebaseService) {
-                        TWITTER_ACCOUNTS.remove(twitterAccount.id.toString())
+                        alert("Do you want disconnect this account?","Warning!!!") {
+                            positiveButton("YES") {
+                                TWITTER_ACCOUNTS.remove(twitterAccount.id.toString())
+                            }
+                            negativeButton("NO") {
+                            }
+                        }.show()
 
                     }
                 }
