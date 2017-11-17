@@ -1,3 +1,4 @@
+import com.google.gson.annotations.SerializedName;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;

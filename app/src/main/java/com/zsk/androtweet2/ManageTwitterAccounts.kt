@@ -25,7 +25,6 @@ import org.jetbrains.anko.alert
  */
 class ManageTwitterAccounts : BaseActivity() {
     lateinit var toolbar: Toolbar
-    var firebaseService = FirebaseService()
     lateinit var twitter_account_query: Query
     lateinit var options: FirebaseRecyclerOptions<TwitterAccount>
     lateinit var adapter: TwitterAccountAdapter
