@@ -32,8 +32,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
 
-    var firebaseService = FirebaseService()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_main)
         super.onCreate(savedInstanceState)

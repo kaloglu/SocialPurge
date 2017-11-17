@@ -10,8 +10,11 @@ import com.mikepenz.iconics.context.IconicsLayoutInflater2
 import com.squareup.picasso.Picasso
 
 open class BaseActivity : AppCompatActivity() {
-    private object Holder {val INSTANCE = BaseActivity()}
+    private object Holder {
+        val INSTANCE = BaseActivity()
+    }
 
+    var firebaseService = FirebaseService()
     val RC_SIGN_IN: Int = 100
     val LOGOUT: Long = -99999
     val ADD_TWITTER_ACCOUNT: Long = -99998

@@ -35,6 +35,7 @@ class SplashScreen : BaseActivity() {
                     RC_SIGN_IN)
         }
 
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {

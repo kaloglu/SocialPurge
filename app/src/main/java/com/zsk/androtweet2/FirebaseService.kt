@@ -16,6 +16,7 @@ class FirebaseService {
     val firebaseAuth: FirebaseAuth? = FirebaseAuth.getInstance()
     val currentUser: FirebaseUser? = firebaseAuth!!.currentUser
 
+    val CONSUMERS: String? = "consumers"
     val USERS: String? = "users"
     val TWITTER_ACCOUNTS: String? = "twitter_accounts"
     val PREFERENCES: String? = "preferences"

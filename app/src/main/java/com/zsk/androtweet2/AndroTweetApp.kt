@@ -12,12 +12,16 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
 import com.google.firebase.FirebaseApp
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
 import com.twitter.sdk.android.core.DefaultLogger
 import com.twitter.sdk.android.core.Twitter
 import com.twitter.sdk.android.core.TwitterAuthConfig
 import com.twitter.sdk.android.core.TwitterConfig
+import com.zsk.androtweet2.models.TwitterConsumer
 
 
 /**
@@ -25,6 +29,7 @@ import com.twitter.sdk.android.core.TwitterConfig
  */
 class AndroTweetApp : Application() {
     private var mTracker: Tracker? = null
+
     private object Holder {
         val INSTANCE = AndroTweetApp()
     }
@@ -34,10 +39,6 @@ class AndroTweetApp : Application() {
 
     companion object {
         val instance: AndroTweetApp by lazy { Holder.INSTANCE }
-        var daysAgo: Int = 0
-        var userName: String? = null
-        var tweetId: String? = null
-        private val tweetID: Any? = null
     }
 
     private val PERMISSIONS_STORAGE = arrayOf(
@@ -47,9 +48,9 @@ class AndroTweetApp : Application() {
     )
 
     override fun onCreate() {
-        super.onCreate()
-        initTwitter()
         FirebaseApp.initializeApp(this)
+        initTwitter()
+        super.onCreate()
     }
 
     private fun initTwitter() {
@@ -57,8 +58,9 @@ class AndroTweetApp : Application() {
         val config = TwitterConfig.Builder(this)
                 .logger(DefaultLogger(Log.DEBUG))
                 .twitterAuthConfig(twitterAuthConfig)
-                .debug(true)
+                .debug(BuildConfig.DEBUG)
                 .build()
+
         Twitter.initialize(config)
     }
 
