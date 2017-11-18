@@ -53,12 +53,12 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
 
                 override fun onChildChanged(dataSnapShot: DataSnapshot?, p1: String?) {
 
-                    dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
-                            ?.let { account ->
-                                androTweetApp.accountHeader.updateProfile(
-                                        getProfileDrawerItem(account)
-                                )
-                            }
+//                    dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
+//                            ?.let { account ->
+//                                androTweetApp.accountHeader.updateProfile(
+//                                        getProfileDrawerItem(account)
+//                                )
+//                            }
                 }
 
                 override fun onChildAdded(dataSnapShot: DataSnapshot?, p1: String?) {
@@ -92,6 +92,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .withName(account.name)
                 .withEmail(account.realname)
                 .withIcon(account.profilePic)
+                .withTag(account)
     }
 
 
@@ -100,11 +101,10 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         twitterLogin.callback = object : TwitterLoginCallBack(firebaseService) {}
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // Pass the activity result to the login button.
-        twitterLogin.onActivityResult(requestCode, resultCode, data)
+            twitterLogin.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun createNavigationDrawer(savedInstanceState: Bundle?, toolbar: Toolbar) {
@@ -176,6 +176,10 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
             return onItemClick(view, -1, profile)
         }
 
+        val activeProfile = androTweetApp.accountHeader.activeProfile as ProfileDrawerItem
+        androTweetApp.activeAccountItem = activeProfile.tag
+
+//        startFragment()
         return false
     }
 

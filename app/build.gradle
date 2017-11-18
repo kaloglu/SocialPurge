@@ -57,6 +57,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-analytics:$google_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUI_version"
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version" // For SnackBars
+
 
 
     //android libraries
