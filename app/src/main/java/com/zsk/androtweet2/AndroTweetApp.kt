@@ -12,15 +12,8 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
 import com.google.firebase.FirebaseApp
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
-import com.twitter.sdk.android.core.DefaultLogger
-import com.twitter.sdk.android.core.Twitter
-import com.twitter.sdk.android.core.TwitterAuthConfig
-import com.twitter.sdk.android.core.TwitterConfig
 import com.zsk.androtweet2.models.TwitterConsumer
 
 
@@ -28,7 +21,9 @@ import com.zsk.androtweet2.models.TwitterConsumer
  * Created by kaloglu on 22/10/2017.
  */
 class AndroTweetApp : Application() {
+    var activeAccountItem: Any? = null
     private var mTracker: Tracker? = null
+    var twitterConsumers: ArrayList<TwitterConsumer> = ArrayList()
 
     private object Holder {
         val INSTANCE = AndroTweetApp()
@@ -49,19 +44,7 @@ class AndroTweetApp : Application() {
 
     override fun onCreate() {
         FirebaseApp.initializeApp(this)
-        initTwitter()
         super.onCreate()
-    }
-
-    private fun initTwitter() {
-        val twitterAuthConfig = TwitterAuthConfig(getString(R.string.com_twitter_sdk_android_CONSUMER_KEY), getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET))
-        val config = TwitterConfig.Builder(this)
-                .logger(DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(twitterAuthConfig)
-                .debug(BuildConfig.DEBUG)
-                .build()
-
-        Twitter.initialize(config)
     }
 
     /**

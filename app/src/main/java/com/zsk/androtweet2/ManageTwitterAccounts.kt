@@ -72,7 +72,7 @@ class ManageTwitterAccounts : BaseActivity() {
         twitter_accounts_rw.addItemDecoration(itemDecorator)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Pass the activity result to the login button.
