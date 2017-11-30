@@ -7,14 +7,19 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.zsk.androtweet2.components.SimpleChildEventListener
+import com.zsk.androtweet2.models.FirebaseObject
 
 /**
  * Created by kaloglu on 11/11/2017.
  */
 class FirebaseService {
-    private val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
-    val firebaseAuth: FirebaseAuth? = FirebaseAuth.getInstance()
-    val currentUser: FirebaseUser? = firebaseAuth!!.currentUser
+    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    val config: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+    private val auth: FirebaseAuth? = FirebaseAuth.getInstance()
+    val currentUser: FirebaseUser? = auth!!.currentUser
 
     val CONSUMERS: String? = "consumers"
     val USERS: String? = "users"
@@ -25,24 +30,51 @@ class FirebaseService {
     val RETWEETS: String? = "retweets"
     val TWEET_DETAILS: String? = "tweet_details"
 
+    private fun String?.getDBRef(vararg longArr: Long): DatabaseReference? = this.getDBRef(longArr.asSequence().toString())
 
-    fun String?.getDatabaseReference(): DatabaseReference =
-            firebaseDatabase.getReference(this)
+    /**
+     * return db path.
+     * eg.:
+     *  "table".getDBRef("subtable1","subtable2","subtable3")
+     *
+     * result:
+     *  "table/subtable1/subtable2/subtable3"
+     */
+    fun String?.getDBRef(vararg strArr: String): DatabaseReference {
+        var ref = this.getDBRef().child(currentUser!!.uid)
+        strArr.asSequence().filter { it != "" }.forEach { ref = ref.child(it) }
+        return ref
+    }
 
-    fun String?.update(id: String, value: Any): Task<Void>? =
-            this.getDatabaseReference().child(currentUser!!.uid).child(id).setValue(value)
 
-    fun String?.remove(id: String): Task<Void>? =
-            this.getDatabaseReference().child(currentUser!!.uid).child(id).removeValue()
+    fun String?.getDBRef(): DatabaseReference = database.getReference(this)
+
+    fun <T : FirebaseObject> String?.update(valueObj: T): Task<Void>? = getDBRef(valueObj.id!!)!!.setValue(valueObj)
+
+    fun <T : FirebaseObject> String?.remove(valueObj: T): Task<Void>? = getDBRef(valueObj.id!!)!!.removeValue()
+
+    fun String?.putValueEventListener(
+            valueEventListener: ValueEventListener,
+            vararg childArray: String
+    ) = getDBRef(*childArray).addValueEventListener(valueEventListener)
+
+
+    fun String?.putChildEventListener(
+            childEventListener: SimpleChildEventListener,
+            vararg childArray: String
+    ) = getDBRef(*childArray).addChildEventListener(childEventListener)
+
+    fun String?.orderByKey(): Query = getDBRef().orderByKey()
+
 
     fun isSignedIn(): Boolean = FirebaseAuth.getInstance().currentUser != null
 
-    fun <T>recyclerOptions(receiver: Class<T>, activity: BaseActivity, query: Query?): FirebaseRecyclerOptions<T> {
+    fun <T> recyclerOptions(receiver: Class<T>, activity: BaseActivity, query: Query?): FirebaseRecyclerOptions<T> {
         return FirebaseRecyclerOptions.Builder<T>()
-                .setQuery(query,receiver)
+                .setQuery(query, receiver)
                 .setLifecycleOwner(activity)
                 .build()
     }
 
-
 }
+

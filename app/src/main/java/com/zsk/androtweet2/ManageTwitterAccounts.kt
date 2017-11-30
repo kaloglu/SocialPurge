@@ -31,7 +31,7 @@ class ManageTwitterAccounts : BaseActivity() {
 
     init {
         with(firebaseService) {
-            twitter_account_query = TWITTER_ACCOUNTS.getDatabaseReference().child(currentUser?.uid).orderByKey()
+            twitter_account_query = TWITTER_ACCOUNTS.orderByKey()
             options = recyclerOptions(TwitterAccount::class.java, this@ManageTwitterAccounts, twitter_account_query)
             adapter = TwitterAccountAdapter(options)
         }
@@ -118,7 +118,7 @@ class ManageTwitterAccounts : BaseActivity() {
                     with(firebaseService) {
                         alert("Do you want disconnect this account?","Warning!!!") {
                             positiveButton("YES") {
-                                TWITTER_ACCOUNTS.remove(twitterAccount.id.toString())
+                                TWITTER_ACCOUNTS.remove(twitterAccount)
                             }
                             negativeButton("NO") {
                             }
@@ -133,4 +133,5 @@ class ManageTwitterAccounts : BaseActivity() {
     }
 
 }
+
 

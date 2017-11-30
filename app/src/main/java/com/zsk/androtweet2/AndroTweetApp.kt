@@ -12,6 +12,7 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
 import com.google.firebase.FirebaseApp
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
 import com.zsk.androtweet2.models.TwitterConsumer
@@ -44,6 +45,8 @@ class AndroTweetApp : Application() {
 
     override fun onCreate() {
         FirebaseApp.initializeApp(this)
+        val configSettings = FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG).build()
+        FirebaseService().config.setConfigSettings(configSettings)
         super.onCreate()
     }
 

@@ -41,9 +41,9 @@ android {
 dependencies {
     ext.anko_version = '0.10.1'
     ext.android_version = "26+"
-    ext.google_version = "11.6.0"
+    ext.google_version = "11.6.2"
     ext.firebaseUI_version = "3.1.0"
-    ext.firebase_version = "11.6.0"
+    ext.firebase_version = "11.6.2"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -51,7 +51,8 @@ dependencies {
     })
     //google libraries,
 //    implementation "com.google.firebase:firebase-core:$firebase_version"
-    implementation "com.google.firebase:firebase-auth:11.6.0"
+    implementation "com.google.firebase:firebase-auth:$firebase_version"
+    implementation "com.google.firebase:firebase-config:$firebase_version"
     implementation "com.google.firebase:firebase-database:$firebase_version"
     implementation "com.google.android.gms:play-services-auth:$google_version"
     implementation "com.google.android.gms:play-services-analytics:$google_version"
