@@ -2,20 +2,20 @@ package com.zsk.androtweet2
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.mikepenz.iconics.context.IconicsContextWrapper
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 import com.squareup.picasso.Picasso
-import com.twitter.sdk.android.core.*
+import com.twitter.sdk.android.core.TwitterAuthConfig
+import com.twitter.sdk.android.core.TwitterAuthException
 import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.email
 
@@ -37,6 +37,10 @@ open class BaseActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(IconicsContextWrapper.wrap(newBase))
     }
+
+    fun getTwitterSettings(): SharedPreferences? =
+            getSharedPreferences("twitter_settings", Context.MODE_PRIVATE)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
@@ -71,61 +75,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun initTwitter(intent: Intent) {
-        with(firebaseService) {
-            var cacheSize = 3600L
 
-            if (config.info.configSettings.isDeveloperModeEnabled)
-                cacheSize = 0
-
-            config.fetch(cacheSize).addOnCompleteListener { result ->
-                if (result.isSuccessful) {
-                    val twitterAuthConfig = TwitterAuthConfig(config.getString("twitter_consumer_key"), config.getString("twitter_consumer_secret"))
-                    val twitterConfig = TwitterConfig.Builder(this@BaseActivity)
-                            .logger(DefaultLogger(Log.DEBUG))
-                            .twitterAuthConfig(twitterAuthConfig)
-                            .debug(BuildConfig.DEBUG)
-                            .build()
-                    Twitter.initialize(twitterConfig)
-                    config.activateFetched()
-                    startActivity(intent)
-                } else
-                    alert("Maintenance Time! plase try again few later...") {
-                        negativeButton("Close App", {
-                            finish()
-                        })
-                        positiveButton("Try Again", {
-                            initTwitter(intent)
-                        })
-                        neutralPressed("Report", {
-                            email(
-                                    "support@androtweet.net",
-                                    "App Working Issue[SplashScreen]",
-                                    "App doesn't open I do not know why!"
-                            )
-                        })
-                    }
-
-            }.addOnFailureListener { exception ->
-                alert("Something goes Wrong") {
-                    negativeButton("Close App", {
-                        finish()
-                    })
-                    positiveButton("Try Again", {
-                        initTwitter(intent)
-                    })
-                    neutralPressed("Report", {
-                        val errorMessage = exception.message
-                        email(
-                                "support@androtweet.net",
-                                "App Working Issue[SplashScreen]",
-                                "App doesn't open I do not know why!\n Reason[$errorMessage]"
-                        )
-                    })
-                }
-            }
-
-
-        }
 
     }
 
