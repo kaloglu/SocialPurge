@@ -30,7 +30,7 @@ class FirebaseService {
     val RETWEETS: String? = "retweets"
     val TWEET_DETAILS: String? = "tweet_details"
 
-    private fun String?.getDBRef(vararg longArr: Long): DatabaseReference? = this.getDBRef(longArr.asSequence().toString())
+    private fun String?.getDBRef(vararg longArr: Long): DatabaseReference? = this.getDBRef(longArr.asSequence().joinToString(","))
 
     /**
      * return db path.
@@ -42,16 +42,16 @@ class FirebaseService {
      */
     fun String?.getDBRef(vararg strArr: String): DatabaseReference {
         var ref = this.getDBRef().child(currentUser!!.uid)
-        strArr.asSequence().filter { it != "" }.forEach { ref = ref.child(it) }
+        strArr.filter { it != "" }.forEach { ref = ref.child(it) }
         return ref
     }
 
 
     fun String?.getDBRef(): DatabaseReference = database.getReference(this)
 
-    fun <T : FirebaseObject> String?.update(valueObj: T): Task<Void>? = getDBRef(valueObj.id!!)!!.setValue(valueObj)
+    fun <T : FirebaseObject> String?.update(valueObj: T): Task<Void>? = getDBRef(valueObj.id)!!.setValue(valueObj)
 
-    fun <T : FirebaseObject> String?.remove(valueObj: T): Task<Void>? = getDBRef(valueObj.id!!)!!.removeValue()
+    fun <T : FirebaseObject> String?.remove(valueObj: T): Task<Void>? = getDBRef(valueObj.id)!!.removeValue()
 
     fun String?.putValueEventListener(
             valueEventListener: ValueEventListener,
