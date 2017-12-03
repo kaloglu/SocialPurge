@@ -28,25 +28,11 @@ class SplashScreen : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen)
-        getRemoteSettings()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (firebaseService.currentUser != null) {
-            onActivityResult(-1, -1, intent)
-        } else {
-            val build = AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(signInProviders)
-                    .setIsSmartLockEnabled(true, true)
-                    .setAllowNewEmailAccounts(true)
-                    .build()
-
-            startActivityForResult(
-                    build,
-                    RC_SIGN_IN)
-        }
+    override fun onPostResume() {
+        super.onPostResume()
+        getRemoteSettings()
     }
 
     private fun getRemoteSettings() {
@@ -69,6 +55,9 @@ class SplashScreen : BaseActivity() {
                         }
                     }
                     config.activateFetched()
+                    twitterImplementation()
+                    checkLogin()
+
                 } else {
                     alert("Maintenance Time! plase try again few later...") {
                         negativeButton("Close App", {
@@ -92,6 +81,21 @@ class SplashScreen : BaseActivity() {
         }
     }
 
+    private fun checkLogin() {
+        if (firebaseService.isSignedIn()) {
+            onActivityResult(-1, -1, intent)
+        } else {
+            val build = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(signInProviders)
+                    .setIsSmartLockEnabled(true, true)
+                    .setAllowNewEmailAccounts(true)
+                    .build()
+
+            startActivityForResult(build, RC_SIGN_IN)
+        }
+    }
+
     private fun handleException(errorMessage: String?) {
         alert("Something goes Wrong") {
             negativeButton("Close App", {
@@ -110,7 +114,7 @@ class SplashScreen : BaseActivity() {
         }
     }
 
-    private fun twitterImplementation(intent: Intent) {
+    private fun twitterImplementation() {
         val twitterSettings = getTwitterSettings()
         val consumerKey = twitterSettings?.getString("twitter_consumer_key", "")
         val consumerSecret = twitterSettings?.getString("twitter_consumer_secret", "")
@@ -126,7 +130,7 @@ class SplashScreen : BaseActivity() {
                 .build()
         Twitter.initialize(twitterConfig)
 
-        startActivity(intent)
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,7 +142,8 @@ class SplashScreen : BaseActivity() {
         idpResponse?.let { intent.putExtra("my_token", idpResponse!!.idpToken) }
 
         if (resultCode == Activity.RESULT_OK) {
-            twitterImplementation(intent)
+            startActivity(intent)
+            finish()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

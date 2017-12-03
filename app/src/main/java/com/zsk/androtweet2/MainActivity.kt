@@ -76,7 +76,6 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .withTag(account)
     }
 
-
     override fun initializeScreenObject() {
         twitterLogin.callback = object : TwitterLoginCallBack(firebaseService) {}
     }
@@ -116,7 +115,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                         profile as ProfileDrawerItem
                         val twitterAccount = profile.tag as TwitterAccount
                         val authToken = twitterAccount.authToken
-                        
+
                         toast((profile.tag as TwitterAccount).name + "->\n[" + authToken?.token + " ] \n [" + (authToken?.secret) + "]")
                         true
                     }
@@ -130,6 +129,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .signOut(this)
                 .addOnCompleteListener({ _ ->
                     startActivity(Intent(this, SplashScreen::class.java))
+                    finish()
                 })
     }
 
