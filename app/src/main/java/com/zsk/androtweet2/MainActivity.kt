@@ -27,6 +27,7 @@ import com.twitter.sdk.android.core.models.User
 import com.zsk.androtweet2.components.SimpleChildEventListener
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.toast
 
 
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
@@ -110,6 +111,17 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .withCurrentProfileHiddenInList(true)
                 .withThreeSmallProfileImages(true)
                 .withSavedInstance(savedInstanceState)
+                .withOnAccountHeaderListener { view, profile, current ->
+                    with(profile) {
+                        profile as ProfileDrawerItem
+                        val twitterAccount = profile.tag as TwitterAccount
+                        val authToken = twitterAccount.authToken
+                        
+                        toast((profile.tag as TwitterAccount).name + "->\n[" + authToken?.token + " ] \n [" + (authToken?.secret) + "]")
+                        true
+                    }
+
+                }
                 .build()
     }
 
