@@ -15,7 +15,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
-import com.zsk.androtweet2.models.TwitterConsumer
 
 
 /**
@@ -24,7 +23,6 @@ import com.zsk.androtweet2.models.TwitterConsumer
 class AndroTweetApp : Application() {
     var activeAccountItem: Any? = null
     private var mTracker: Tracker? = null
-    var twitterConsumers: ArrayList<TwitterConsumer> = ArrayList()
 
     private object Holder {
         val INSTANCE = AndroTweetApp()
