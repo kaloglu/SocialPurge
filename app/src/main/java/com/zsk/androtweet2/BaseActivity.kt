@@ -41,11 +41,14 @@ open class BaseActivity : AppCompatActivity() {
     fun getTwitterSettings(): SharedPreferences? =
             getSharedPreferences("twitter_settings", Context.MODE_PRIVATE)
 
+    fun getAppSettings(): SharedPreferences? =
+            getSharedPreferences("app_settings", Context.MODE_PRIVATE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
         initializeScreenObject()
         initFirebase()
+
         super.onCreate(savedInstanceState)
     }
 
