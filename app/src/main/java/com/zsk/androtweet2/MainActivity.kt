@@ -1,6 +1,7 @@
 package com.zsk.androtweet2
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -32,6 +33,7 @@ import org.jetbrains.anko.toast
 
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_main)
         super.onCreate(savedInstanceState)
@@ -44,25 +46,32 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     override fun addEventListenerForFirebase() {
         super.addEventListenerForFirebase()
         with(firebaseService) {
-
             TWITTER_ACCOUNTS.putChildEventListener(object : SimpleChildEventListener {
-                override fun onChildAdded(twitterAccountSnapShot: DataSnapshot?, p1: String?) {
-                    val account = twitterAccountSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
-                    account?.let {
-                        var index = 0
-                        with(androTweetApp.accountHeader.profiles) {
-                            if (count() >= 2) index = count() - 2
-                        }
-                        androTweetApp.accountHeader.addProfile(getProfileDrawerItem(account), index)
+
+                override fun onChildAdded(dataSnapShot: DataSnapshot?, p1: String?) {
+                    androTweetApp.accountHeader.let { accountHeader ->
+                        val index = if (accountHeader.profiles.count() >= 2) accountHeader.profiles.count() - 2 else 0
+                        dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
+                                ?.let { account ->
+                                    accountHeader.addProfile(getProfileDrawerItem(account), index)
+                                    index.inc()
+                                }
+                        val selectedProfile = getAppSettings()?.get("selectedProfile", -1L) as Long
+                        if (selectedProfile != -1L)
+                            accountHeader.setActiveProfile(selectedProfile, true)
                     }
                 }
 
+
                 override fun onChildRemoved(dataSnapShot: DataSnapshot?) {
-                    dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
-                            ?.let { account ->
-                                androTweetApp.accountHeader.removeProfileByIdentifier(account.id)
-                            }
+                    androTweetApp.accountHeader.let { accountHeader ->
+                        dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
+                                ?.let { account ->
+                                    accountHeader.removeProfileByIdentifier(account.id)
+                                }
+                    }
                 }
+
             })
         }
 
@@ -110,17 +119,6 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .withCurrentProfileHiddenInList(true)
                 .withThreeSmallProfileImages(true)
                 .withSavedInstance(savedInstanceState)
-                .withOnAccountHeaderListener { view, profile, current ->
-                    with(profile) {
-                        profile as ProfileDrawerItem
-                        val twitterAccount = profile.tag as TwitterAccount
-                        val authToken = twitterAccount.authToken
-
-                        toast((profile.tag as TwitterAccount).name + "->\n[" + authToken?.token + " ] \n [" + (authToken?.secret) + "]")
-                        true
-                    }
-
-                }
                 .build()
     }
 
@@ -161,13 +159,21 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     override fun onProfileChanged(view: View?, profile: IProfile<*>?, current: Boolean): Boolean {
-        if (profile is IDrawerItem<*, *>) return onItemClick(view, -1, profile)
-
-        val activeProfile = androTweetApp.accountHeader.activeProfile as ProfileDrawerItem
-        androTweetApp.activeAccountItem = activeProfile.tag
-
-//        startFragment()
-        return false
+        var a = profile.toString()
+        a += " :) "
+        when (profile) {
+            is ProfileSettingDrawerItem -> {
+                return onItemClick(view, -1, profile)
+            }
+            is ProfileDrawerItem -> {
+                if (!current) {
+                    val newActiveAccount = profile.tag as TwitterAccount
+                    getAppSettings()?.put("selectedProfile", profile.identifier)
+                    toast(newActiveAccount.name)
+                }
+            }
+        }
+        return true
     }
 
     open class TwitterLoginCallBack(private val firebaseServ: FirebaseService) : Callback<TwitterSession>() {
@@ -206,3 +212,28 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         }
     }
 }
+
+private fun SharedPreferences.put(key: String, value: Any) {
+
+    val editor = this.edit()
+
+    when (value) {
+        is Long -> editor.putLong(key, value)
+        is Float -> editor.putFloat(key, value)
+        is Boolean -> editor.putBoolean(key, value)
+        is Int -> editor.putInt(key, value)
+        is String -> editor.putString(key, value)
+    }
+
+    editor.apply()
+}
+
+private fun SharedPreferences.get(key: String, default: Any): Any = when (default) {
+    is Long -> this.getLong(key, default)
+    is Float -> this.getFloat(key, default)
+    is Boolean -> this.getBoolean(key, default)
+    is Int -> this.getInt(key, default)
+    is String -> this.getString(key, default)
+    else -> ""
+}
+

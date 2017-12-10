@@ -1,15 +1,17 @@
 package com.zsk.androtweet2.models
 
+import com.google.firebase.database.Exclude
 import com.twitter.sdk.android.core.TwitterAuthToken
 import com.twitter.sdk.android.core.models.User
+
 
 /**
  * Created by kaloglu on 12/11/2017.
  */
 class TwitterAccount : FirebaseObject {
-    lateinit var name: String
-    lateinit var realname: String
-    lateinit var profilePic: String
+    var name: String = ""
+    var realname: String = ""
+    var profilePic: String = ""
     var authToken: CustomAuthToken? = null
 
     constructor() : super()
@@ -42,6 +44,18 @@ class TwitterAccount : FirebaseObject {
             this.expired = authToken.isExpired
         }
 
+    }
+
+    @Exclude
+    fun toMap(): Map<String, Any> {
+        val result = HashMap<String, Any>()
+
+        result.put("name", name)
+        result.put("realname", realname)
+        result.put("profilePic", profilePic)
+        result.put("authToken", authToken!!)
+
+        return result
     }
 
 }

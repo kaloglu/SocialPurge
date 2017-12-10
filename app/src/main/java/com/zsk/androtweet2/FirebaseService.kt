@@ -16,7 +16,7 @@ import com.zsk.androtweet2.models.FirebaseObject
  * Created by kaloglu on 11/11/2017.
  */
 class FirebaseService {
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    internal val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val config: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
     private val auth: FirebaseAuth? = FirebaseAuth.getInstance()
     val currentUser: FirebaseUser? = auth!!.currentUser
@@ -30,7 +30,7 @@ class FirebaseService {
     val RETWEETS: String? = "retweets"
     val TWEET_DETAILS: String? = "tweet_details"
 
-    private fun String?.getDBRef(vararg longArr: Long): DatabaseReference? = this.getDBRef(longArr.asSequence().joinToString(","))
+    internal fun String?.getDBRef(vararg longArr: Long): DatabaseReference? = this.getDBRef(longArr.asSequence().joinToString(","))
 
     /**
      * return db path.
@@ -56,15 +56,33 @@ class FirebaseService {
     fun String?.putValueEventListener(
             valueEventListener: ValueEventListener,
             vararg childArray: String
-    ) = getDBRef(*childArray).addValueEventListener(valueEventListener)
+    ) = this.putValueEventListener(false, valueEventListener, *childArray)
 
-
-    fun String?.putChildEventListener(
-            childEventListener: SimpleChildEventListener,
+    fun String?.putValueEventListener(
+            justOnce: Boolean = false,
+            valueEventListener: ValueEventListener,
             vararg childArray: String
-    ) = getDBRef(*childArray).addChildEventListener(childEventListener)
+    ) {
+        if (justOnce)
+            getDBRef(*childArray).addListenerForSingleValueEvent(valueEventListener)
+        else
+            getDBRef(*childArray).addValueEventListener(valueEventListener)
+    }
 
-    fun String?.orderByKey(): Query = getDBRef().orderByKey()
+
+    fun String?.putChildEventListener(childEventListener: SimpleChildEventListener, vararg childArray: String)
+            = getDBRef(*childArray).addChildEventListener(childEventListener)
+
+    fun Query.putChildEventListener(childEventListener: SimpleChildEventListener)
+            = this.addChildEventListener(childEventListener)
+
+    fun String?.orderByKey(): Query {
+        val ref = if (this.equals(TWITTER_ACCOUNTS)) getDBRef("") else getDBRef()
+
+        return ref.orderByKey()
+    }
+
+    fun String?.orderByChild(string: String): Query = getDBRef().orderByChild(string)
 
 
     fun isSignedIn(): Boolean = FirebaseAuth.getInstance().currentUser != null
