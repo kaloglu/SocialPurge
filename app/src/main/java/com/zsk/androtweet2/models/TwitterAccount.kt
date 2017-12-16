@@ -43,8 +43,9 @@ class TwitterAccount : FirebaseObject {
             this.secret = authToken.secret
             this.expired = authToken.isExpired
         }
-
     }
+
+    fun TwitterAccount.twitterAuth(): TwitterAuthToken = authToken?.let { TwitterAuthToken(it.token, it.secret) }!!
 
     @Exclude
     fun toMap(): Map<String, Any> {

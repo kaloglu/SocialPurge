@@ -1,4 +1,4 @@
-package com.zsk.androtweet2
+package com.zsk.androtweet2.helpers.utils
 
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.gms.tasks.Task
@@ -10,6 +10,7 @@ import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.zsk.androtweet2.components.SimpleChildEventListener
+import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.models.FirebaseObject
 
 /**

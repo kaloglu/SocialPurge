@@ -1,4 +1,4 @@
-package com.zsk.androtweet2
+package com.zsk.androtweet2.helpers.utils
 
 /**
  * Created by kaloglu on 04/11/2017.
@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat
 import android.text.TextPaint
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.util.TypedValue.applyDimension
+import com.zsk.androtweet2.R
 import com.zsk.androtweet2.Sealed.Enums
 import com.zsk.androtweet2.components.CustomTypeFace
 

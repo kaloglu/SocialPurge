@@ -1,4 +1,4 @@
-package com.zsk.androtweet2
+package com.zsk.androtweet2.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.Query
+import com.zsk.androtweet2.R
+import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_manage_twitter_accounts.*

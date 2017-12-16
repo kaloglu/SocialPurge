@@ -1,10 +1,11 @@
-package com.zsk.androtweet2
+package com.zsk.androtweet2.helpers.bases
 
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -15,6 +16,11 @@ import com.squareup.picasso.Picasso
 import com.twitter.sdk.android.core.TwitterAuthConfig
 import com.twitter.sdk.android.core.TwitterAuthException
 import com.twitter.sdk.android.core.identity.TwitterLoginButton
+import com.zsk.androtweet2.AndroTweetApp
+import com.zsk.androtweet2.R
+import com.zsk.androtweet2.fragments.BaseFragment
+import com.zsk.androtweet2.fragments.TimelineFragment
+import com.zsk.androtweet2.helpers.utils.FirebaseService
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.email
@@ -60,7 +66,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     companion object {
-        val baseActivity: BaseActivity by lazy { BaseActivity.Holder.INSTANCE }
+        val baseActivity: BaseActivity by lazy { Holder.INSTANCE }
     }
 
     open fun initializeScreenObject() {}
@@ -135,5 +141,47 @@ open class BaseActivity : AppCompatActivity() {
                     "Can not add Twitter account!\n Reason[$errorMessage]"
             )
         }
+    }
+
+    fun startFragment(fragment: BaseFragment) {
+        val manager = supportFragmentManager
+        val transaction: FragmentTransaction = manager.beginTransaction()
+
+        transaction.addToBackStack(fragment.id.toString())
+        //TODO:create new View for activity.
+        transaction.replace(R.id.fragmentContainer, fragment, fragment.id.toString())
+
+        try {
+            transaction.commit()
+            manager.executePendingTransactions()
+        } catch (ignored: Exception) {
+        }
+
+    }
+
+    fun String?.timeline_fragment(): BaseFragment = TimelineFragment().setType(this)
+
+    internal fun SharedPreferences.put(key: String, value: Any) {
+
+        val editor = this.edit()
+
+        when (value) {
+            is Long -> editor.putLong(key, value)
+            is Float -> editor.putFloat(key, value)
+            is Boolean -> editor.putBoolean(key, value)
+            is Int -> editor.putInt(key, value)
+            is String -> editor.putString(key, value)
+        }
+
+        editor.apply()
+    }
+
+    internal fun SharedPreferences.get(key: String, default: Any): Any = when (default) {
+        is Long -> this.getLong(key, default)
+        is Float -> this.getFloat(key, default)
+        is Boolean -> this.getBoolean(key, default)
+        is Int -> this.getInt(key, default)
+        is String -> this.getString(key, default)
+        else -> ""
     }
 }
