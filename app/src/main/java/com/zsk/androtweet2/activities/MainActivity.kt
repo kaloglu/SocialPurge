@@ -1,7 +1,6 @@
-package com.zsk.androtweet2
+package com.zsk.androtweet2.activities
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -25,7 +24,13 @@ import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.models.User
+import com.zsk.androtweet2.BuildConfig
+import com.zsk.androtweet2.helpers.utils.FirebaseService
+import com.zsk.androtweet2.helpers.utils.FontIconDrawable
+import com.zsk.androtweet2.R
+import com.zsk.androtweet2.SplashScreen
 import com.zsk.androtweet2.components.SimpleChildEventListener
+import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.toast
@@ -158,6 +163,8 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         startActivity(Intent(this, ManageTwitterAccounts::class.java))
     }
 
+    private val MENTIONS: String="mentions";
+
     override fun onProfileChanged(view: View?, profile: IProfile<*>?, current: Boolean): Boolean {
         var a = profile.toString()
         a += " :) "
@@ -166,10 +173,15 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 return onItemClick(view, -1, profile)
             }
             is ProfileDrawerItem -> {
-                if (!current) {
+                if (!current and (profile.tag is TwitterAccount)) {
                     val newActiveAccount = profile.tag as TwitterAccount
                     getAppSettings()?.put("selectedProfile", profile.identifier)
-                    toast(newActiveAccount.name)
+                    if (BuildConfig.DEBUG)
+                        toast(newActiveAccount.name)
+
+                    androTweetApp.initializeActiveUserAccount(newActiveAccount)
+
+                    startFragment(MENTIONS.timeline_fragment())
                 }
             }
         }
@@ -212,28 +224,3 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         }
     }
 }
-
-private fun SharedPreferences.put(key: String, value: Any) {
-
-    val editor = this.edit()
-
-    when (value) {
-        is Long -> editor.putLong(key, value)
-        is Float -> editor.putFloat(key, value)
-        is Boolean -> editor.putBoolean(key, value)
-        is Int -> editor.putInt(key, value)
-        is String -> editor.putString(key, value)
-    }
-
-    editor.apply()
-}
-
-private fun SharedPreferences.get(key: String, default: Any): Any = when (default) {
-    is Long -> this.getLong(key, default)
-    is Float -> this.getFloat(key, default)
-    is Boolean -> this.getBoolean(key, default)
-    is Int -> this.getInt(key, default)
-    is String -> this.getString(key, default)
-    else -> ""
-}
-

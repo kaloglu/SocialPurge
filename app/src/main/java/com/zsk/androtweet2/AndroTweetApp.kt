@@ -15,13 +15,19 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
+import com.twitter.sdk.android.core.TwitterApiClient
+import com.twitter.sdk.android.core.TwitterAuthToken
+import com.twitter.sdk.android.core.TwitterSession
+import com.zsk.androtweet2.helpers.utils.FirebaseService
+import com.zsk.androtweet2.models.FirebaseObject
+import com.zsk.androtweet2.models.TwitterAccount
 
 
 /**
  * Created by kaloglu on 22/10/2017.
  */
 class AndroTweetApp : Application() {
-    var activeAccountItem: Any? = null
+    var activeUserAccountItem: Any? = null
     private var mTracker: Tracker? = null
 
     private object Holder {
@@ -129,5 +135,25 @@ class AndroTweetApp : Application() {
 
     }
 
+    fun initializeActiveUserAccount(activeAccount: FirebaseObject) {
+        activeUserAccountItem = when (activeAccount) {
+            is TwitterAccount -> getActiveTwitterUserAccount(activeAccount)
+//            is FacebookAccount -> getActiveFaceboookUserAccount(activeAccount)
+//            is IsntagramAccount -> getActiveInstagramUserAccount(activeAccount)
+            else -> null
+        }
+    }
+
+    fun TwitterAccount.twitterAuth(): TwitterAuthToken = authToken?.let { TwitterAuthToken(it.token, it.secret) }!!
+
+    private fun getActiveTwitterUserAccount(twitterAccount: TwitterAccount): TwitterApiClient =
+            TwitterApiClient(with(twitterAccount, { TwitterSession(twitterAuth(), id, name) }))
+
+//    private fun getActiveFacebookUserAccount(facebookAccount: FacebookAccount) {
+//    TODO: Facebook session staff
+//    }
+//    private fun getActiveInstagramUserAccount(instagramAccount: InstagramAccount) {
+//    TODO: Isntagram session staff
+//    }
 
 }

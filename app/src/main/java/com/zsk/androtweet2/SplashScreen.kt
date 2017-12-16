@@ -10,6 +10,8 @@ import com.twitter.sdk.android.core.DefaultLogger
 import com.twitter.sdk.android.core.Twitter
 import com.twitter.sdk.android.core.TwitterAuthConfig
 import com.twitter.sdk.android.core.TwitterConfig
+import com.zsk.androtweet2.activities.MainActivity
+import com.zsk.androtweet2.helpers.bases.BaseActivity
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.email
 import java.util.*

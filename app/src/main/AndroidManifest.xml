@@ -18,10 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".BaseActivity" />
-        <activity android:name=".ManageTwitterAccounts"
-            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".helpers.bases.BaseActivity" />
+        <activity android:name=".activities.ManageTwitterAccounts"
+            android:parentActivityName=".activities.MainActivity"/>
     </application>
 
 </manifest>
