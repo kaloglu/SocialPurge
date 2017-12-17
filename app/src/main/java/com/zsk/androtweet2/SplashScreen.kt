@@ -12,6 +12,7 @@ import com.twitter.sdk.android.core.TwitterAuthConfig
 import com.twitter.sdk.android.core.TwitterConfig
 import com.zsk.androtweet2.activities.MainActivity
 import com.zsk.androtweet2.helpers.bases.BaseActivity
+import com.zsk.androtweet2.helpers.utils.Enums.RequestCodes.RC_SIGN_IN
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.email
 import java.util.*
@@ -83,20 +84,19 @@ class SplashScreen : BaseActivity() {
         }
     }
 
-    private fun checkLogin() {
-        if (firebaseService.isSignedIn()) {
-            onActivityResult(-1, -1, intent)
-        } else {
-            val build = AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(signInProviders)
-                    .setIsSmartLockEnabled(true, true)
-                    .setAllowNewEmailAccounts(true)
-                    .build()
+    private fun checkLogin() = if (firebaseService.isSignedIn()) {
+        onActivityResult(-1, -1, intent)
+    } else {
+        val build = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(signInProviders)
+                .setIsSmartLockEnabled(true, true)
+                .setAllowNewEmailAccounts(true)
+                .build()
 
-            startActivityForResult(build, RC_SIGN_IN)
-        }
+        startActivityForResult(build, RC_SIGN_IN)
     }
+
 
     private fun handleException(errorMessage: String?) {
         alert("Something goes Wrong") {
