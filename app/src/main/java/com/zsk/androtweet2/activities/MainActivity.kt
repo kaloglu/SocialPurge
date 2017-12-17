@@ -25,12 +25,15 @@ import com.squareup.picasso.Picasso
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.models.User
 import com.zsk.androtweet2.BuildConfig
-import com.zsk.androtweet2.helpers.utils.FirebaseService
-import com.zsk.androtweet2.helpers.utils.FontIconDrawable
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.SplashScreen
 import com.zsk.androtweet2.components.SimpleChildEventListener
 import com.zsk.androtweet2.helpers.bases.BaseActivity
+import com.zsk.androtweet2.helpers.utils.Enums
+import com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.*
+import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.*
+import com.zsk.androtweet2.helpers.utils.FirebaseService
+import com.zsk.androtweet2.helpers.utils.FontIconDrawable
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.toast
@@ -112,10 +115,10 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .addProfiles(
 //                        Settings for Account
                         ProfileSettingDrawerItem().withName("Add Account")
-                                .withIdentifier(baseActivity.ADD_TWITTER_ACCOUNT)
+                                .withIdentifier(ADD_TWITTER_ACCOUNT)
                                 .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus))),
                         ProfileSettingDrawerItem().withName("Manage Account")
-                                .withIdentifier(baseActivity.MANAGE_TWITTER_ACCOUNT)
+                                .withIdentifier(MANAGE_AGGOUNTS)
                                 .withDescription("Add / Remove your accounts")
                                 .withIcon(FontIconDrawable(this, getString(R.string.ic_cog)))
                 )
@@ -154,7 +157,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         when (drawerItem?.identifier) {
             LOGOUT -> signOut()
             ADD_TWITTER_ACCOUNT -> twitterLogin.callOnClick()
-            MANAGE_TWITTER_ACCOUNT -> getManageActivity()
+            MANAGE_ACCOUNTS -> getManageActivity()
         }
         return false
     }
@@ -162,8 +165,6 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     private fun getManageActivity() {
         startActivity(Intent(this, ManageTwitterAccounts::class.java))
     }
-
-    private val MENTIONS: String="mentions";
 
     override fun onProfileChanged(view: View?, profile: IProfile<*>?, current: Boolean): Boolean {
         var a = profile.toString()
@@ -181,7 +182,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
 
                     androTweetApp.initializeActiveUserAccount(newActiveAccount)
 
-                    startFragment(MENTIONS.timeline_fragment())
+                    startFragment(MENTIONS.twitter_timeline())
                 }
             }
         }
@@ -223,4 +224,5 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
             Picasso.with(imageView?.context).cancelRequest(imageView)
         }
     }
+
 }

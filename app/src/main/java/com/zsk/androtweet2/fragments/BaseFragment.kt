@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.zsk.androtweet2.R
+import com.zsk.androtweet2.helpers.utils.Enums
 
 
 /**
@@ -15,19 +15,20 @@ import com.zsk.androtweet2.R
  * Activities that contain this fragment must implement the
  * [BaseFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [BaseFragment.newInstance] factory method to
+ * Use the [BaseFragment.forTwitter] factory method to
  * create an instance of this fragment.
  */
 //TODO: update for using.
 open class BaseFragment : Fragment() {
+    val layoutId = null
     private var type: String? = "default"
     private var mListener: OnFragmentInteractionListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_base, container, false)
-    }
+    override fun onCreateView(
+            inflater: LayoutInflater?,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? = inflater!!.inflate(layoutId, container, false)
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
@@ -65,34 +66,27 @@ open class BaseFragment : Fragment() {
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
+        private val FRAGMENT_TYPE = "fragment_type"
+        private val CONTENT_TYPE = "content_type"
+    }
 
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
+         * @param fragment_type Parameter 1.
+         * @param content_type Parameter 2.
          * @return A new instance of fragment BaseFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): BaseFragment {
+
+        fun forTwitter(@Enums.FragmentContentTypes content_type: Long): BaseFragment {
             val fragment = BaseFragment()
             val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
+            args.putLong(FRAGMENT_TYPE, Enums.FragmentTypes.TWITTER)
+            args.putLong(CONTENT_TYPE, content_type)
             fragment.arguments = args
             return fragment
-        }
     }
 
-    fun setType(typeString: String?): BaseFragment {
-        if (!typeString.isNullOrBlank())
-            type = typeString
-
-        return this
-    }
 }

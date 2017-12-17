@@ -26,19 +26,21 @@ import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.email
 
 open class BaseActivity : AppCompatActivity() {
+    val TAG = this.javaClass.simpleName
     val TOKEN_ERROR = "Failed to get request token"
     val CANCEL_LOGIN = "Failed to get authorization, bundle incomplete"
     private object Holder {
         val INSTANCE = BaseActivity()
     }
 
-    var firebaseService = FirebaseService()
-    val RC_SIGN_IN: Int = 100
-    val LOGOUT: Long = -99999
-    val ADD_TWITTER_ACCOUNT: Long = -99998
-    val MANAGE_TWITTER_ACCOUNT: Long = -99997
-    val androTweetApp = AndroTweetApp.instance
-    val TAG = "AndroTweet"
+    companion object {
+
+        var firebaseService = FirebaseService()
+        val androTweetApp = AndroTweetApp.instance
+        val baseActivity: BaseActivity by lazy { Holder.INSTANCE }
+
+    }
+
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(IconicsContextWrapper.wrap(newBase))
@@ -63,10 +65,6 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     open fun addEventListenerForFirebase() {
-    }
-
-    companion object {
-        val baseActivity: BaseActivity by lazy { Holder.INSTANCE }
     }
 
     open fun initializeScreenObject() {}
@@ -159,7 +157,8 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
-    fun String?.timeline_fragment(): BaseFragment = TimelineFragment().setType(this)
+    /** use Long with {@code @Enum.FragmentContentTypes} {@link FragmentContentTypes com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes}*/
+    fun Long.twitter_timeline(): BaseFragment = TimelineFragment().forTwitter(this)
 
     internal fun SharedPreferences.put(key: String, value: Any) {
 
