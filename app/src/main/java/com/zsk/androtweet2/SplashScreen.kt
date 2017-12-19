@@ -104,7 +104,7 @@ class SplashScreen : BaseActivity() {
                 finish()
             })
             positiveButton("Try Again", {
-                initTwitter(intent)
+                twitterImplementation()
             })
             neutralPressed("Report", {
                 email(

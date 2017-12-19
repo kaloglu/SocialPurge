@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.zsk.androtweet2.helpers.utils.Enums
+import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
 
 
 /**
@@ -65,28 +66,25 @@ open class BaseFragment : Fragment() {
         fun onFragmentInteraction(uri: Uri)
     }
 
-    companion object {
-        private val FRAGMENT_TYPE = "fragment_type"
-        private val CONTENT_TYPE = "content_type"
-    }
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param fragment_type Parameter 1.
+     * @param content_type Parameter 2.
+     * @return A new instance of fragment BaseFragment.
+     */
+    // TODO: Rename and change types and number of parameters
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param fragment_type Parameter 1.
-         * @param content_type Parameter 2.
-         * @return A new instance of fragment BaseFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+    internal fun setInstance(@Enums.FragmentTypes fragment_type: Long, @Enums.FragmentContentTypes content_type: Long, @Enums.FragmentItemTypes item_type: Long): BaseFragment {
+        val fragment = BaseFragment()
+        fragment.arguments = Bundle().apply {
+            putLong(FRAGMENT_TYPE, fragment_type)
+            putLong(CONTENT_TYPE, content_type)
+            putLong(ITEM_TYPE, item_type)
+        }
 
-        fun forTwitter(@Enums.FragmentContentTypes content_type: Long): BaseFragment {
-            val fragment = BaseFragment()
-            val args = Bundle()
-            args.putLong(FRAGMENT_TYPE, Enums.FragmentTypes.TWITTER)
-            args.putLong(CONTENT_TYPE, content_type)
-            fragment.arguments = args
-            return fragment
+        return fragment
     }
 
 }
