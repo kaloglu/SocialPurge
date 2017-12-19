@@ -1,6 +1,7 @@
 package com.zsk.androtweet2.helpers.utils;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.StringDef;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,9 +11,14 @@ import java.lang.annotation.Target;
 import static com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.ADD_TWITTER_ACCOUNT;
 import static com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.LOGOUT;
 import static com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.MANAGE_ACCOUNTS;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.CONTENT_TYPE;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.FRAGMENT_TYPE;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.ITEM_TYPE;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.FAVORITES;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.MENTIONS;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.RETWEETS;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.ITEM;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.LIST;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes.FACEBOOK;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes.INSTAGRAM;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes.TWITTER;
@@ -39,13 +45,21 @@ public class Enums {
         long MANAGE_ACCOUNTS = 3;
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @IntDef({LIST, ITEM})
+    @Target(ElementType.PARAMETER)
+    public @interface FragmentItemTypes {
+        long ITEM = 0;
+        long LIST = 50;
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MENTIONS, RETWEETS, FAVORITES})
     @Target(ElementType.PARAMETER)
     public @interface FragmentContentTypes {
-        long MENTIONS = 1;
-        long RETWEETS = 2;
-        long FAVORITES = 3;
+        long MENTIONS = 0;
+        long RETWEETS = 1;
+        long FAVORITES = 2;
     }
 
     @Retention(RetentionPolicy.SOURCE)
@@ -57,5 +71,13 @@ public class Enums {
         long INSTAGRAM = 2;
     }
 
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({FRAGMENT_TYPE, CONTENT_TYPE, ITEM_TYPE})
+    @Target(ElementType.PARAMETER)
+    public @interface FragmentArguments {
+        String FRAGMENT_TYPE = "fragment_type";
+        String CONTENT_TYPE = "content_type";
+        String ITEM_TYPE = "item_type";
+    }
 
 }

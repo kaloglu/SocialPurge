@@ -19,7 +19,8 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.fragments.BaseFragment
-import com.zsk.androtweet2.fragments.TimelineFragment
+import com.zsk.androtweet2.fragments.TwitterTimelineFragment
+import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.MENTIONS
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.design.longSnackbar
@@ -29,15 +30,16 @@ open class BaseActivity : AppCompatActivity() {
     val TAG = this.javaClass.simpleName
     val TOKEN_ERROR = "Failed to get request token"
     val CANCEL_LOGIN = "Failed to get authorization, bundle incomplete"
+
     private object Holder {
         val INSTANCE = BaseActivity()
     }
 
     companion object {
+        val baseActivity: BaseActivity by lazy { Holder.INSTANCE }
 
         var firebaseService = FirebaseService()
         val androTweetApp = AndroTweetApp.instance
-        val baseActivity: BaseActivity by lazy { Holder.INSTANCE }
 
     }
 
@@ -68,13 +70,6 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     open fun initializeScreenObject() {}
-
-    open fun String?.getOrDefault(): String {
-        if (this == null)
-            return ""
-
-        return this
-    }
 
     open fun ImageView.loadFromUrl(context: Context, profilePic: String?) {
         if (!profilePic.isNullOrEmpty())
@@ -158,7 +153,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     /** use Long with {@code @Enum.FragmentContentTypes} {@link FragmentContentTypes com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes}*/
-    fun Long.twitter_timeline(): BaseFragment = TimelineFragment().forTwitter(this)
+    fun Long.twitter_mention_timeline(): BaseFragment = TwitterTimelineFragment().setInstance(MENTIONS)
 
     internal fun SharedPreferences.put(key: String, value: Any) {
 

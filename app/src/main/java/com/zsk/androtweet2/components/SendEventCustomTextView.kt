@@ -1,5 +1,6 @@
 package com.zsk.androtweet2.components
 
+import android.util.Log
 import android.view.View
 import com.zsk.androtweet2.AndroTweetApp
 
@@ -9,13 +10,7 @@ class SendEventCustomTextView(private val onClickListener: View.OnClickListener?
         val cButton = v as CustomTextView
 
         if (!cButton.getEventAction().isNullOrBlank())
-            (cButton.context.applicationContext as AndroTweetApp).sendEvent(
-                    cButton.getEventCategory(),
-                    cButton.getEventAction(),
-                    cButton.getEventLabel(),
-                    cButton.getEventValue(),
-                    cButton.isEventInterraction()
-            )
+            Log.d("sendEvent","staffs.")
         onClickListener?.onClick(v)
     }
 
