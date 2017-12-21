@@ -31,11 +31,6 @@ class CustomTextView : TextView {
         typeface = CustomTypeFace.getTypeFace(context, fontType)
     }
 
-    override fun setOnClickListener(l: OnClickListener) {
-
-        super.setOnClickListener(SendEventCustomTextView(l))
-    }
-
     fun setFontIcon(fontIcon: String) {
         setFontIcon(fontIcon, 0)
     }

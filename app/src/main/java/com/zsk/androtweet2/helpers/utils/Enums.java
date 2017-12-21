@@ -14,9 +14,10 @@ import static com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.MANAGE_ACCOU
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.CONTENT_TYPE;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.FRAGMENT_TYPE;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.ITEM_TYPE;
-import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.FAVORITES;
-import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.MENTIONS;
-import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.RETWEETS;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.FAVORITE;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.MENTION;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.RETWEET;
+import static com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.ITEM;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.LIST;
 import static com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes.FACEBOOK;
@@ -54,12 +55,13 @@ public class Enums {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MENTIONS, RETWEETS, FAVORITES})
+    @IntDef({TWEET, MENTION, RETWEET, FAVORITE})
     @Target(ElementType.PARAMETER)
     public @interface FragmentContentTypes {
-        long MENTIONS = 0;
-        long RETWEETS = 1;
-        long FAVORITES = 2;
+        long TWEET = 0;
+        long MENTION = 1;
+        long RETWEET = 2;
+        long FAVORITE = 3;
     }
 
     @Retention(RetentionPolicy.SOURCE)
