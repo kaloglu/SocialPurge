@@ -3,8 +3,11 @@ package com.zsk.androtweet2.helpers.bases
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v7.app.AppCompatActivity
@@ -17,16 +20,18 @@ import com.twitter.sdk.android.core.TwitterAuthConfig
 import com.twitter.sdk.android.core.TwitterAuthException
 import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import com.zsk.androtweet2.AndroTweetApp
-import com.zsk.androtweet2.R
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.fragments.TwitterTimelineFragment
-import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.MENTIONS
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.email
 
-open class BaseActivity : AppCompatActivity() {
+open class BaseActivity : AppCompatActivity(), BaseFragment.OnFragmentInteractionListener {
+    override fun onFragmentInteraction(uri: Uri) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     val TAG = this.javaClass.simpleName
     val TOKEN_ERROR = "Failed to get request token"
     val CANCEL_LOGIN = "Failed to get authorization, bundle incomplete"
@@ -74,11 +79,6 @@ open class BaseActivity : AppCompatActivity() {
     open fun ImageView.loadFromUrl(context: Context, profilePic: String?) {
         if (!profilePic.isNullOrEmpty())
             Picasso.with(context).load(profilePic).into(this)
-    }
-
-    fun initTwitter(intent: Intent) {
-
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -136,24 +136,26 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    fun startFragment(fragment: BaseFragment) {
-        val manager = supportFragmentManager
-        val transaction: FragmentTransaction = manager.beginTransaction()
-
-        transaction.addToBackStack(fragment.id.toString())
-        //TODO:create new View for activity.
-        transaction.replace(R.id.fragmentContainer, fragment, fragment.id.toString())
-
-        try {
-            transaction.commit()
-            manager.executePendingTransactions()
-        } catch (ignored: Exception) {
-        }
-
+    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit) {
+        val fragmentTransaction = beginTransaction()
+        fragmentTransaction.func()
+        fragmentTransaction.commit()
     }
 
+    fun AppCompatActivity.startFragment(fragment: Fragment, containerViewId: Int = fragment_container.id) =
+            supportFragmentManager.let({
+                it.inTransaction({
+                    fragment.let {
+                        when {
+                            it.isAdded -> replace(containerViewId, it, it.id.toString())
+                            else -> add(containerViewId, it, it.id.toString())
+                        }
+                    }
+                })
+            })
+
     /** use Long with {@code @Enum.FragmentContentTypes} {@link FragmentContentTypes com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes}*/
-    fun Long.twitter_mention_timeline(): BaseFragment = TwitterTimelineFragment().setInstance(MENTIONS)
+    fun Long.twitter_timeline(): BaseFragment = TwitterTimelineFragment().getInstance(this)
 
     internal fun SharedPreferences.put(key: String, value: Any) {
 

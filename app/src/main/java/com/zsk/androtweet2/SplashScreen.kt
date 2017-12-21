@@ -141,7 +141,7 @@ class SplashScreen : BaseActivity() {
         when (requestCode) {
             RC_SIGN_IN -> idpResponse = IdpResponse.fromResultIntent(data)
         }
-        idpResponse?.let { intent.putExtra("my_token", idpResponse!!.idpToken) }
+        idpResponse?.let { intent.putExtra("my_token", idpResponse.idpToken) }
 
         if (resultCode == Activity.RESULT_OK) {
             startActivity(intent)

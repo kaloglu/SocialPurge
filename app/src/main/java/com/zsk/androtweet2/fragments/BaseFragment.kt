@@ -16,34 +16,30 @@ import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
  * Activities that contain this fragment must implement the
  * [BaseFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [BaseFragment.forTwitter] factory method to
+ * Use the [BaseFragment.getInstance] factory method to
  * create an instance of this fragment.
  */
-//TODO: update for using.
-open class BaseFragment : Fragment() {
-    val layoutId = null
+abstract class BaseFragment : Fragment() {
+    abstract val layoutId: Int
+
     private var type: String? = "default"
     private var mListener: OnFragmentInteractionListener? = null
 
-    override fun onCreateView(
-            inflater: LayoutInflater?,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? = inflater!!.inflate(layoutId, container, false)
+    open var TAG = this.javaClass.simpleName!!
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View?
+            = inflater!!.inflate(layoutId, container, false)
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
+        if (mListener != null) mListener!!.onFragmentInteraction(uri)
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+        when (context) {
+            is OnFragmentInteractionListener -> mListener = context
+            else -> throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
     }
 
@@ -70,21 +66,20 @@ open class BaseFragment : Fragment() {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param fragment_type Parameter 1.
+     * @param fragment_type @link
      * @param content_type Parameter 2.
+     * @param item_type Parameter 3.
      * @return A new instance of fragment BaseFragment.
      */
-    // TODO: Rename and change types and number of parameters
 
-    internal fun setInstance(@Enums.FragmentTypes fragment_type: Long, @Enums.FragmentContentTypes content_type: Long, @Enums.FragmentItemTypes item_type: Long): BaseFragment {
-        val fragment = BaseFragment()
-        fragment.arguments = Bundle().apply {
+    internal fun getInstance(@Enums.FragmentTypes fragment_type: Long, @Enums.FragmentContentTypes content_type: Long, @Enums.FragmentItemTypes item_type: Long): BaseFragment {
+        this.arguments= Bundle().apply {
             putLong(FRAGMENT_TYPE, fragment_type)
             putLong(CONTENT_TYPE, content_type)
             putLong(ITEM_TYPE, item_type)
         }
 
-        return fragment
+        return this
     }
 
 }

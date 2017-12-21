@@ -29,7 +29,6 @@ import com.zsk.androtweet2.R
 import com.zsk.androtweet2.SplashScreen
 import com.zsk.androtweet2.components.SimpleChildEventListener
 import com.zsk.androtweet2.helpers.bases.BaseActivity
-import com.zsk.androtweet2.helpers.utils.Enums
 import com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.*
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.*
 import com.zsk.androtweet2.helpers.utils.FirebaseService
@@ -118,7 +117,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                                 .withIdentifier(ADD_TWITTER_ACCOUNT)
                                 .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus))),
                         ProfileSettingDrawerItem().withName("Manage Account")
-                                .withIdentifier(MANAGE_AGGOUNTS)
+                                .withIdentifier(MANAGE_ACCOUNTS)
                                 .withDescription("Add / Remove your accounts")
                                 .withIcon(FontIconDrawable(this, getString(R.string.ic_cog)))
                 )
@@ -182,7 +181,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
 
                     androTweetApp.initializeActiveUserAccount(newActiveAccount)
 
-                    startFragment(MENTIONS.twitter_timeline())
+                    startFragment(MENTION.twitter_timeline())
                 }
             }
         }
