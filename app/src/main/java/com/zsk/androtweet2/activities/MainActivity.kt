@@ -30,7 +30,7 @@ import com.zsk.androtweet2.SplashScreen
 import com.zsk.androtweet2.components.SimpleChildEventListener
 import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.*
-import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.*
+import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import com.zsk.androtweet2.helpers.utils.FontIconDrawable
 import com.zsk.androtweet2.models.TwitterAccount
@@ -166,26 +166,26 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     override fun onProfileChanged(view: View?, profile: IProfile<*>?, current: Boolean): Boolean {
-        var a = profile.toString()
-        a += " :) "
-        when (profile) {
-            is ProfileSettingDrawerItem -> {
-                return onItemClick(view, -1, profile)
-            }
-            is ProfileDrawerItem -> {
-                if (!current and (profile.tag is TwitterAccount)) {
-                    val newActiveAccount = profile.tag as TwitterAccount
-                    getAppSettings()?.put("selectedProfile", profile.identifier)
-                    if (BuildConfig.DEBUG)
-                        toast(newActiveAccount.name)
+        profile.let {
+            if (it is ProfileSettingDrawerItem) return onItemClick(view, -1, it)
 
-                    androTweetApp.initializeActiveUserAccount(newActiveAccount)
+            if (it is ProfileDrawerItem) {
+                getAppSettings()?.put("selectedProfile", it.identifier)
+                val profileModel = it.tag
 
-                    startFragment(MENTION.twitter_timeline())
+                when (profileModel) {
+                    is TwitterAccount -> {
+                        androTweetApp.initializeActiveUserAccount(profileModel)
+
+                        startFragment(TWEET.twitter_timeline())
+
+                        if (BuildConfig.DEBUG)
+                            toast(profileModel.name)
+                    }
                 }
             }
         }
-        return true
+        return false
     }
 
     open class TwitterLoginCallBack(private val firebaseServ: FirebaseService) : Callback<TwitterSession>() {
