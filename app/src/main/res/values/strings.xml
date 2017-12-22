@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">AndroTweet</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -12,4 +12,22 @@
 
     <!--<string name="com.twitter.sdk.android.CONSUMER_KEY">hHFUMp2BBfBZ38ck6K6Grrv7C</string>-->
     <!--<string name="com.twitter.sdk.android.CONSUMER_SECRET">U1RqnR3Zng4tdmvdFBwYqnEzvrNYfYbwKwmOeen7Xu90uWacne</string>-->
+
+
+    <!--extended twitter strings-->
+    <string name="tw__like_tweet" tools:override="true">Like Tweet</string>
+    <string name="tw__liked_tweet" tools:override="true">Undo Like</string>
+    <string name="tw__loading_tweet" tools:override="true">Loading Tweet</string>
+    <string name="tw__pause" tools:override="true">pause</string>
+    <string name="tw__play" tools:override="true">play</string>
+    <string name="tw__relative_date_format_long" tools:override="true">MM/dd/yy</string>
+    <string name="tw__relative_date_format_short" tools:override="true">MMM dd</string>
+    <string name="tw__replay" tools:override="true">replay</string>
+    <string name="tw__retweeted_by_format" tools:override="true">Retweeted by %1$s</string>
+    <string name="tw__share_content_format" tools:override="true">Check out @%1$s\'s Tweet: https://twitter.com/%1$s/status/%2$s</string>
+    <string name="tw__share_subject_format" tools:override="true">Tweet from %1$s (@%2$s)</string>
+    <string name="tw__share_tweet" tools:override="true">Share Tweet</string>
+    <string name="tw__tweet_content_description" tools:override="true">%1$s. %2$s. %3$s.</string>
+    <string name="tw__tweet_media" tools:override="true">Tweet Media</string>
+    <!--extended twitter strings-->
 </resources>
