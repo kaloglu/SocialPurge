@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,22 @@ abstract class BaseFragment : Fragment() {
     fun onButtonPressed(uri: Uri) {
         if (mListener != null) mListener!!.onFragmentInteraction(uri)
     }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        onFragmentCreated(savedInstanceState)
+        Log.d(TAG, "onActivityCreated() called with: savedInstanceState = [$savedInstanceState]")
+        super.onActivityCreated(savedInstanceState)
+    }
+
+    private fun onFragmentCreated(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onFragmentCreated() called with: savedInstanceState = [$savedInstanceState]")
+        initializeScreenObjects()
+        designScreen()
+    }
+
+    abstract fun designScreen()
+
+    abstract fun initializeScreenObjects()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -73,7 +90,7 @@ abstract class BaseFragment : Fragment() {
      */
 
     internal fun getInstance(@Enums.FragmentTypes fragment_type: Long, @Enums.FragmentContentTypes content_type: Long, @Enums.FragmentItemTypes item_type: Long): BaseFragment {
-        this.arguments= Bundle().apply {
+        this.arguments = Bundle().apply {
             putLong(FRAGMENT_TYPE, fragment_type)
             putLong(CONTENT_TYPE, content_type)
             putLong(ITEM_TYPE, item_type)
