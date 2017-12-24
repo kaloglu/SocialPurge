@@ -2,10 +2,6 @@ package com.zsk.androtweet2
 
 import android.Manifest
 import android.app.Application
-import android.util.Log
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.answers.CustomEvent
-import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -23,7 +19,7 @@ import com.zsk.androtweet2.models.TwitterAccount
  * Created by kaloglu on 22/10/2017.
  */
 class AndroTweetApp : Application() {
-    var activeUserAccountItem: Any? = null
+    var activeUserAccountItem: TwitterApiClient? = null
     private var mTracker: Tracker? = null
 
     private object Holder {
@@ -51,8 +47,8 @@ class AndroTweetApp : Application() {
     }
 
     fun initializeActiveUserAccount(activeAccount: FirebaseObject) {
-        activeUserAccountItem = when (activeAccount) {
-            is TwitterAccount -> getActiveTwitterUserAccount(activeAccount)
+        when (activeAccount) {
+            is TwitterAccount -> activeUserAccountItem =getActiveTwitterUserAccount(activeAccount)
 //            is FacebookAccount -> getActiveFaceboookUserAccount(activeAccount)
 //            is IsntagramAccount -> getActiveInstagramUserAccount(activeAccount)
             else -> null
