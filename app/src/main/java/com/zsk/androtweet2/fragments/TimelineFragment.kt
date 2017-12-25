@@ -2,12 +2,12 @@ package com.zsk.androtweet2.fragments
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter
+import com.twitter.sdk.android.tweetui.UserTimeline
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.LIST
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes
-import com.zsk.androtweet2.helpers.utils.tweetui.TweetTimelineRecyclerViewAdapter
-import com.zsk.androtweet2.helpers.utils.tweetui.UserTimeline
 
 /**
  * Created by kaloglu on 16.12.2017.

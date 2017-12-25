@@ -1,0 +1,3 @@
+[submodule "modules/twitter-kit-android"]
+	path = modules/twitter-kit-android
+	url = git@github.com:twitter/twitter-kit-android.git
