@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
@@ -7,16 +7,4 @@
     <color name="red">#ff0000</color>
     <color name="blue">#0000ff</color>
     <color name="t_blue_grey_400">#af78909c</color>
-    <color name="tw__black_opacity_10" tools:override="true">#1a000000</color>
-    <color name="tw__cta_border_color" tools:override="true">@android:color/white</color>
-    <color name="tw__cta_text_color" tools:override="true">@android:color/white</color>
-    <color name="tw__seekbar_thumb_inner_color" tools:override="true">#ffffffff</color>
-    <color name="tw__seekbar_thumb_outer_color" tools:override="true">#4dffffff</color>
-    <color name="tw__tweet_action_color" tools:override="true">#55acee</color>
-    <color name="tw__tweet_action_dark_highlight_color" tools:override="true">#667580</color>
-    <color name="tw__tweet_action_light_highlight_color" tools:override="true">#ebeef0</color>
-    <color name="tw__tweet_dark_container_bg_color" tools:override="true">#d9000000</color>
-    <color name="tw__tweet_dark_primary_text_color" tools:override="true">#e1ffffff</color>
-    <color name="tw__tweet_light_container_bg_color" tools:override="true">#55ff0000</color>
-    <color name="tw__tweet_light_primary_text_color" tools:override="true">#292f33</color>
 </resources>
