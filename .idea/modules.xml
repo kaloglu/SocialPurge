@@ -8,7 +8,9 @@
       <module fileurl="file://$PROJECT_DIR$/modules/twitter-kit-android/samples/app/samples-app.iml" filepath="$PROJECT_DIR$/modules/twitter-kit-android/samples/app/samples-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/twitter-kit-android/tweet-composer/tweet-composer.iml" filepath="$PROJECT_DIR$/modules/twitter-kit-android/tweet-composer/tweet-composer.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/twitter-kit-android/tweet-ui/tweet-ui.iml" filepath="$PROJECT_DIR$/modules/twitter-kit-android/tweet-ui/tweet-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/twitter-kit-android/twitter/twitter.iml" filepath="$PROJECT_DIR$/modules/twitter-kit-android/twitter/twitter.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/twitter-kit-android/twitter-core/twitter-core.iml" filepath="$PROJECT_DIR$/modules/twitter-kit-android/twitter-core/twitter-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/twitter-kit-android/twitter-mopub/twitter-mopub.iml" filepath="$PROJECT_DIR$/modules/twitter-kit-android/twitter-mopub/twitter-mopub.iml" />
     </modules>
   </component>
 </project>
