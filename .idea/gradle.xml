@@ -12,7 +12,9 @@
             <option value="$PROJECT_DIR$/modules/twitter-kit-android/samples/app" />
             <option value="$PROJECT_DIR$/modules/twitter-kit-android/tweet-composer" />
             <option value="$PROJECT_DIR$/modules/twitter-kit-android/tweet-ui" />
+            <option value="$PROJECT_DIR$/modules/twitter-kit-android/twitter" />
             <option value="$PROJECT_DIR$/modules/twitter-kit-android/twitter-core" />
+            <option value="$PROJECT_DIR$/modules/twitter-kit-android/twitter-mopub" />
             <option value="$PROJECT_DIR$/samples" />
           </set>
         </option>

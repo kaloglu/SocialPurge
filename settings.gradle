@@ -1,5 +1,7 @@
-include ':app', ':twitter-core', ':tweet-ui', ':tweet-composer', ':samples:app'
+include ':app', ':twitter-core', ':tweet-ui', ':twitter-mopub', ':twitter', ':tweet-composer', ':samples:app'
 project(':twitter-core').projectDir = new File('modules/twitter-kit-android/twitter-core')
 project(':tweet-ui').projectDir = new File('modules/twitter-kit-android/tweet-ui')
+project(':twitter-mopub').projectDir = new File('modules/twitter-kit-android/twitter-mopub')
+project(':twitter').projectDir = new File('modules/twitter-kit-android/twitter')
 project(':tweet-composer').projectDir = new File('modules/twitter-kit-android/tweet-composer')
 project(':samples:app').projectDir = new File('modules/twitter-kit-android/samples/app')
