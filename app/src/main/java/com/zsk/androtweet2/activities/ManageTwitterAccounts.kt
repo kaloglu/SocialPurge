@@ -69,7 +69,7 @@ class ManageTwitterAccounts : BaseActivity() {
         twitter_accounts_rw.layoutManager = LinearLayoutManager(this)
 
         val itemDecorator = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        ContextCompat.getDrawable(this, R.drawable.divider)?.let { itemDecorator.setDrawable(it) }
+        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider))
 
         twitter_accounts_rw.addItemDecoration(itemDecorator)
     }
