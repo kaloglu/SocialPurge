@@ -47,8 +47,8 @@ class AndroTweetApp : Application() {
     }
 
     fun initializeActiveUserAccount(activeAccount: FirebaseObject) {
-        val unit = when (activeAccount) {
-            is TwitterAccount -> activeUserAccountItem = getActiveTwitterUserAccount(activeAccount)
+        when (activeAccount) {
+            is TwitterAccount -> activeUserAccountItem =getActiveTwitterUserAccount(activeAccount)
 //            is FacebookAccount -> getActiveFaceboookUserAccount(activeAccount)
 //            is IsntagramAccount -> getActiveInstagramUserAccount(activeAccount)
             else -> null

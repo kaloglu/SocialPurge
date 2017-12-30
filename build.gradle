@@ -1,5 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply from: rootProject.file('dependencies.gradle')
 
 buildscript {
     ext.kotlin_version = '1.2.10'
@@ -18,17 +17,10 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url "https://maven.google.com" }
-        maven { url 'https://maven.fabric.io/public' }
+        maven {url "https://maven.google.com"}
+        maven {url 'https://maven.fabric.io/public'}
         jcenter()
     }
-}
-
-ext {
-    // The following are only a few examples of the types of properties you can define.
-    compileSdkVersion = 26
-    buildToolsVersion = "26.0.2"
-    minSdkVersion = 21
 }
 
 task clean(type: Delete) {

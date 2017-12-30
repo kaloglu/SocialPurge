@@ -4,6 +4,7 @@ import com.google.firebase.database.Exclude
 import com.twitter.sdk.android.core.TwitterAuthToken
 import com.twitter.sdk.android.core.models.User
 
+
 /**
  * Created by kaloglu on 12/11/2017.
  */
