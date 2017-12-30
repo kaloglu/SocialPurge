@@ -2,12 +2,12 @@ package com.zsk.androtweet2.fragments
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.twitter.sdk.android.core.models.Tweet
+import com.twitter.sdk.android.tweetui.Timeline
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.LIST
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes
-import com.zsk.androtweet2.helpers.utils.tweetui.TweetTimelineRecyclerViewAdapter
-import com.zsk.androtweet2.helpers.utils.tweetui.UserTimeline
 
 /**
  * Created by kaloglu on 16.12.2017.
@@ -16,8 +16,8 @@ import com.zsk.androtweet2.helpers.utils.tweetui.UserTimeline
 //TODO: update for using.
 abstract class TimelineFragment : BaseFragment() {
     protected lateinit var timelineRV: RecyclerView
-    protected lateinit var adapter: TweetTimelineRecyclerViewAdapter
-    protected lateinit var timeline_tweet: UserTimeline
+    protected lateinit var adapter: RecyclerView.Adapter<*>
+    protected lateinit var timeline_tweet: Timeline<Tweet>
 
     fun getInstance(@FragmentTypes fragment_type: Long, @FragmentContentTypes content_type: Long) =
             super.getInstance(fragment_type, content_type, LIST)
@@ -33,6 +33,5 @@ abstract class TimelineFragment : BaseFragment() {
     override fun designScreen() {
         timelineRV.adapter = adapter
     }
-
 }
 

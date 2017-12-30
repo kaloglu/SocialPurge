@@ -1,12 +1,14 @@
 package com.zsk.androtweet2.fragments
 
+import com.twitter.sdk.android.core.models.Tweet
+import com.twitter.sdk.android.tweetui.Timeline
+import com.twitter.sdk.android.tweetui.UserTimeline
 import com.zsk.androtweet2.R
+import com.zsk.androtweet2.components.TweetTimelineRecyclerViewAdapter
 import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes.TWITTER
-import com.zsk.androtweet2.helpers.utils.tweetui.TweetTimelineRecyclerViewAdapter
-import com.zsk.androtweet2.helpers.utils.tweetui.UserTimeline
 
 /**
  * Created by kaloglu on 16.12.2017.
@@ -28,9 +30,9 @@ class TwitterTimelineFragment : TimelineFragment() {
                 .includeRetweets(true)
                 .includeReplies(true)
                 .userId(BaseActivity.androTweetApp.accountHeader.activeProfile.identifier)
-                .build()
+                .build() as Timeline<Tweet>
 
-        adapter = TweetTimelineRecyclerViewAdapter.Builder(context).setTimeline(timeline_tweet).build()
+        adapter = TweetTimelineRecyclerViewAdapter(context, timeline_tweet).adapter
         super.designScreen()
     }
 

@@ -15,7 +15,7 @@
   ~
   -->
 
-<com.zsk.androtweet2.helpers.utils.tweetui.TweetActionBarView
+<com.twitter.sdk.android.tweetui.TweetActionBarView
     android:id="@+id/tw__tweet_action_bar"
     style="@style/tw__TweetFillWidth"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,7 +25,7 @@
     android:visibility="gone"
     tools:visibility="visible">
 
-    <com.zsk.androtweet2.helpers.utils.tweetui.ToggleImageButton
+    <com.twitter.sdk.android.tweetui.ToggleImageButton
         android:id="@+id/tw__tweet_like_button"
         style="@style/tw__TweetActionButton.Heart"
         android:src="@drawable/tw__like_action"
@@ -40,4 +40,4 @@
         android:contentDescription="@string/tw__share_tweet"
         android:src="@drawable/tw__share_action"/>
 
-</com.zsk.androtweet2.helpers.utils.tweetui.TweetActionBarView>
+</com.twitter.sdk.android.tweetui.TweetActionBarView>

@@ -98,5 +98,4 @@ abstract class BaseFragment : Fragment() {
 
         return this
     }
-
 }
