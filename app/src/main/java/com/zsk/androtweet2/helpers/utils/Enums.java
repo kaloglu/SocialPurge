@@ -8,6 +8,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static com.zsk.androtweet2.helpers.utils.Enums.AdapterTypes.TIMELINE;
+import static com.zsk.androtweet2.helpers.utils.Enums.AdapterTypes.USER;
 import static com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.ADD_TWITTER_ACCOUNT;
 import static com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.LOGOUT;
 import static com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.MANAGE_ACCOUNTS;
@@ -30,6 +32,7 @@ import static com.zsk.androtweet2.helpers.utils.Enums.RequestCodes.RC_SIGN_IN;
  */
 
 public class Enums {
+
     @Retention(RetentionPolicy.RUNTIME)
     @IntDef({RC_SIGN_IN})
     @Target(ElementType.PARAMETER)
@@ -44,6 +47,20 @@ public class Enums {
         long LOGOUT = 1;
         long ADD_TWITTER_ACCOUNT = 2;
         long MANAGE_ACCOUNTS = 3;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({USER, TIMELINE})
+    @Target({ElementType.PARAMETER})
+    public @interface AdapterTypes {
+        long USER = 1;
+        long TIMELINE = 2;
+
+        class TIMELINE {
+            public static Long getValue() {
+                return TIMELINE;
+            }
+        }
     }
 
     @Retention(RetentionPolicy.RUNTIME)

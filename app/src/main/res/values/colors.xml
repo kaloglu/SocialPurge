@@ -17,6 +17,6 @@
     <color name="tw__tweet_action_light_highlight_color" tools:override="true">#ebeef0</color>
     <color name="tw__tweet_dark_container_bg_color" tools:override="true">#d9000000</color>
     <color name="tw__tweet_dark_primary_text_color" tools:override="true">#e1ffffff</color>
-    <color name="tw__tweet_light_container_bg_color" tools:override="true">#55ff0000</color>
+    <color name="tw__tweet_light_container_bg_color" tools:override="true">#ffffff</color>
     <color name="tw__tweet_light_primary_text_color" tools:override="true">#292f33</color>
 </resources>
