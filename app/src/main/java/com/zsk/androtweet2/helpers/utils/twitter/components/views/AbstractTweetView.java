@@ -18,7 +18,6 @@
 package com.zsk.androtweet2.helpers.utils.twitter.components.views;
 
 import android.content.Context;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -33,9 +32,6 @@ import com.twitter.sdk.android.core.models.Card;
 import com.twitter.sdk.android.core.models.ImageValue;
 import com.twitter.sdk.android.core.models.MediaEntity;
 import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.tweetui.TweetLinkClickListener;
-import com.twitter.sdk.android.tweetui.TweetMediaClickListener;
-import com.twitter.sdk.android.tweetui.TweetUi;
 import com.twitter.sdk.android.tweetui.internal.AspectRatioFrameLayout;
 import com.twitter.sdk.android.tweetui.internal.MediaBadgeView;
 import com.twitter.sdk.android.tweetui.internal.SpanClickHandler;
@@ -43,7 +39,6 @@ import com.twitter.sdk.android.tweetui.internal.TweetMediaUtils;
 import com.twitter.sdk.android.tweetui.internal.TweetMediaView;
 import com.zsk.androtweet2.R;
 import com.zsk.androtweet2.components.twitter.utils.TweetDateUtils;
-import com.zsk.androtweet2.helpers.utils.interfaces.LinkClickListener;
 import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetUtils;
 
 import java.text.DateFormat;
@@ -65,11 +60,6 @@ abstract class AbstractTweetView extends RelativeLayout {
 
     static final long INVALID_ID = -1L;
 
-    // attributes
-    private LinkClickListener linkClickListener;
-    TweetLinkClickListener tweetLinkClickListener;
-    TweetMediaClickListener tweetMediaClickListener;
-    private Uri permalinkUri;
     Tweet tweet;
 
     // for testing
@@ -92,7 +82,6 @@ abstract class AbstractTweetView extends RelativeLayout {
     int mediaBgColor;
     // resource id's
     int photoErrorResId;
-    private TweetUi tweetUI;
 
     /**
      * Performs inflation from XML and apply a class-specific base style with the given dependency
@@ -139,21 +128,6 @@ abstract class AbstractTweetView extends RelativeLayout {
      */
     abstract int getLayout();
 
-    /*
-     * Gets the scribe namespace
-     */
-    abstract String getViewTypeName();
-
-    /**
-     * @return id of the Tweet of the TweetView.
-     */
-    public long getTweetId() {
-        if (tweet == null) {
-            return INVALID_ID;
-        }
-        return tweet.getId();
-    }
-
     /**
      * Set the Tweet to be displayed and update the subviews. For any data that is missing from
      * the Tweet, invalidate the subview value (e.g. text views set to empty string) for view
@@ -174,25 +148,6 @@ abstract class AbstractTweetView extends RelativeLayout {
     }
 
     /**
-     * Override the default action when media is clicked.
-     *
-     * @param tweetMediaClickListener called when media is clicked.
-     */
-    public void setTweetMediaClickListener(TweetMediaClickListener tweetMediaClickListener) {
-        this.tweetMediaClickListener = tweetMediaClickListener;
-        tweetMediaView.setTweetMediaClickListener(tweetMediaClickListener);
-    }
-
-    /**
-     * Override the default action when any link or entity is clicked.
-     *
-     * @param tweetLinkClickListener called when any link or entity is clicked.
-     */
-    public void setTweetLinkClickListener(TweetLinkClickListener tweetLinkClickListener) {
-        this.tweetLinkClickListener = tweetLinkClickListener;
-    }
-
-    /**
      * Render the Tweet by updating the subviews. For any data that is missing from the Tweet,
      * invalidate the subview value (e.g. text views set to empty string) for view recycling.
      * Do not call with render true until inflation has completed.
@@ -206,25 +161,6 @@ abstract class AbstractTweetView extends RelativeLayout {
         setText(displayTweet);
         setContentDescription(displayTweet);
 
-        // set permalink if tweet id and screen name are available
-//        if (TweetUtils.isTweetResolvable(tweet)) {
-//            setPermalinkUri(tweet.user.screenName, getTweetId());
-//        } else {
-//            permalinkUri = null;
-//        }
-//
-//         set or update the permalink launcher with the current permalinkUri
-//        setPermalinkLauncher();
-//        scribeImpression();
-    }
-
-    Uri getPermalinkUri() {
-        return permalinkUri;
-    }
-
-    void setPermalinkUri(String screenName, Long tweetId) {
-        if (tweetId <= 0) return;
-        permalinkUri = TweetUtils.getPermalink(screenName, tweetId);
     }
 
     /**

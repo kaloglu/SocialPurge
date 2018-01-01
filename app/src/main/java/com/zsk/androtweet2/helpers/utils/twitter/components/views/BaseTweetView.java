@@ -157,7 +157,6 @@ public abstract class BaseTweetView extends AbstractTweetView {
         }
         // XML special case. The screen_name is not known yet. A permalink can be constructed and
         // followed. Permalink should be updated once the loadTweet call receives the Tweet.
-        setPermalinkUri(null, tweetId);
         this.tweet = new TweetBuilder().setId(tweetId).build();
     }
 
@@ -250,8 +249,6 @@ public abstract class BaseTweetView extends AbstractTweetView {
             quoteTweetView.setStyle(primaryTextColor, secondaryTextColor, actionColor,
                     actionHighlightColor, mediaBgColor, photoErrorResId);
             quoteTweetView.setTweet(tweet.quotedStatus);
-            quoteTweetView.setTweetLinkClickListener(tweetLinkClickListener);
-            quoteTweetView.setTweetMediaClickListener(tweetMediaClickListener);
             quoteTweetHolder.setVisibility(VISIBLE);
             quoteTweetHolder.addView(quoteTweetView);
         } else {
