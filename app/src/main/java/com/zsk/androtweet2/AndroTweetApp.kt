@@ -7,9 +7,9 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
-import com.twitter.sdk.android.core.TwitterApiClient
 import com.twitter.sdk.android.core.TwitterAuthToken
 import com.twitter.sdk.android.core.TwitterSession
+import com.zsk.androtweet2.components.twitter.TwitterApiClient
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import com.zsk.androtweet2.models.FirebaseObject
 import com.zsk.androtweet2.models.TwitterAccount
@@ -51,7 +51,8 @@ class AndroTweetApp : Application() {
             is TwitterAccount -> activeUserAccountItem =getActiveTwitterUserAccount(activeAccount)
 //            is FacebookAccount -> getActiveFaceboookUserAccount(activeAccount)
 //            is IsntagramAccount -> getActiveInstagramUserAccount(activeAccount)
-            else -> null
+            else -> {
+            }
         }
     }
 

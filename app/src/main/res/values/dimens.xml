@@ -30,7 +30,7 @@
 
     <!--extended twitter dimensions-->
     <dimen name="tw__badge_padding" tools:override="true">4dp</dimen>
-    <dimen name="tw__compact_tweet_action_bar_offset_left" tools:override="true">-12dp</dimen>
+    <dimen name="tw__compact_tweet_action_bar_offset_left" tools:override="true">0dp</dimen>
     <dimen name="tw__compact_tweet_attribution_line_margin_right" tools:override="true">36dp</dimen>
     <dimen name="tw__compact_tweet_avatar_margin_left" tools:override="true">12dp</dimen>
     <dimen name="tw__compact_tweet_avatar_margin_right" tools:override="true">8dp</dimen>
@@ -48,7 +48,7 @@
     <dimen name="tw__compact_tweet_quote_tweet_margin_right" tools:override="true">12dp</dimen>
     <dimen name="tw__compact_tweet_retweeted_by_drawable_padding" tools:override="true">7dp</dimen>
     <dimen name="tw__compact_tweet_retweeted_by_margin_bottom" tools:override="true">0dp</dimen>
-    <dimen name="tw__compact_tweet_retweeted_by_margin_left" tools:override="true">-25dp</dimen>
+    <dimen name="tw__compact_tweet_retweeted_by_margin_left" tools:override="true">0dp</dimen>
     <dimen name="tw__compact_tweet_retweeted_by_margin_top" tools:override="true">0dp</dimen>
     <dimen name="tw__compact_tweet_screen_name_layout_width" tools:override="true">0dp</dimen>
     <dimen name="tw__compact_tweet_screen_name_margin_bottom" tools:override="true">0dp</dimen>
