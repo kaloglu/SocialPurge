@@ -239,6 +239,7 @@ public abstract class BaseTweetView extends AbstractTweetView {
         setTimestamp(displayTweet);
         showRetweetedBy(tweet);
         setQuoteTweet(tweet);
+
     }
 
     void setQuoteTweet(Tweet tweet) {

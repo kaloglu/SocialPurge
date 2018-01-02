@@ -18,16 +18,13 @@
 package com.zsk.androtweet2.helpers.utils.twitter.components.views
 
 import android.content.Context
-import android.support.v4.content.ContextCompat.getColor
 import android.util.AttributeSet
 import android.widget.Toast
 import com.twitter.sdk.android.core.models.MediaEntity
 import com.twitter.sdk.android.core.models.Tweet
 import com.zsk.androtweet2.R
 
-public class CompactTweetView : BaseTweetView {
-
-    constructor(context: Context, tweet: Tweet) : super(context, tweet)
+class CompactTweetView : BaseTweetView {
 
     constructor(context: Context, tweet: Tweet, styleResId: Int) : super(context, tweet, styleResId)
 
@@ -39,17 +36,22 @@ public class CompactTweetView : BaseTweetView {
 
     internal override fun render() {
         super.render()
-        this.setOnClickListener {
-            isSelected = !isSelected
-            var color = if (isSelected) R.color.md_blue_50 else R.color.md_white_1000
-            setBackgroundColor(getColor(context, color))
-            Toast.makeText(context, "selected: (" + it.isSelected + ")" + tweet.text, Toast.LENGTH_SHORT).show()
-        }
         // Redraw screen name on recycle, because TextView doesn't resize when text length changes
         screenNameView.requestLayout()
-        this.requestLayout()
-        refreshDrawableState()
+
+        setClickListener()
     }
+
+    private fun setClickListener() {
+        setOnClickListener {
+
+//            isSelected = !isSelected
+//            val color = if (isSelected) R.color.md_blue_50 else R.color.md_white_1000
+//            setBackgroundColor(ContextCompat.getColor(context, color))
+            Toast.makeText(context, "added: (" + it.isSelected + ")" + tweet.text, Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     override fun applyStyles() {
         super.applyStyles()
@@ -93,10 +95,7 @@ public class CompactTweetView : BaseTweetView {
     override fun getAspectRatioForPhotoEntity(photoCount: Int): Double =
             DEFAULT_ASPECT_RATIO_MEDIA_CONTAINER
 
-    internal override fun getViewTypeName(): String = VIEW_TYPE_NAME
-
     companion object {
-        private val VIEW_TYPE_NAME = "compact"
         private val SQUARE_ASPECT_RATIO = 1.0
         private val MAX_LANDSCAPE_ASPECT_RATIO = 3.0
         private val MIN_LANDSCAPE_ASPECT_RATIO = 4.0 / 3.0

@@ -153,7 +153,6 @@ abstract class AbstractTweetView extends RelativeLayout {
      * Do not call with render true until inflation has completed.
      */
     void render() {
-        this.setTag(tweet);
         final Tweet displayTweet = TweetUtils.getDisplayTweet(tweet);
         setName(displayTweet);
         setScreenName(displayTweet);

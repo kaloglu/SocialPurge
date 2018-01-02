@@ -131,7 +131,7 @@ class SplashScreen : BaseActivity() {
                 .debug(BuildConfig.DEBUG)
                 .build()
         Twitter.initialize(twitterConfig)
-
+        Twitter.getLogger().logLevel = Log.ASSERT
 
     }
 

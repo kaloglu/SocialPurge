@@ -39,7 +39,7 @@ import org.jetbrains.anko.toast
 
 
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
-
+    var selectedProfile = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_main)
@@ -47,6 +47,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         setSupportActionBar(toolbar!!)
         DrawerImageLoader.init(PicassoLoader())
         createNavigationDrawer(savedInstanceState, toolbar)
+        selectedProfile = getAppSettings()?.get("selectedProfile", -1L) as Long
 
     }
 
@@ -63,12 +64,16 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                                     accountHeader.addProfile(getProfileDrawerItem(account), index)
                                     index.inc()
                                 }
-                        val selectedProfile = getAppSettings()?.get("selectedProfile", -1L) as Long
+                    }
+                }
+
+                override fun onChildChanged(dataSnapShot: DataSnapshot?, p1: String?) {
+                    super.onChildChanged(dataSnapShot, p1)
+                    androTweetApp.accountHeader.let { accountHeader ->
                         if (selectedProfile != -1L)
                             accountHeader.setActiveProfile(selectedProfile, true)
                     }
                 }
-
 
                 override fun onChildRemoved(dataSnapShot: DataSnapshot?) {
                     androTweetApp.accountHeader.let { accountHeader ->

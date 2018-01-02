@@ -1,17 +1,14 @@
 package com.zsk.androtweet2
 
-import android.Manifest
 import android.app.Application
-import com.google.android.gms.analytics.Tracker
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
-import com.twitter.sdk.android.core.TwitterAuthToken
+import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
 import com.zsk.androtweet2.components.twitter.TwitterApiClient
 import com.zsk.androtweet2.helpers.utils.FirebaseService
-import com.zsk.androtweet2.models.FirebaseObject
 import com.zsk.androtweet2.models.TwitterAccount
 
 
@@ -19,8 +16,6 @@ import com.zsk.androtweet2.models.TwitterAccount
  * Created by kaloglu on 22/10/2017.
  */
 class AndroTweetApp : Application() {
-    var activeUserAccountItem: TwitterApiClient? = null
-    private var mTracker: Tracker? = null
 
     private object Holder {
         val INSTANCE = AndroTweetApp()
@@ -33,12 +28,6 @@ class AndroTweetApp : Application() {
         val instance: AndroTweetApp by lazy { Holder.INSTANCE }
     }
 
-    private val PERMISSIONS_STORAGE = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
-
     override fun onCreate() {
         FirebaseApp.initializeApp(this)
         val configSettings = FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG).build()
@@ -46,26 +35,12 @@ class AndroTweetApp : Application() {
         super.onCreate()
     }
 
-    fun initializeActiveUserAccount(activeAccount: FirebaseObject) {
-        when (activeAccount) {
-            is TwitterAccount -> activeUserAccountItem =getActiveTwitterUserAccount(activeAccount)
-//            is FacebookAccount -> getActiveFaceboookUserAccount(activeAccount)
-//            is IsntagramAccount -> getActiveInstagramUserAccount(activeAccount)
-            else -> {
-            }
-        }
+    fun initializeActiveUserAccount(activeAccount: TwitterAccount) {
+        val activeTwitterProfile = TwitterCore.getInstance()
+        val session = with(activeAccount, { TwitterSession(twitterAuth(), id, name) })
+
+        activeTwitterProfile.sessionManager.activeSession = session
+        activeTwitterProfile.addApiClient(session, TwitterApiClient(session))
     }
-
-    fun TwitterAccount.twitterAuth(): TwitterAuthToken = authToken?.let { TwitterAuthToken(it.token, it.secret) }!!
-
-    private fun getActiveTwitterUserAccount(twitterAccount: TwitterAccount): TwitterApiClient =
-            TwitterApiClient(with(twitterAccount, { TwitterSession(twitterAuth(), id, name) }))
-
-//    private fun getActiveFacebookUserAccount(facebookAccount: FacebookAccount) {
-//    TODO: Facebook session staff
-//    }
-//    private fun getActiveInstagramUserAccount(instagramAccount: InstagramAccount) {
-//    TODO: Isntagram session staff
-//    }
 
 }

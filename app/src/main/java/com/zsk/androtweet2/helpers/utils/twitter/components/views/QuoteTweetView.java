@@ -105,8 +105,4 @@ public class QuoteTweetView extends AbstractTweetView {
         return DEFAULT_ASPECT_RATIO_MEDIA_CONTAINER;
     }
 
-    @Override
-    String getViewTypeName() {
-        return VIEW_TYPE_NAME;
-    }
 }
