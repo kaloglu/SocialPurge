@@ -73,7 +73,7 @@ class SplashScreen : BaseActivity() {
                                     "App doesn't open I do not know why!"
                             )
                         })
-                    }
+                    }.show()
                 }
 
             }.addOnFailureListener { exception ->
@@ -113,7 +113,7 @@ class SplashScreen : BaseActivity() {
                         "App doesn't open I do not know why!\n Reason[$errorMessage]"
                 )
             })
-        }
+        }.show()
     }
 
     private fun twitterImplementation() {
