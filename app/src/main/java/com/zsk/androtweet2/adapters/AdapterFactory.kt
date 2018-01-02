@@ -20,28 +20,4 @@ class AdapterFactory {
         return adapter
     }
 
-//    private class TweetTimelineAdapter(
-//            context: Context?,
-//            timeline: Timeline<Tweet>?,
-//            cb: Callback<Tweet>?
-//    ) : TweetTimelineAdapter(context, timeline, R.style.tw__TweetLightStyle, cb) {
-//
-//        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): TweetViewHolder {
-//            val tweet = TweetBuilder().build()
-//            val compactTweetView = CompactTweetView(context, tweet)
-//            return TweetViewHolder(compactTweetView as com.twitter.sdk.android.tweetui.CompactTweetView)
-//        }
-//
-//        override fun getItemCount(): Int {
-//            return super.getItemCount()
-//        }
-//
-//        override fun refresh(cb: Callback<TimelineResult<Tweet>>?) {
-//            super.refresh(cb)
-//        }
-//
-//        override fun onBindViewHolder(holder: TweetViewHolder?, position: Int) {
-//            super.onBindViewHolder(holder, position)
-//        }
-//    }
 }

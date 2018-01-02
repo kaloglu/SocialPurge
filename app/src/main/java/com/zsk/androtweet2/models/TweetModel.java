@@ -28,7 +28,7 @@ import com.twitter.sdk.android.core.models.User;
 import java.util.List;
 
 /**
- * A Tweet is the basic atomic building block of all things Twitter. Tweets, also known more
+ * A Tweet is the level atomic building block of all things Twitter. Tweets, also known more
  * generically as "status updates." Tweets can be embedded, replied to, favorited, unfavorited and
  * deleted.
  */
