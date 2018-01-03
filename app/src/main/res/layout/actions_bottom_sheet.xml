@@ -7,48 +7,27 @@
     android:layout_height="wrap_content"
     android:elevation="5dp"
     android:orientation="vertical"
-    app:behavior_hideable="true"
+    android:background="@color/md_blue_grey_50"
+    app:behavior_hideable="false"
     app:behavior_peekHeight="?actionBarSize"
     app:layout_behavior="@string/bottom_sheet_behavior">
-
-    <LinearLayout
-        android:id="@+id/actions"
-        android:background="@color/md_white_1000"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="0.5"
-            android:padding="4dp"
-            android:src="@drawable/ic_swap_vert_16dp" />
-
-        <com.zsk.androtweet2.components.CustomTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/actions"
-            android:text="Actions" />
-    </LinearLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/select_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/actions"
         android:background="?selectableItemBackground"
         android:padding="@dimen/h_margin_half">
 
-        <ImageView
+        <CheckBox
             android:id="@+id/select_all_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:tint="@color/md_grey_900"
-            android:src="@drawable/ic_check_box_blank_32dp"
+            android:button="@drawable/ic_check_box"
             app:layout_constraintBottom_toBottomOf="@id/select_all_desc"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/select_all_title"
-            tools:src="@drawable/ic_check_box_selected_32dp" />
+            app:layout_constraintTop_toTopOf="@id/select_all_title" />
 
         <com.zsk.androtweet2.components.CustomTextView
             android:id="@+id/select_all_title"
@@ -59,6 +38,15 @@
             android:layout_marginStart="@dimen/h_margin_half"
             android:text="Select All"
             app:layout_constraintLeft_toRightOf="@id/select_all_icon" />
+
+        <ImageView
+            android:id="@+id/open_sheet"
+            android:padding="@dimen/h_margin_half"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            android:src="@drawable/ic_swap_vert_16dp"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <com.zsk.androtweet2.components.CustomTextView
             android:id="@+id/select_all_desc"
@@ -76,6 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/select_all"
         android:background="?selectableItemBackground"
+        android:visibility="gone"
         android:padding="@dimen/h_margin_half">
 
         <ImageView
@@ -149,6 +138,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/add_whitelist"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/add_queue"
