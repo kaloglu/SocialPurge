@@ -3,11 +3,13 @@ package com.zsk.androtweet2.fragments
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import com.zsk.androtweet2.helpers.utils.Enums
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
 
@@ -22,6 +24,7 @@ import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
  */
 abstract class BaseFragment : Fragment() {
     abstract val layoutId: Int
+    abstract val bottomSheetBehavior: BottomSheetBehavior<RelativeLayout>?
 
     private var type: String? = "default"
     private var mListener: OnFragmentInteractionListener? = null
@@ -97,5 +100,18 @@ abstract class BaseFragment : Fragment() {
         }
 
         return this
+    }
+
+    protected fun toggleSheetMenu() {
+        bottomSheetBehavior?.toggleSheetState()
+    }
+
+    private fun BottomSheetBehavior<*>.toggleSheetState() {
+        with(this) {
+            state = when (state) {
+                BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_EXPANDED
+                else -> BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
     }
 }
