@@ -8,6 +8,7 @@ import com.zsk.androtweet2.R
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.LIST
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes
+import kotlinx.android.synthetic.main.actions_bottom_sheet.*
 
 /**
 * Created by kaloglu on 16.12.2017.
@@ -26,6 +27,10 @@ abstract class TimelineFragment : BaseFragment() {
             timelineRV = findViewById(R.id.timeline_rv)
             timelineRV.layoutManager=LinearLayoutManager(this.context)
         }
+        
+        open_sheet?.setOnClickListener {
+            toggleSheetMenu()
+        }
     }
 
     override fun designScreen() {
@@ -35,5 +40,6 @@ abstract class TimelineFragment : BaseFragment() {
     companion object {
         lateinit var timeline_tweet: Timeline<Tweet>
     }
+
 }
 
