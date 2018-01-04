@@ -1,10 +1,12 @@
 package com.zsk.androtweet2.fragments
 
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v7.widget.RecyclerView
 import android.widget.RelativeLayout
 import android.widget.Toast
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.adapters.AdapterFactory
+import com.zsk.androtweet2.adapters.TimelineAdapter
 import com.zsk.androtweet2.components.twitter.UserTimeline
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
@@ -28,6 +30,7 @@ class TwitterTimelineFragment : TimelineFragment() {
 
         select_all.setOnClickListener {
             select_all_icon.isChecked = !select_all_icon.isChecked
+            adapter.selectAll(select_all_icon.isChecked)
         }
 
         select_all_icon.setOnCheckedChangeListener { _, _ ->
@@ -40,9 +43,12 @@ class TwitterTimelineFragment : TimelineFragment() {
 
     override fun designScreen() {
         timeline_tweet = UserTimeline()
-
-        adapter = AdapterFactory().create(context, timeline_tweet)
+        adapter = AdapterFactory().create(context, timeline_tweet, toggleSheetMenuListener)
         super.designScreen()
     }
 
+}
+
+private fun RecyclerView.Adapter<*>.selectAll(checked: Boolean) {
+    (this as? TimelineAdapter)?.selectAll(checked)
 }

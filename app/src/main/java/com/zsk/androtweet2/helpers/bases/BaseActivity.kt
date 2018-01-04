@@ -3,7 +3,6 @@ package com.zsk.androtweet2.helpers.bases
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -27,11 +26,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.email
 
-open class BaseActivity : AppCompatActivity(), BaseFragment.OnFragmentInteractionListener {
-    override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+open class BaseActivity : AppCompatActivity() {
     val TAG = this.javaClass.simpleName
     val TOKEN_ERROR = "Failed to get request token"
     val CANCEL_LOGIN = "Failed to get authorization, bundle incomplete"

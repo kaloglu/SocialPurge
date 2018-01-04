@@ -2,37 +2,37 @@ package com.zsk.androtweet2.helpers.utils
 
 import android.database.DataSetObservable
 import android.database.DataSetObserver
-import com.zsk.androtweet2.helpers.utils.interfaces.Identifiable
-import java.util.*
+import com.twitter.sdk.android.core.models.Identifiable
 
 /**
  * SelectionDelegate manages items data items and loads items from a Timeline.
  *
  * @param <T> the item type
 </T> */
-public class SelectionDelegate<in T : Identifiable>(observable: DataSetObservable?) {
+class SelectionDelegate<T : Identifiable>(observable: DataSetObservable? = null) {
     private var items: ArrayList<T> = ArrayList()
     private val listObservable: DataSetObservable = observable ?: DataSetObservable()
 
-    class selectionObserver : DataSetObserver() {
 
-        override fun onChanged() {
-            var a = 0
-            super.onChanged()
-        }
-
+    companion object {
+        // once capacity is exceeded, additional items will not be loaded
+        internal val CAPACITY = 50L
     }
 
-    init {
-        listObservable.registerObserver(selectionObserver)
-    }
-
-    fun setItemById(item: T) {
-        items.indices
+    fun addItems(itemList: ArrayList<T>) {
+        itemList
                 .asSequence()
-                .filter { item.id == items[it].id }
-                .forEach { items[it] = item }
-        notifyDataSetChanged()
+                .filter { addItem(it, false) }
+                .forEach { notifyDataSetChanged() }
+    }
+
+    fun addItem(item: T, notifier: Boolean = true): Boolean {
+        var added = false
+        if (!withinMaxCapacity()) {
+            added = items.add(item)
+            notifyDataSetChanged()
+        } else notifyDataSetInvalidated()
+        return added
     }
 
     /**
@@ -80,8 +80,4 @@ public class SelectionDelegate<in T : Identifiable>(observable: DataSetObservabl
         listObservable.notifyInvalidated()
     }
 
-    companion object {
-        // once capacity is exceeded, additional items will not be loaded
-        internal val CAPACITY = 50L
-    }
 }

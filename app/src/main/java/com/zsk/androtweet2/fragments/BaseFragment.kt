@@ -1,7 +1,5 @@
 package com.zsk.androtweet2.fragments
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
@@ -13,31 +11,25 @@ import android.widget.RelativeLayout
 import com.zsk.androtweet2.helpers.utils.Enums
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
 
-
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [BaseFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [BaseFragment.getInstance] factory method to
- * create an instance of this fragment.
- */
 abstract class BaseFragment : Fragment() {
     abstract val layoutId: Int
     abstract val bottomSheetBehavior: BottomSheetBehavior<RelativeLayout>?
+    var toggleSheetMenuListener: ToggleSheetMenuListener? = object : ToggleSheetMenuListener {
+        override fun onToggle(show: Boolean) {
+            toggleSheetMenu(show)
+        }
+    }
+
+    interface ToggleSheetMenuListener {
+        fun onToggle(show: Boolean)
+    }
 
     private var type: String? = "default"
-    private var mListener: OnFragmentInteractionListener? = null
 
     open var TAG = this.javaClass.simpleName!!
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View?
             = inflater!!.inflate(layoutId, container, false)
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) mListener!!.onFragmentInteraction(uri)
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         onFragmentCreated(savedInstanceState)
@@ -54,33 +46,6 @@ abstract class BaseFragment : Fragment() {
     abstract fun designScreen()
 
     abstract fun initializeScreenObjects()
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        when (context) {
-            is OnFragmentInteractionListener -> mListener = context
-            else -> throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
 
     /**
      * Use this factory method to create a new instance of
@@ -102,16 +67,17 @@ abstract class BaseFragment : Fragment() {
         return this
     }
 
-    protected fun toggleSheetMenu() {
-        bottomSheetBehavior?.toggleSheetState()
+    fun toggleSheetMenu(show: Boolean = false) {
+        bottomSheetBehavior?.toggleSheetState(show)
     }
 
-    private fun BottomSheetBehavior<*>.toggleSheetState() {
+    private fun BottomSheetBehavior<*>.toggleSheetState(show: Boolean = false) {
         with(this) {
-            state = when (state) {
-                BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_EXPANDED
-                else -> BottomSheetBehavior.STATE_COLLAPSED
+            state = when {
+                show || this.state == BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_EXPANDED
+                else -> BottomSheetBehavior.STATE_HIDDEN
             }
         }
     }
+
 }

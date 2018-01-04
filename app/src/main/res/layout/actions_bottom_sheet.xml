@@ -8,8 +8,8 @@
     android:elevation="5dp"
     android:orientation="vertical"
     android:background="@color/md_blue_grey_50"
-    app:behavior_hideable="false"
-    app:behavior_peekHeight="?actionBarSize"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <android.support.constraint.ConstraintLayout

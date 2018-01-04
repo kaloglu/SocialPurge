@@ -21,52 +21,41 @@ import android.content.Context
 import android.database.DataSetObserver
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
 import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.core.models.TweetBuilder
-import com.twitter.sdk.android.tweetui.R.style.tw__TweetLightStyle
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
+import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.utils.twitter.components.views.CompactTweetView
 
 /**
- * TweetTimelineAdapter is a RecyclerView adapter which can provide Timeline Tweets to
+ * TimelineAdapter is a RecyclerView adapter which can provide Timeline Tweets to
  * RecyclerViews.
  */
-internal class TweetTimelineAdapter private constructor(
+class TimelineAdapter private constructor(
         private val context: Context,
-        private val timelineDelegate: TimelineDelegate<Tweet>,
-        private val styleResId: Int
-) : RecyclerView.Adapter<TweetTimelineAdapter.TweetViewHolder>() {
+        private val timelineDelegate: TimelineDelegate<Tweet>
+) : RecyclerView.Adapter<TimelineAdapter.TweetViewHolder>() {
     private var previousCount: Int = 0
 
-    /**
-     * Constructs a TweetTimelineAdapter for a RecyclerView implementation of a timeline
-     *
-     * @param context  the context for row views.
-     * @param timeline a Timeline&lt;Tweet&gt; providing access to Tweet data items.
-     * @throws IllegalArgumentException if context is null
-     */
+    fun selectAll(checked:Boolean){
+        timelineDelegate.selectAll(checked)
+    }
     constructor(
             context: Context,
-            timeline: Timeline<Tweet>
-    ) : this(context, timeline, tw__TweetLightStyle)
-
-    private constructor(
-            context: Context,
             timeline: Timeline<Tweet>,
-            styleResId: Int
-    ) : this(context, TimelineDelegate<Tweet>(timeline), styleResId)
+            toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
+    ) : this(context, TimelineDelegate<Tweet>(context, timeline, toggleSheetMenuListener = toggleSheetMenuListener))
 
     init {
         timelineDelegate.refresh(object : Callback<TimelineResult<Tweet>>() {
             override fun success(result: Result<TimelineResult<Tweet>>) {
                 notifyDataSetChanged()
-                previousCount = this@TweetTimelineAdapter.timelineDelegate.count
+                previousCount = this@TimelineAdapter.timelineDelegate.itemList.size
             }
 
             override fun failure(exception: TwitterException) {
@@ -96,14 +85,14 @@ internal class TweetTimelineAdapter private constructor(
         timelineDelegate.registerDataSetObserver(dataSetObserver)
     }
 
-    override fun getItemCount(): Int = timelineDelegate.count
+    override fun getItemCount(): Int = timelineDelegate.itemList.size
 
 
-    internal class TweetViewHolder(itemView: CompactTweetView) : RecyclerView.ViewHolder(itemView)
+    class TweetViewHolder(itemView: CompactTweetView) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TweetViewHolder {
         val tweet = TweetBuilder().build()
-        val compactTweetView = CompactTweetView(context, tweet, styleResId)
+        val compactTweetView = CompactTweetView(context, tweet, timelineDelegate)
         return TweetViewHolder(compactTweetView)
     }
 
