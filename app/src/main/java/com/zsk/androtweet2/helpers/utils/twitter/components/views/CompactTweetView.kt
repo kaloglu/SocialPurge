@@ -17,20 +17,21 @@
 
 package com.zsk.androtweet2.helpers.utils.twitter.components.views
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.util.AttributeSet
+import android.support.v4.content.ContextCompat
 import android.widget.Toast
 import com.twitter.sdk.android.core.models.MediaEntity
 import com.twitter.sdk.android.core.models.Tweet
 import com.zsk.androtweet2.R
+import com.zsk.androtweet2.components.twitter.TimelineDelegate
 
-class CompactTweetView : BaseTweetView {
-
-    constructor(context: Context, tweet: Tweet, styleResId: Int) : super(context, tweet, styleResId)
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
+@SuppressLint("ViewConstructor")
+class CompactTweetView(
+        context: Context,
+        tweet: Tweet,
+        timelineDelegate: TimelineDelegate<Tweet>
+) : BaseTweetView(context, tweet, timelineDelegate) {
 
     override fun getLayout(): Int = R.layout.tw__tweet_compact
 
@@ -38,16 +39,17 @@ class CompactTweetView : BaseTweetView {
         super.render()
         // Redraw screen name on recycle, because TextView doesn't resize when text length changes
         screenNameView.requestLayout()
+        isSelected = timelineDelegate.isSelected(tweet)
+        val color = if (isSelected) R.color.md_blue_50 else R.color.md_white_1000
+        setBackgroundColor(ContextCompat.getColor(context, color))
 
         setClickListener()
     }
 
     private fun setClickListener() {
         setOnClickListener {
-
-//            isSelected = !isSelected
-//            val color = if (isSelected) R.color.md_blue_50 else R.color.md_white_1000
-//            setBackgroundColor(ContextCompat.getColor(context, color))
+            timelineDelegate.selectionToggle(tweet)
+            render()
             Toast.makeText(context, "added: (" + it.isSelected + ")" + tweet.text, Toast.LENGTH_SHORT).show()
         }
     }

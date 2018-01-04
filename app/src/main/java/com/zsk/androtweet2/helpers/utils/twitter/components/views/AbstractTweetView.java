@@ -38,6 +38,7 @@ import com.twitter.sdk.android.tweetui.internal.SpanClickHandler;
 import com.twitter.sdk.android.tweetui.internal.TweetMediaUtils;
 import com.twitter.sdk.android.tweetui.internal.TweetMediaView;
 import com.zsk.androtweet2.R;
+import com.zsk.androtweet2.components.twitter.TimelineDelegate;
 import com.zsk.androtweet2.components.twitter.utils.TweetDateUtils;
 import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetUtils;
 
@@ -59,6 +60,7 @@ abstract class AbstractTweetView extends RelativeLayout {
     static final double MEDIA_BG_DARK_OPACITY = 0.12;
 
     static final long INVALID_ID = -1L;
+    protected final TimelineDelegate<Tweet> timelineDelegate;
 
     Tweet tweet;
 
@@ -93,11 +95,12 @@ abstract class AbstractTweetView extends RelativeLayout {
      *                 resource to apply to this view. If 0, no default style will be applied.
      * @throws IllegalArgumentException if the Tweet id is invalid.
      */
-    AbstractTweetView(Context context, AttributeSet attrs, int defStyle) {
+    AbstractTweetView(Context context, AttributeSet attrs, int defStyle, TimelineDelegate<Tweet> timelineDelegate) {
         super(context, attrs, defStyle);
 
         inflateView(context);
         findSubviews();
+        this.timelineDelegate = timelineDelegate;
     }
 
     /**

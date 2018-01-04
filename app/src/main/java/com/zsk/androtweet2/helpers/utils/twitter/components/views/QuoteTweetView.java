@@ -30,7 +30,7 @@ public class QuoteTweetView extends AbstractTweetView {
     private static final double DEFAULT_ASPECT_RATIO_MEDIA_CONTAINER = 16.0 / 10.0;
 
     QuoteTweetView(Context context) {
-        super(context, null, 0);
+        super(context, null, 0, null);
     }
 
     public void setStyle(int primaryTextColor, int secondaryTextColor, int actionColor,

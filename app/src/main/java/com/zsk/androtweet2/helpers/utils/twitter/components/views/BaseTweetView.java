@@ -34,6 +34,7 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.TweetBuilder;
 import com.twitter.sdk.android.tweetui.TweetUi;
 import com.zsk.androtweet2.R;
+import com.zsk.androtweet2.components.twitter.TimelineDelegate;
 import com.zsk.androtweet2.components.twitter.utils.ColorUtils;
 import com.zsk.androtweet2.components.twitter.utils.TweetDateUtils;
 import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetUtils;
@@ -64,8 +65,8 @@ public abstract class BaseTweetView extends AbstractTweetView {
      * @param context the context of the view
      * @param tweet a Tweet object
      */
-    BaseTweetView(Context context, Tweet tweet) {
-        this(context, tweet, DEFAULT_STYLE);
+    BaseTweetView(Context context, Tweet tweet, TimelineDelegate<Tweet> timelineDelegate) {
+        this(context, tweet, DEFAULT_STYLE,timelineDelegate);
     }
 
     /**
@@ -74,8 +75,8 @@ public abstract class BaseTweetView extends AbstractTweetView {
      * @param tweet a Tweet object
      * @param styleResId resource id of the Tweet view style
      */
-    BaseTweetView(Context context, Tweet tweet, int styleResId) {
-        super(context, null, styleResId);
+    BaseTweetView(Context context, Tweet tweet, int styleResId, TimelineDelegate<Tweet> timelineDelegate) {
+        super(context, null, styleResId, timelineDelegate);
 
         initAttributes(styleResId);
         applyStyles();
@@ -103,7 +104,7 @@ public abstract class BaseTweetView extends AbstractTweetView {
      * @throws IllegalArgumentException if the Tweet id is invalid.
      */
     public BaseTweetView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+        super(context, attrs, defStyle,null);
 
         initXmlAttributes(context, attrs);
         applyStyles();
