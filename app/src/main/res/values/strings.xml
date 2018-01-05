@@ -29,5 +29,6 @@
     <string name="tw__share_tweet" tools:override="true">Share Tweet</string>
     <string name="tw__tweet_content_description" tools:override="true">%1$s. %2$s. %3$s.</string>
     <string name="tw__tweet_media" tools:override="true">Tweet Media</string>
+    <string name="selection_info">%s </string>
     <!--extended twitter strings-->
 </resources>

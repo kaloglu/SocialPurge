@@ -33,8 +33,8 @@ class TwitterTimelineFragment : TimelineFragment() {
             adapter.selectAll(select_all_icon.isChecked)
         }
 
-        select_all_icon.setOnCheckedChangeListener { _, _ ->
-            Toast.makeText(context, "select_all : " + select_all_icon.isChecked, Toast.LENGTH_SHORT).show()
+        select_all_icon.setOnCheckedChangeListener { _, isChecked ->
+            adapter.selectAll(isChecked)
         }
         add_queue.setOnClickListener {
             Toast.makeText(context, "delete", Toast.LENGTH_SHORT).show()
