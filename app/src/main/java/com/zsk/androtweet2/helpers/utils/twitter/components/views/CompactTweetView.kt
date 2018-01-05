@@ -49,8 +49,6 @@ class CompactTweetView(
     private fun setClickListener() {
         setOnClickListener {
             timelineDelegate.selectionToggle(tweet)
-            render()
-            Toast.makeText(context, "added: (" + it.isSelected + ")" + tweet.text, Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -137,19 +137,6 @@ internal constructor(
         }
     }
 
-    fun selectionToggle(item: T) {
-        if (selectionList.isSelected(item)) {
-            selectionList.remove(item)
-        } else
-            selectionList.add(item)
-
-        toggleSheetMenuListener?.onToggle(selectionList.size > 0)
-    }
-
-    fun isSelected(item: T): Boolean = selectionList.isSelected(item)
-
-    private fun MutableList<T>.isSelected(item: T): Boolean = item.let(this::contains)
-
     /**
      * TimelineDelegate.DefaultCallback is a Callback which handles setting requestInFlight to
      * false on both success and failure and calling through to a wrapped developer Callback.
@@ -255,6 +242,20 @@ internal constructor(
     fun notifyDataSetInvalidated() {
         listAdapterObservable.notifyInvalidated()
     }
+    fun selectionToggle(item: T) {
+        if (selectionList.isSelected(item)) {
+            selectionList.remove(item)
+        } else
+            selectionList.add(item)
+
+        afterSelectionToggleAction()
+        notifyDataSetChanged()
+    }
+
+    fun isSelected(item: T): Boolean = selectionList.isSelected(item)
+
+    private fun MutableList<T>.isSelected(item: T): Boolean = item.let(this::contains)
+
 
     fun selectAll(checked: Boolean) {
         if (checked)
@@ -262,7 +263,14 @@ internal constructor(
         else
             selectionList.clear()
 
+        afterSelectionToggleAction()
+
         notifyDataSetChanged()
+    }
+
+    private fun afterSelectionToggleAction() {
+        toggleSheetMenuListener?.onToggle(selectionList.size)
+
     }
 
 }

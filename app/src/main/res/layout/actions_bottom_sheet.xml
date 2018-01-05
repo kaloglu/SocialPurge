@@ -5,174 +5,209 @@
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/md_blue_grey_50"
     android:elevation="5dp"
     android:orientation="vertical"
-    android:background="@color/md_blue_grey_50"
     app:behavior_hideable="true"
-    app:behavior_peekHeight="0dp"
+    app:behavior_peekHeight="30dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/select_all"
+    <LinearLayout
+        android:id="@+id/info_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/h_margin_half">
+        android:gravity="center_vertical"
+        android:paddingEnd="@dimen/h_margin_half"
+        android:paddingStart="@dimen/h_margin_half">
 
-        <CheckBox
-            android:id="@+id/select_all_icon"
+        <TextView
+            android:id="@+id/info"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tint="@color/md_grey_900"
-            android:button="@drawable/ic_check_box"
-            app:layout_constraintBottom_toBottomOf="@id/select_all_desc"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/select_all_title" />
-
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/select_all_title"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="3dp"
+            android:textColor="@color/md_blue_A400"
             android:textStyle="bold"
+            android:text="@string/selection_info" />
+
+        <TextView
+            android:id="@+id/info_text"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/h_margin_half"
-            android:text="Select All"
-            app:layout_constraintLeft_toRightOf="@id/select_all_icon" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text=" selected tweets" />
 
         <ImageView
             android:id="@+id/open_sheet"
-            android:padding="@dimen/h_margin_half"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:alpha="0.8"
+            android:visibility="gone"
+            android:padding="@dimen/h_margin_half"
             android:src="@drawable/ic_swap_vert_16dp"
             app:layout_constraintRight_toRightOf="parent" />
+    </LinearLayout>
 
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/select_all_desc"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Select all of listed tweets"
-            app:layout_constraintLeft_toLeftOf="@id/select_all_title"
-            app:layout_constraintTop_toBottomOf="@+id/select_all_title" />
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/show_all"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/select_all"
-        android:background="?selectableItemBackground"
-        android:visibility="gone"
-        android:padding="@dimen/h_margin_half">
+        android:layout_below="@+id/info_layout"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/show_all_icon"
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/select_all"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_show_all_32dp"
-            android:tint="@color/md_blue_400"
-            app:layout_constraintBottom_toBottomOf="@id/show_all_desc"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/show_all_title"
-            tools:src="@drawable/ic_show_off_whitelist_32dp" />
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half">
 
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/show_all_title"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
-            android:layout_width="0dp"
+            <CheckBox
+                android:id="@+id/select_all_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/ic_check_box"
+                android:tint="@color/md_grey_900"
+                app:layout_constraintBottom_toBottomOf="@id/select_all_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/select_all_title" />
+
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/select_all_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Select All"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/select_all_icon" />
+
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/select_all_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Select all of listed tweets"
+                app:layout_constraintLeft_toLeftOf="@id/select_all_title"
+                app:layout_constraintTop_toBottomOf="@+id/select_all_title" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/show_all"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/h_margin_half"
-            android:text="Show All"
-            app:layout_constraintLeft_toRightOf="@id/show_all_icon" />
+            android:layout_below="@id/select_all"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half"
+            android:visibility="gone">
 
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/show_all_desc"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="0dp"
+            <ImageView
+                android:id="@+id/show_all_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_show_all_32dp"
+                android:tint="@color/md_blue_400"
+                app:layout_constraintBottom_toBottomOf="@id/show_all_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/show_all_title"
+                tools:src="@drawable/ic_show_off_whitelist_32dp" />
+
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/show_all_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Show All"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/show_all_icon" />
+
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/show_all_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Show all tweets also whitelist"
+                app:layout_constraintLeft_toLeftOf="@id/show_all_title"
+                app:layout_constraintTop_toBottomOf="@+id/show_all_title" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/add_queue"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Show all tweets also whitelist"
-            app:layout_constraintLeft_toLeftOf="@id/show_all_title"
-            app:layout_constraintTop_toBottomOf="@+id/show_all_title" />
-    </android.support.constraint.ConstraintLayout>
+            android:layout_below="@id/show_all"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half"
+            android:visibility="gone">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/add_queue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/show_all"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/h_margin_half">
+            <ImageView
+                android:id="@+id/add_queue_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_deletion_queue_32dp"
+                android:tint="@color/md_red_A700"
+                app:layout_constraintBottom_toBottomOf="@id/add_queue_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/add_queue_title" />
 
-        <ImageView
-            android:id="@+id/add_queue_icon"
-            android:layout_width="wrap_content"
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/add_queue_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Delete"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/add_queue_icon" />
+
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/add_queue_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Add deletion queue selected tweets"
+                app:layout_constraintLeft_toLeftOf="@id/add_queue_title"
+                app:layout_constraintTop_toBottomOf="@+id/add_queue_title" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/add_whitelist"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:tint="@color/md_red_A700"
-            android:src="@drawable/ic_add_deletion_queue_32dp"
-            app:layout_constraintBottom_toBottomOf="@id/add_queue_desc"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/add_queue_title" />
+            android:layout_below="@id/add_queue"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half"
+            android:visibility="gone">
 
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/add_queue_title"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/h_margin_half"
-            android:text="Delete"
-            app:layout_constraintLeft_toRightOf="@id/add_queue_icon" />
+            <ImageView
+                android:id="@+id/add_whitelist_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_whitelist_32dp"
+                android:tint="@color/md_green_A700"
+                app:layout_constraintBottom_toBottomOf="@id/add_whitelist_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/add_whitelist_title" />
 
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/add_queue_desc"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Add deletion queue selected tweets"
-            app:layout_constraintLeft_toLeftOf="@id/add_queue_title"
-            app:layout_constraintTop_toBottomOf="@+id/add_queue_title" />
-    </android.support.constraint.ConstraintLayout>
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/add_whitelist_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Whitelist"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/add_whitelist_icon" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/add_whitelist"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/add_queue"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/h_margin_half">
-
-        <ImageView
-            android:id="@+id/add_whitelist_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tint="@color/md_green_A700"
-            android:src="@drawable/ic_add_whitelist_32dp"
-            app:layout_constraintBottom_toBottomOf="@id/add_whitelist_desc"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/add_whitelist_title" />
-
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/add_whitelist_title"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/h_margin_half"
-            android:text="Whitelist"
-            app:layout_constraintLeft_toRightOf="@id/add_whitelist_icon" />
-
-        <com.zsk.androtweet2.components.CustomTextView
-            android:id="@+id/add_whitelist_desc"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Add whitelist selected tweets"
-            app:layout_constraintLeft_toLeftOf="@id/add_whitelist_title"
-            app:layout_constraintTop_toBottomOf="@+id/add_whitelist_title" />
-    </android.support.constraint.ConstraintLayout>
-
+            <com.zsk.androtweet2.components.CustomTextView
+                android:id="@+id/add_whitelist_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Add whitelist selected tweets"
+                app:layout_constraintLeft_toLeftOf="@id/add_whitelist_title"
+                app:layout_constraintTop_toBottomOf="@+id/add_whitelist_title" />
+        </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
 </RelativeLayout>

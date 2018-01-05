@@ -42,9 +42,10 @@ class TimelineAdapter private constructor(
 ) : RecyclerView.Adapter<TimelineAdapter.TweetViewHolder>() {
     private var previousCount: Int = 0
 
-    fun selectAll(checked:Boolean){
+    fun selectAll(checked: Boolean) {
         timelineDelegate.selectAll(checked)
     }
+
     constructor(
             context: Context,
             timeline: Timeline<Tweet>,
@@ -55,7 +56,7 @@ class TimelineAdapter private constructor(
         timelineDelegate.refresh(object : Callback<TimelineResult<Tweet>>() {
             override fun success(result: Result<TimelineResult<Tweet>>) {
                 notifyDataSetChanged()
-                previousCount = this@TimelineAdapter.timelineDelegate.itemList.size
+                previousCount = timelineDelegate.itemList.size
             }
 
             override fun failure(exception: TwitterException) {
@@ -67,8 +68,7 @@ class TimelineAdapter private constructor(
             override fun onChanged() {
                 super.onChanged()
                 when (previousCount) {
-                    0 ->
-                        notifyDataSetChanged()
+                    0, itemCount -> notifyDataSetChanged()
                     else -> {
                         notifyItemRangeInserted(previousCount, itemCount - previousCount)
                     }

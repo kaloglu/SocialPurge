@@ -7,21 +7,48 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.RelativeLayout
+import com.zsk.androtweet2.R
 import com.zsk.androtweet2.helpers.utils.Enums
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
+import kotlinx.android.synthetic.main.actions_bottom_sheet.*
+import kotlinx.android.synthetic.main.actions_bottom_sheet.view.*
 
 abstract class BaseFragment : Fragment() {
     abstract val layoutId: Int
     abstract val bottomSheetBehavior: BottomSheetBehavior<RelativeLayout>?
     var toggleSheetMenuListener: ToggleSheetMenuListener? = object : ToggleSheetMenuListener {
-        override fun onToggle(show: Boolean) {
-            toggleSheetMenu(show)
+        override fun onToggle(selectedCount: Int) {
+            toggleSheetMenu(selectedCount > 0)
+            setInfoText(selectedCount)
         }
     }
 
+    private fun setInfoText(selectedCount: Int) {
+        val anim = AlphaAnimation(1.0f, 0.0f)
+        anim.duration = 200
+        anim.repeatCount = 1
+        anim.repeatMode = Animation.REVERSE
+
+        anim.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationEnd(animation: Animation?) {}
+            override fun onAnimationStart(animation: Animation?) {}
+            override fun onAnimationRepeat(animation: Animation?) {
+                if (selectedCount > 0)
+                    bottom_sheet?.info?.text = String.format(getString(R.string.selection_info), selectedCount)
+                else
+                    bottom_sheet?.info?.text = String.format(getString(R.string.selection_info), "No more")
+            }
+        })
+
+
+        bottom_sheet?.info?.startAnimation(anim)
+    }
+
     interface ToggleSheetMenuListener {
-        fun onToggle(show: Boolean)
+        fun onToggle(selectedCount: Int)
     }
 
     private var type: String? = "default"
@@ -41,6 +68,12 @@ abstract class BaseFragment : Fragment() {
         Log.d(TAG, "onFragmentCreated() called with: savedInstanceState = [$savedInstanceState]")
         initializeScreenObjects()
         designScreen()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setInfoText(0)
+//        toggleSheetMenuListener?.onToggle(0)
     }
 
     abstract fun designScreen()
@@ -75,7 +108,7 @@ abstract class BaseFragment : Fragment() {
         with(this) {
             state = when {
                 show || this.state == BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_EXPANDED
-                else -> BottomSheetBehavior.STATE_HIDDEN
+                else -> BottomSheetBehavior.STATE_COLLAPSED
             }
         }
     }
