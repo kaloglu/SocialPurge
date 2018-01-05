@@ -25,6 +25,7 @@ class FirebaseService {
     val CONSUMERS: String? = "consumers"
     val USERS: String? = "users"
     val TWITTER_ACCOUNTS: String? = "twitter_accounts"
+    val DELETION_QUEUE: String? = "delete_queue"
     val PREFERENCES: String? = "preferences"
     val STATUSES: String? = "statuses"
     val LIKES: String? = "likes"
@@ -50,7 +51,7 @@ class FirebaseService {
 
     fun String?.getDBRef(): DatabaseReference = database.getReference(this)
 
-    fun <T : FirebaseObject> String?.update(valueObj: T): Task<Void>? = getDBRef(valueObj.id)!!.setValue(valueObj)
+    fun <T : FirebaseObject> String?.update(valueObj: T,completionListener:DatabaseReference.CompletionListener?=null) = getDBRef(valueObj.id)!!.setValue(valueObj,completionListener)
 
     fun <T : FirebaseObject> String?.remove(valueObj: T): Task<Void>? = getDBRef(valueObj.id)!!.removeValue()
 

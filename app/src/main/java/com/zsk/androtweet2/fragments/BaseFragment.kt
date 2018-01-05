@@ -2,6 +2,7 @@ package com.zsk.androtweet2.fragments
 
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.helpers.utils.Enums
@@ -18,6 +20,7 @@ import kotlinx.android.synthetic.main.actions_bottom_sheet.view.*
 
 abstract class BaseFragment : Fragment() {
     abstract val layoutId: Int
+    abstract val fab: FloatingActionButton
     abstract val bottomSheetBehavior: BottomSheetBehavior<RelativeLayout>?
     var toggleSheetMenuListener: ToggleSheetMenuListener? = object : ToggleSheetMenuListener {
         override fun onToggle(selectedCount: Int) {
@@ -55,8 +58,8 @@ abstract class BaseFragment : Fragment() {
 
     open var TAG = this.javaClass.simpleName!!
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View?
-            = inflater!!.inflate(layoutId, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+            = inflater.inflate(layoutId, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         onFragmentCreated(savedInstanceState)
@@ -105,12 +108,24 @@ abstract class BaseFragment : Fragment() {
     }
 
     private fun BottomSheetBehavior<*>.toggleSheetState(show: Boolean = false) {
+        var scale = 0f
+        val animate = fab.animate()
         with(this) {
             state = when {
-                show || this.state == BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_EXPANDED
-                else -> BottomSheetBehavior.STATE_COLLAPSED
+                show || this.state == BottomSheetBehavior.STATE_COLLAPSED -> {
+                    scale = 1F
+                    BottomSheetBehavior.STATE_EXPANDED
+                }
+                else -> {
+                    BottomSheetBehavior.STATE_COLLAPSED
+                }
             }
         }
+        animate
+                .scaleX(scale)
+                .scaleY(scale)
+                .setDuration(200)
+                .setInterpolator(LinearInterpolator()).start()
     }
 
 }

@@ -5,18 +5,26 @@
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/md_blue_grey_50"
+    android:background="@color/md_white_1000"
+    android:clickable="true"
     android:elevation="5dp"
+    android:focusable="true"
     android:orientation="vertical"
     app:behavior_hideable="true"
     app:behavior_peekHeight="30dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/material_drawer_shadow_top" />
 
     <LinearLayout
         android:id="@+id/info_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:paddingTop="4dp"
         android:paddingEnd="@dimen/h_margin_half"
         android:paddingStart="@dimen/h_margin_half">
 
@@ -26,9 +34,9 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:padding="3dp"
+            android:text="@string/selection_info"
             android:textColor="@color/md_blue_A400"
-            android:textStyle="bold"
-            android:text="@string/selection_info" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/info_text"
@@ -43,9 +51,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:alpha="0.8"
-            android:visibility="gone"
             android:padding="@dimen/h_margin_half"
             android:src="@drawable/ic_swap_vert_16dp"
+            android:visibility="gone"
             app:layout_constraintRight_toRightOf="parent" />
     </LinearLayout>
 

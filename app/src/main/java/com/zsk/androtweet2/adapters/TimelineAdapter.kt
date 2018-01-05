@@ -46,6 +46,10 @@ class TimelineAdapter private constructor(
         timelineDelegate.selectAll(checked)
     }
 
+    fun addAll() {
+        timelineDelegate.addAll()
+    }
+
     constructor(
             context: Context,
             timeline: Timeline<Tweet>,
@@ -67,11 +71,10 @@ class TimelineAdapter private constructor(
         val dataSetObserver = object : DataSetObserver() {
             override fun onChanged() {
                 super.onChanged()
-                when (previousCount) {
-                    0, itemCount -> notifyDataSetChanged()
-                    else -> {
-                        notifyItemRangeInserted(previousCount, itemCount - previousCount)
-                    }
+                when (itemCount) {
+                    in Int.MIN_VALUE..itemCount ->
+                        notifyDataSetChanged()
+                    else -> notifyItemRangeInserted(previousCount, itemCount - previousCount)
                 }
                 previousCount = itemCount
             }

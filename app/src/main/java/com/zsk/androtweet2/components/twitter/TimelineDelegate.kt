@@ -20,13 +20,18 @@ package com.zsk.androtweet2.components.twitter
 import android.content.Context
 import android.database.DataSetObservable
 import android.database.DataSetObserver
+import com.google.firebase.database.DatabaseReference
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
 import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.models.Identifiable
+import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.fragments.BaseFragment
+import com.zsk.androtweet2.helpers.bases.BaseActivity.Companion.firebaseService
+import com.zsk.androtweet2.models.DeleteTweetObject
+import java.util.*
 
 /**
  * TimelineDelegate manages timeline data items and loads items from a Timeline.
@@ -242,6 +247,7 @@ internal constructor(
     fun notifyDataSetInvalidated() {
         listAdapterObservable.notifyInvalidated()
     }
+
     fun selectionToggle(item: T) {
         if (selectionList.isSelected(item)) {
             selectionList.remove(item)
@@ -267,6 +273,24 @@ internal constructor(
 
         notifyDataSetChanged()
     }
+
+    fun addAll() {
+        itemList.filter { selectionList.contains(it) }.forEach {
+            firebaseService.apply {
+                DELETION_QUEUE?.update(DeleteTweetObject(it as Tweet), DatabaseReference.CompletionListener { dbError, _ ->
+                    if (dbError == null) {
+                        selectionList.remove(it)
+                        itemList.remove(it)
+                        afterSelectionToggleAction()
+
+                        notifyDataSetChanged()
+                    }
+                })
+            }
+        }
+
+    }
+
 
     private fun afterSelectionToggleAction() {
         toggleSheetMenuListener?.onToggle(selectionList.size)

@@ -20,11 +20,11 @@ package com.zsk.androtweet2.helpers.utils.twitter.components.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.content.ContextCompat
-import android.widget.Toast
 import com.twitter.sdk.android.core.models.MediaEntity
 import com.twitter.sdk.android.core.models.Tweet
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
+import kotlinx.android.synthetic.main.tw__tweet_compact_card.view.*
 
 @SuppressLint("ViewConstructor")
 class CompactTweetView(
@@ -33,7 +33,7 @@ class CompactTweetView(
         timelineDelegate: TimelineDelegate<Tweet>
 ) : BaseTweetView(context, tweet, timelineDelegate) {
 
-    override fun getLayout(): Int = R.layout.tw__tweet_compact
+    override fun getLayout(): Int = R.layout.tw__tweet_compact_card
 
     internal override fun render() {
         super.render()
@@ -41,7 +41,7 @@ class CompactTweetView(
         screenNameView.requestLayout()
         isSelected = timelineDelegate.isSelected(tweet)
         val color = if (isSelected) R.color.md_blue_50 else R.color.md_white_1000
-        setBackgroundColor(ContextCompat.getColor(context, color))
+        tweet_view?.setBackgroundColor(ContextCompat.getColor(context, color))
 
         setClickListener()
     }
