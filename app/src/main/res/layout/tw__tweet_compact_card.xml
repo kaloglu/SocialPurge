@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="5dp"
+    android:layout_marginStart="@dimen/h_margin_half"
+    android:layout_marginEnd="@dimen/h_margin_half"
+    app:cardBackgroundColor="@color/md_white_1000"
+    app:cardUseCompatPadding="true"
+    app:cardElevation="5dp">
+
+    <RelativeLayout
+        android:id="@+id/tweet_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/tw__tweet_compact" />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
