@@ -1,6 +1,7 @@
 package com.zsk.androtweet2.models
 
 import com.google.firebase.database.Exclude
+import com.google.gson.annotations.SerializedName
 import com.twitter.sdk.android.core.TwitterAuthToken
 import com.twitter.sdk.android.core.models.User
 
@@ -9,6 +10,10 @@ import com.twitter.sdk.android.core.models.User
  * Created by kaloglu on 12/11/2017.
  */
 class TwitterAccount : FirebaseObject {
+    override fun getId(): Long = accountId
+
+    @SerializedName("id")
+    private var accountId:Long=0
     var name: String = ""
     var realname: String = ""
     var profilePic: String = ""
@@ -16,12 +21,13 @@ class TwitterAccount : FirebaseObject {
 
     constructor() : super()
 
-    constructor(id: Long,
+    constructor(accountId: Long,
                 username: String = "",
                 fullName: String = "",
                 profilePic: String = "",
                 authToken: CustomAuthToken = CustomAuthToken()
-    ) : super(id) {
+    ){
+        this.accountId= accountId
         this.name = username
         this.realname = fullName
         this.profilePic = profilePic
