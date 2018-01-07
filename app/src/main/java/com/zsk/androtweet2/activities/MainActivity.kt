@@ -79,7 +79,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                     androTweetApp.accountHeader.let { accountHeader ->
                         dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                                 ?.let { account ->
-                                    accountHeader.removeProfileByIdentifier(account.id)
+                                    accountHeader.removeProfileByIdentifier(account.getId())
                                 }
                     }
                 }
@@ -90,7 +90,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     private fun getProfileDrawerItem(account: TwitterAccount): IProfile<*> {
-        return ProfileDrawerItem().withIdentifier(account.id)
+        return ProfileDrawerItem().withIdentifier(account.getId())
                 .withName(account.name)
                 .withEmail(account.realname)
                 .withIcon(account.profilePic)
@@ -202,7 +202,9 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                     .enqueue(object : Callback<User>() {
                         override fun success(userResult: Result<User>?) {
                             userResult?.data?.let { user ->
-                                with(firebaseServ) { TWITTER_ACCOUNTS?.update(TwitterAccount(user, sessionResult.data.authToken)) }
+                                with(firebaseServ) {
+                                    TWITTER_ACCOUNTS?.updateWithUID(TwitterAccount(user, sessionResult.data.authToken))
+                                }
                             }
                         }
 

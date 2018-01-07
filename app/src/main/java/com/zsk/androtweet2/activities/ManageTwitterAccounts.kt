@@ -120,7 +120,7 @@ class ManageTwitterAccounts : BaseActivity() {
                     with(firebaseService) {
                         alert("Do you want disconnect this account?","Warning!!!") {
                             positiveButton("YES") {
-                                TWITTER_ACCOUNTS.remove(twitterAccount)
+                                TWITTER_ACCOUNTS.removeWitUID(twitterAccount)
                             }
                             negativeButton("NO") {
                             }

@@ -32,7 +32,10 @@ class FirebaseService {
     val RETWEETS: String? = "retweets"
     val TWEET_DETAILS: String? = "tweet_details"
 
-    internal fun String?.getDBRef(vararg longArr: Long): DatabaseReference? = this.getDBRef(longArr.asSequence().joinToString(","))
+    internal fun String?.getDBRefWithUID(vararg longArr: Long): DatabaseReference? =
+            this.getDBRef(true, longArr.asSequence().joinToString(","))
+    internal fun String?.getDBRef(hasUID: Boolean = false, vararg longArr: Long): DatabaseReference? =
+            this.getDBRef(hasUID, longArr.asSequence().joinToString(","))
 
     /**
      * return db path.
@@ -42,8 +45,11 @@ class FirebaseService {
      * result:
      *  "table/subtable1/subtable2/subtable3"
      */
-    fun String?.getDBRef(vararg strArr: String): DatabaseReference {
-        var ref = this.getDBRef().child(currentUser!!.uid)
+    fun String?.getDBRefWithUID(vararg strArr: String): DatabaseReference =getDBRef(true,*strArr)
+    fun String?.getDBRef(hasUID: Boolean = false, vararg strArr: String): DatabaseReference {
+        var ref = this.getDBRef()
+        if (hasUID)
+            ref = ref.child(currentUser!!.uid)
         strArr.filter { it != "" }.forEach { ref = ref.child(it) }
         return ref
     }
@@ -51,9 +57,26 @@ class FirebaseService {
 
     fun String?.getDBRef(): DatabaseReference = database.getReference(this)
 
-    fun <T : FirebaseObject> String?.update(valueObj: T,completionListener:DatabaseReference.CompletionListener?=null) = getDBRef(valueObj.id)!!.setValue(valueObj,completionListener)
+    @JvmOverloads
+    fun <T : FirebaseObject> String?.updateWithUID(
+            valueObj: T,
+            completionListener: DatabaseReference.CompletionListener? = null
+    ) = update(valueObj,completionListener,true)
 
-    fun <T : FirebaseObject> String?.remove(valueObj: T): Task<Void>? = getDBRef(valueObj.id)!!.removeValue()
+    @JvmOverloads
+    fun <T : FirebaseObject> String?.update(
+            valueObj: T,
+            completionListener: DatabaseReference.CompletionListener? = null,
+            hasUID: Boolean=false
+    ) = getDBRef(hasUID, valueObj.getId())!!.setValue(valueObj, completionListener)
+
+    fun <T : FirebaseObject> String?.removeWitUID(valueObj: T): Task<Void>? = remove(valueObj,true)
+
+    @JvmOverloads
+    fun <T : FirebaseObject> String?.remove(
+            valueObj: T,
+            hasUID: Boolean=false
+    ): Task<Void>? = getDBRef(hasUID,valueObj.getId())!!.removeValue()
 
     fun String?.putValueEventListener(
             valueEventListener: ValueEventListener,
@@ -66,20 +89,20 @@ class FirebaseService {
             vararg childArray: String
     ) {
         if (justOnce)
-            getDBRef(*childArray).addListenerForSingleValueEvent(valueEventListener)
+            getDBRefWithUID(*childArray).addListenerForSingleValueEvent(valueEventListener)
         else
-            getDBRef(*childArray).addValueEventListener(valueEventListener)
+            getDBRefWithUID(*childArray).addValueEventListener(valueEventListener)
     }
 
 
     fun String?.putChildEventListener(childEventListener: SimpleChildEventListener, vararg childArray: String)
-            = getDBRef(*childArray).addChildEventListener(childEventListener)
+            = getDBRefWithUID(*childArray).addChildEventListener(childEventListener)
 
     fun Query.putChildEventListener(childEventListener: SimpleChildEventListener)
             = this.addChildEventListener(childEventListener)
 
     fun String?.orderByKey(): Query {
-        val ref = if (this.equals(TWITTER_ACCOUNTS)) getDBRef("") else getDBRef()
+        val ref = if (this.equals(TWITTER_ACCOUNTS)) getDBRefWithUID("") else getDBRef()
 
         return ref.orderByKey()
     }

@@ -37,7 +37,7 @@ class AndroTweetApp : Application() {
 
     fun initializeActiveUserAccount(activeAccount: TwitterAccount) {
         val activeTwitterProfile = TwitterCore.getInstance()
-        val session = with(activeAccount, { TwitterSession(twitterAuth(), id, name) })
+        val session = with(activeAccount, { TwitterSession(twitterAuth(), getId(), name) })
 
         activeTwitterProfile.sessionManager.activeSession = session
         activeTwitterProfile.addApiClient(session, TwitterApiClient(session))
