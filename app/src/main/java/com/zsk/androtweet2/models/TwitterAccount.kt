@@ -9,11 +9,10 @@ import com.twitter.sdk.android.core.models.User
 /**
  * Created by kaloglu on 12/11/2017.
  */
-class TwitterAccount : FirebaseObject {
-    override fun getId(): Long = accountId
+class TwitterAccount : AccountObject {
+    @SerializedName("id", alternate = ["accountId"])
+    override var id: Long = 0
 
-    @SerializedName("id")
-    private var accountId:Long=0
     var name: String = ""
     var realname: String = ""
     var profilePic: String = ""
@@ -26,8 +25,8 @@ class TwitterAccount : FirebaseObject {
                 fullName: String = "",
                 profilePic: String = "",
                 authToken: CustomAuthToken = CustomAuthToken()
-    ){
-        this.accountId= accountId
+    ) {
+        this.id = accountId
         this.name = username
         this.realname = fullName
         this.profilePic = profilePic

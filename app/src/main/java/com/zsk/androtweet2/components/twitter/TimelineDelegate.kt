@@ -277,7 +277,7 @@ internal constructor(
     fun addAll() {
         itemList.filter { selectionList.contains(it) }.forEach {
             firebaseService.apply {
-                DELETION_QUEUE?.update(DeleteTweetObject(it as Tweet), DatabaseReference.CompletionListener { dbError, _ ->
+                DELETION_QUEUE?.update(DeleteTweetObject(it as Tweet,currentUser), DatabaseReference.CompletionListener { dbError, _ ->
                     if (dbError == null) {
                         selectionList.remove(it)
                         itemList.remove(it)
