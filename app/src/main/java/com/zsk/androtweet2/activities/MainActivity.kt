@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.ImageView
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.iid.FirebaseInstanceId
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
 import com.mikepenz.materialdrawer.Drawer
@@ -31,7 +32,6 @@ import com.zsk.androtweet2.components.SimpleChildEventListener
 import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.*
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
-import com.zsk.androtweet2.helpers.utils.FirebaseService
 import com.zsk.androtweet2.helpers.utils.FontIconDrawable
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
@@ -98,7 +98,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     override fun initializeScreenObject() {
-        twitterLogin.callback = object : TwitterLoginCallBack(firebaseService) {}
+        twitterLogin.callback = object : TwitterLoginCallBack() {}
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -180,6 +180,10 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
 
                 when (profileModel) {
                     is TwitterAccount -> {
+                        profileModel.deviceToken = FirebaseInstanceId.getInstance().token!!
+                        with(firebaseService) {
+                            TWITTER_ACCOUNTS?.updateWithUID(TwitterAccount(profileModel))
+                        }
                         androTweetApp.initializeActiveUserAccount(profileModel)
 
                         startFragment(TWEET.twitter_timeline())
@@ -193,7 +197,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         return false
     }
 
-    open class TwitterLoginCallBack(private val firebaseServ: FirebaseService) : Callback<TwitterSession>() {
+    open class TwitterLoginCallBack : Callback<TwitterSession>() {
         override fun success(sessionResult: Result<TwitterSession>?) {
             if (sessionResult?.data == null)
                 return
@@ -202,8 +206,8 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                     .enqueue(object : Callback<User>() {
                         override fun success(userResult: Result<User>?) {
                             userResult?.data?.let { user ->
-                                with(firebaseServ) {
-                                    TWITTER_ACCOUNTS?.updateWithUID(TwitterAccount(user, sessionResult.data.authToken))
+                                with(firebaseService) {
+                                    TWITTER_ACCOUNTS?.updateWithUID(TwitterAccount(user, sessionResult.data.authToken, FirebaseInstanceId.getInstance().token!!))
                                 }
                             }
                         }

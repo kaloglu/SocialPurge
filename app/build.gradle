@@ -46,26 +46,25 @@ dependencies {
     ext.android_version = "27.0.2"
     ext.google_version = "11.8.0"
     ext.firebaseUI_version = "3.1.0"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 
     implementation "com.android.support:support-compat:$android_version"
     implementation "com.android.support:animated-vector-drawable:$android_version"
     implementation "com.android.support:support-core-utils:$android_version"
     implementation "com.android.support:support-core-ui:$android_version"
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    //google libraries,
-//    implementation "com.google.firebase:firebase-core:$google_version"
     implementation "com.google.firebase:firebase-auth:$google_version"
     implementation "com.google.firebase:firebase-config:$google_version"
     implementation "com.google.firebase:firebase-database:$google_version"
+    implementation "com.google.firebase:firebase-messaging:$google_version"
     implementation "com.google.android.gms:play-services-auth:$google_version"
     implementation "com.google.android.gms:play-services-analytics:$google_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUI_version"
 
-    compile "org.jetbrains.anko:anko-commons:$anko_version"
-    compile "org.jetbrains.anko:anko-design:$anko_version"
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version"
 
     //android libraries
     implementation "com.android.support:appcompat-v7:$android_version"
