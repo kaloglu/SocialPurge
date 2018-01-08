@@ -79,7 +79,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                     androTweetApp.accountHeader.let { accountHeader ->
                         dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                                 ?.let { account ->
-                                    accountHeader.removeProfileByIdentifier(account.getId())
+                                    accountHeader.removeProfileByIdentifier(account.id)
                                 }
                     }
                 }
@@ -90,7 +90,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     private fun getProfileDrawerItem(account: TwitterAccount): IProfile<*> {
-        return ProfileDrawerItem().withIdentifier(account.getId())
+        return ProfileDrawerItem().withIdentifier(account.id)
                 .withName(account.name)
                 .withEmail(account.realname)
                 .withIcon(account.profilePic)
