@@ -17,6 +17,7 @@ class TwitterAccount : AccountObject {
     var realname: String = ""
     var profilePic: String = ""
     var authToken: CustomAuthToken? = null
+    var deviceToken: String = ""
 
     constructor() : super()
 
@@ -24,17 +25,28 @@ class TwitterAccount : AccountObject {
                 username: String = "",
                 fullName: String = "",
                 profilePic: String = "",
-                authToken: CustomAuthToken = CustomAuthToken()
+                authToken: CustomAuthToken = CustomAuthToken(),
+                deviceToken: String
     ) {
         this.id = accountId
         this.name = username
         this.realname = fullName
         this.profilePic = profilePic
         this.authToken = authToken
+        this.deviceToken = deviceToken
     }
 
-    constructor(user: User, authToken: TwitterAuthToken) :
-            this(user.id, "@" + user.screenName, user.name, user.profileImageUrl, CustomAuthToken(authToken))
+    constructor(user: User, authToken: TwitterAuthToken, deviceToken: String) :
+            this(user.id, "@" + user.screenName, user.name, user.profileImageUrl, CustomAuthToken(authToken), deviceToken)
+
+    constructor(twitterAccount: TwitterAccount) : this(
+            twitterAccount.id,
+            twitterAccount.name,
+            twitterAccount.realname,
+            twitterAccount.profilePic,
+            twitterAccount.authToken!!,
+            twitterAccount.deviceToken
+    )
 
 
     class CustomAuthToken {
