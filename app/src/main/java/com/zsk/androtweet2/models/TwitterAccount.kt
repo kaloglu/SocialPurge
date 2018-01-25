@@ -11,13 +11,14 @@ import com.twitter.sdk.android.core.models.User
  */
 class TwitterAccount : AccountObject {
     @SerializedName("id", alternate = ["accountId"])
+    @Exclude
     override var id: Long = 0
 
     var name: String = ""
     var realname: String = ""
     var profilePic: String = ""
-    var authToken: CustomAuthToken? = null
-    var deviceToken: String = ""
+    var token: String = ""
+    var secret: String = ""
 
     constructor() : super()
 
@@ -25,44 +26,31 @@ class TwitterAccount : AccountObject {
                 username: String = "",
                 fullName: String = "",
                 profilePic: String = "",
-                authToken: CustomAuthToken = CustomAuthToken(),
-                deviceToken: String
+                token: String,
+                secret: String
     ) {
         this.id = accountId
         this.name = username
         this.realname = fullName
         this.profilePic = profilePic
-        this.authToken = authToken
-        this.deviceToken = deviceToken
+        this.token = token
+        this.secret = secret
     }
 
-    constructor(user: User, authToken: TwitterAuthToken, deviceToken: String) :
-            this(user.id, "@" + user.screenName, user.name, user.profileImageUrl, CustomAuthToken(authToken), deviceToken)
+    constructor(user: User, authToken: TwitterAuthToken) :
+            this(user.id, "@" + user.screenName, user.name, user.profileImageUrl, authToken.token, authToken.secret)
 
     constructor(twitterAccount: TwitterAccount) : this(
             twitterAccount.id,
             twitterAccount.name,
             twitterAccount.realname,
             twitterAccount.profilePic,
-            twitterAccount.authToken!!,
-            twitterAccount.deviceToken
+            twitterAccount.token,
+            twitterAccount.secret
     )
 
 
-    class CustomAuthToken {
-        lateinit var token: String
-        lateinit var secret: String
-        var expired = false
-
-        constructor()
-        constructor(authToken: TwitterAuthToken) {
-            this.token = authToken.token
-            this.secret = authToken.secret
-            this.expired = authToken.isExpired
-        }
-    }
-
-    fun TwitterAccount.twitterAuth(): TwitterAuthToken = authToken?.let { TwitterAuthToken(it.token, it.secret) }!!
+    fun TwitterAccount.twitterAuth(): TwitterAuthToken = TwitterAuthToken(token, secret)
 
     @Exclude
     fun toMap(): Map<String, Any> {
@@ -71,7 +59,8 @@ class TwitterAccount : AccountObject {
         result.put("name", name)
         result.put("realname", realname)
         result.put("profilePic", profilePic)
-        result.put("authToken", authToken!!)
+        result.put("token", token)
+        result.put("secret", secret)
 
         return result
     }

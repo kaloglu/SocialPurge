@@ -27,14 +27,14 @@ import org.jetbrains.anko.alert
  */
 class ManageTwitterAccounts : BaseActivity() {
     lateinit var toolbar: Toolbar
-    lateinit var twitter_account_query: Query
+    lateinit var profiles_query: Query
     lateinit var options: FirebaseRecyclerOptions<TwitterAccount>
     lateinit var adapter: TwitterAccountAdapter
 
     init {
         with(firebaseService) {
-            twitter_account_query = TWITTER_ACCOUNTS.orderByKey()
-            options = recyclerOptions(TwitterAccount::class.java, this@ManageTwitterAccounts, twitter_account_query)
+            profiles_query = PROFILES.orderByKey()
+            options = recyclerOptions(TwitterAccount::class.java, this@ManageTwitterAccounts, profiles_query)
             adapter = TwitterAccountAdapter(options)
         }
     }
@@ -120,7 +120,7 @@ class ManageTwitterAccounts : BaseActivity() {
                     with(firebaseService) {
                         alert("Do you want disconnect this account?","Warning!!!") {
                             positiveButton("YES") {
-                                TWITTER_ACCOUNTS.removeWitUID(twitterAccount)
+                                PROFILES.removeWitUID(twitterAccount)
                             }
                             negativeButton("NO") {
                             }

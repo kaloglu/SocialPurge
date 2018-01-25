@@ -54,14 +54,19 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     override fun addEventListenerForFirebase() {
         super.addEventListenerForFirebase()
         with(firebaseService) {
-            TWITTER_ACCOUNTS.putChildEventListener(object : SimpleChildEventListener {
+            PROFILES.putChildEventListener(object : SimpleChildEventListener {
 
                 override fun onChildAdded(dataSnapShot: DataSnapshot?, p1: String?) {
-                    androTweetApp.accountHeader.let { accountHeader ->
-                        val index = if (accountHeader.profiles.count() >= 2) accountHeader.profiles.count() - 2 else 0
+                    androTweetApp.accountHeader.let {
+                        val index: Int = when {
+                            it.profiles.count() >= 2 -> {
+                                it.profiles.count() - 2
+                            }
+                            else -> 0
+                        }
                         dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                                 ?.let { account ->
-                                    accountHeader.addProfile(getProfileDrawerItem(account), index)
+                                    it.addProfile(getProfileDrawerItem(account), index)
                                     index.inc()
                                 }
                     }
@@ -79,7 +84,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                     androTweetApp.accountHeader.let { accountHeader ->
                         dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                                 ?.let { account ->
-                                    accountHeader.removeProfileByIdentifier(account.id)
+                                    accountHeader.removeProfileByIdentifier(account.id.toLong())
                                 }
                     }
                 }
@@ -90,7 +95,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     private fun getProfileDrawerItem(account: TwitterAccount): IProfile<*> {
-        return ProfileDrawerItem().withIdentifier(account.id)
+        return ProfileDrawerItem().withIdentifier(account.id.toLong())
                 .withName(account.name)
                 .withEmail(account.realname)
                 .withIcon(account.profilePic)
@@ -180,9 +185,11 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
 
                 when (profileModel) {
                     is TwitterAccount -> {
-                        profileModel.deviceToken = FirebaseInstanceId.getInstance().token!!
+                        val deviceTokenObject = HashMap<String, String>()
+                        deviceTokenObject.put(profileModel.id.toString(), FirebaseInstanceId.getInstance().token!!)
+
                         with(firebaseService) {
-                            TWITTER_ACCOUNTS?.updateWithUID(TwitterAccount(profileModel))
+                            DEVICE_TOKENS.updateWithUID(deviceTokenObject)
                         }
                         androTweetApp.initializeActiveUserAccount(profileModel)
 
@@ -202,12 +209,13 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
             if (sessionResult?.data == null)
                 return
 
-            TwitterApiClient(sessionResult.data).accountService.verifyCredentials(true, true, true)
+            TwitterApiClient(sessionResult.data).accountService
+                    .verifyCredentials(false, true, false)
                     .enqueue(object : Callback<User>() {
                         override fun success(userResult: Result<User>?) {
                             userResult?.data?.let { user ->
-                                with(firebaseService) {
-                                    TWITTER_ACCOUNTS?.updateWithUID(TwitterAccount(user, sessionResult.data.authToken, FirebaseInstanceId.getInstance().token!!))
+                                firebaseService.apply {
+                                    PROFILES?.updateWithUID(TwitterAccount(user, sessionResult.data.authToken))
                                 }
                             }
                         }
