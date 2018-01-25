@@ -23,8 +23,8 @@ import android.database.DataSetObserver
 import com.google.firebase.database.DatabaseReference
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
+import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterException
-import com.twitter.sdk.android.core.models.Identifiable
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
@@ -37,7 +37,7 @@ import java.util.*
  * TimelineDelegate manages timeline data items and loads items from a Timeline.
  * @param <T> the item type
 </T> */
-class TimelineDelegate<T : Identifiable>
+class TimelineDelegate<T : Tweet>
 internal constructor(
         val context: Context,
         internal val timeline: Timeline<T>,
@@ -46,7 +46,7 @@ internal constructor(
         private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(),
         private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
 ) {
-    private var selectionList: MutableList<T> = ArrayList()
+    private var selectionList: MutableList<String> = ArrayList()
     private var listAdapterObservable: DataSetObservable = observer ?: DataSetObservable()
 
     companion object {
@@ -250,9 +250,9 @@ internal constructor(
 
     fun selectionToggle(item: T) {
         if (selectionList.isSelected(item)) {
-            selectionList.remove(item)
+            selectionList.remove(item.idStr)
         } else
-            selectionList.add(item)
+            selectionList.add(item.idStr)
 
         afterSelectionToggleAction()
         notifyDataSetChanged()
@@ -260,12 +260,16 @@ internal constructor(
 
     fun isSelected(item: T): Boolean = selectionList.isSelected(item)
 
-    private fun MutableList<T>.isSelected(item: T): Boolean = item.let(this::contains)
+    private fun MutableList<String>.isSelected(item: T): Boolean = item.id.toString().let(this::contains)
 
 
     fun selectAll(checked: Boolean) {
         if (checked)
-            itemList.filter { selectionList.contains(it).not() }.forEach { selectionList.add(it) }
+            itemList.filter { item ->
+                selectionList.contains(item.idStr).not()
+            }.forEach { item ->
+                selectionList.add(item.idStr)
+            }
         else
             selectionList.clear()
 
@@ -275,18 +279,20 @@ internal constructor(
     }
 
     fun addAll() {
-        itemList.filter { selectionList.contains(it) }.forEach {
-            firebaseService.apply {
-                DELETION_QUEUE?.update(DeleteTweetObject(it as Tweet,currentUser), DatabaseReference.CompletionListener { dbError, _ ->
-                    if (dbError == null) {
-                        selectionList.remove(it)
-                        itemList.remove(it)
-                        afterSelectionToggleAction()
+        val activeUserId = TwitterCore.getInstance().sessionManager.activeSession.userId;
+        firebaseService.apply {
+            DELETION_QUEUE?.update(
+                    DeleteTweetObject(selectionList, currentUser.uid, activeUserId.toString()),
+                    DatabaseReference.CompletionListener { dbError, _ ->
+                        if (dbError == null) {
+                            itemList.removeAll(itemList.filter { item -> selectionList.contains(item.idStr) })
+                            selectionList.clear()
+                            afterSelectionToggleAction()
 
-                        notifyDataSetChanged()
+                            notifyDataSetChanged()
+                        }
                     }
-                })
-            }
+            )
         }
 
     }
