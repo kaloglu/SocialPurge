@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
@@ -121,21 +122,31 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         return AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.md_red_500)
+                .withOnAccountHeaderListener(this)
+                .withCompactStyle(true)
+                .withSavedInstance(savedInstanceState)
                 .addProfiles(
 //                        Settings for Account
-                        ProfileSettingDrawerItem().withName("Add Account")
+                        ProfileSettingDrawerItem()
+                                .withName("Add Account")
+                                .withDescription("Coming soon...")
+                                .withTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
+                                .withDescriptionTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
                                 .withIdentifier(ADD_TWITTER_ACCOUNT)
-                                .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus))),
+                                .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus), R.color.tw__composer_light_gray))
+                                .withEnabled(false),
                         ProfileSettingDrawerItem().withName("Manage Account")
                                 .withIdentifier(MANAGE_ACCOUNTS)
                                 .withDescription("Add / Remove your accounts")
-                                .withIcon(FontIconDrawable(this, getString(R.string.ic_cog)))
+                                .withTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
+                                .withDescriptionTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
+                                .withIcon(FontIconDrawable(this, getString(R.string.ic_cog), R.color.tw__composer_light_gray))
+                                .withDescription("Coming soon...")
+                                .withEnabled(false)
                 )
-                .withOnAccountHeaderListener(this)
                 .withAlternativeProfileHeaderSwitching(true)
                 .withCurrentProfileHiddenInList(true)
                 .withThreeSmallProfileImages(true)
-                .withSavedInstance(savedInstanceState)
                 .build()
     }
 
@@ -149,10 +160,14 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     private fun createDrawer(toolbar: Toolbar, headerResult: AccountHeader, savedInstanceState: Bundle?): Drawer {
+//        getMenuItems()
+
         return DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
+                .withFireOnInitialOnClick(true)
                 .withAccountHeader(headerResult, true)
+//                .withDrawerItems()
                 .inflateMenu(R.menu.activity_main_drawer)
                 .addStickyDrawerItems(PrimaryDrawerItem().withName("Logout").withIdentifier(LOGOUT))
                 .withOnDrawerItemClickListener(this)
@@ -186,7 +201,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 when (profileModel) {
                     is TwitterAccount -> {
                         val deviceTokenObject = HashMap<String, String>()
-                        deviceTokenObject.put(profileModel.id.toString(), FirebaseInstanceId.getInstance().token!!)
+                        deviceTokenObject[profileModel.id.toString()] = FirebaseInstanceId.getInstance().token!!
 
                         with(firebaseService) {
                             DEVICE_TOKENS.updateWithUID(deviceTokenObject)
@@ -201,7 +216,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 }
             }
         }
-        return false
+        return true
     }
 
     open class TwitterLoginCallBack : Callback<TwitterSession>() {
