@@ -67,18 +67,21 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                         }
                         dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                                 ?.let { account ->
+                                    account.id = dataSnapShot.key.toLong()
                                     it.addProfile(getProfileDrawerItem(account), index)
                                     index.inc()
                                 }
+                        if (selectedProfile != -1L)
+                            it.setActiveProfile(selectedProfile, true)
                     }
                 }
 
                 override fun onChildChanged(dataSnapShot: DataSnapshot?, p1: String?) {
                     super.onChildChanged(dataSnapShot, p1)
-                    androTweetApp.accountHeader.let { accountHeader ->
-                        if (selectedProfile != -1L)
-                            accountHeader.setActiveProfile(selectedProfile, true)
-                    }
+//                    androTweetApp.accountHeader.let { accountHeader ->
+//                        if (selectedProfile != -1L)
+//                            accountHeader.setActiveProfile(selectedProfile, true)
+//                    }
                 }
 
                 override fun onChildRemoved(dataSnapShot: DataSnapshot?) {
@@ -167,7 +170,6 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .withToolbar(toolbar)
                 .withFireOnInitialOnClick(true)
                 .withAccountHeader(headerResult, true)
-//                .withDrawerItems()
                 .inflateMenu(R.menu.activity_main_drawer)
                 .addStickyDrawerItems(PrimaryDrawerItem().withName("Logout").withIdentifier(LOGOUT))
                 .withOnDrawerItemClickListener(this)
@@ -178,12 +180,18 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     override fun onItemClick(view: View?, position: Int, drawerItem: IDrawerItem<*, *>?): Boolean {
+        if (androTweetApp.accountHeader.activeProfile == null)
+            return false
+
         when (drawerItem?.identifier) {
+            R.id.all_tweets_by_me.toLong() -> {
+                startFragment(TWEET.twitterTimeline())
+            }
             LOGOUT -> signOut()
             ADD_TWITTER_ACCOUNT -> twitterLogin.callOnClick()
             MANAGE_ACCOUNTS -> getManageActivity()
         }
-        return false
+        return true
     }
 
     private fun getManageActivity() {
@@ -208,7 +216,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                         }
                         androTweetApp.initializeActiveUserAccount(profileModel)
 
-                        startFragment(TWEET.twitter_timeline())
+//                        startFragment(TWEET.twitterTimeline())
 
                         if (BuildConfig.DEBUG)
                             toast(profileModel.name)

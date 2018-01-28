@@ -36,7 +36,7 @@
     <dimen name="tw__compact_tweet_avatar_margin_right" tools:override="true">8dp</dimen>
     <dimen name="tw__compact_tweet_avatar_margin_top" tools:override="true">5.5dp</dimen>
     <dimen name="tw__compact_tweet_container_bottom_separator" tools:override="true">13dp</dimen>
-    <dimen name="tw__compact_tweet_container_padding_top" tools:override="true">10.5dp</dimen>
+    <dimen name="tw__compact_tweet_container_padding_top" tools:override="true">0.5dp</dimen>
     <dimen name="tw__compact_tweet_full_name_margin_right" tools:override="true">0dp</dimen>
     <dimen name="tw__compact_tweet_full_name_margin_top" tools:override="true">0dp</dimen>
     <dimen name="tw__compact_tweet_logo_margin_right" tools:override="true">12dp</dimen>

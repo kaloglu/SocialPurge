@@ -1,5 +1,7 @@
 package com.zsk.androtweet2.fragments
 
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.twitter.sdk.android.core.models.Tweet
@@ -9,6 +11,7 @@ import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.LIST
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes
 import kotlinx.android.synthetic.main.actions_bottom_sheet.*
+
 
 /**
 * Created by kaloglu on 16.12.2017.
@@ -26,6 +29,15 @@ abstract class TimelineFragment : BaseFragment() {
         with(view!!) {
             timelineRV = findViewById(R.id.timeline_rv)
             timelineRV.layoutManager=LinearLayoutManager(this.context)
+            val dividerItemDecoration = DividerItemDecoration(
+                    timelineRV.context,
+                    LinearLayoutManager.VERTICAL
+            )
+
+            dividerItemDecoration.setDrawable(
+                    ContextCompat.getDrawable(context!!, R.drawable.divider_default)!!
+            )
+            timelineRV.addItemDecoration(dividerItemDecoration)
         }
         
         open_sheet?.setOnClickListener {

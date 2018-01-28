@@ -5,7 +5,6 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.RecyclerView
 import android.widget.RelativeLayout
-import android.widget.Toast
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.adapters.AdapterFactory
 import com.zsk.androtweet2.adapters.TimelineAdapter
@@ -33,7 +32,6 @@ class TwitterTimelineFragment : TimelineFragment() {
     fun getInstance(@FragmentContentTypes content_type: Long = TWEET) = super.getInstance(TWITTER, content_type)
     override fun initializeScreenObjects() {
         super.initializeScreenObjects()
-
         select_all.setOnClickListener {
             select_all_icon.isChecked = !select_all_icon.isChecked
             adapter.selectAll(select_all_icon.isChecked)
