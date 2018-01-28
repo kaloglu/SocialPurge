@@ -18,10 +18,9 @@
 <!--Tweet container-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/tweet_background"
     android:clickable="true"
     style="@style/tw__TweetFillWidth"
-    tools:parentTag="RelativeLayout"
+    tools:parentTag="android.widget.RelativeLayout"
     android:focusable="true">
 
     <View
@@ -32,7 +31,7 @@
     <TextView
         android:id="@+id/tw__tweet_retweeted_by"
         style="@style/tw__TweetRetweetedBy.Compact"
-        android:layout_alignRight="@id/tw__author_attribution"
+        android:layout_alignLeft="@id/tw__author_attribution"
         tools:text="Retweeted by Jack"
         tools:visibility="visible"/>
 

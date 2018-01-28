@@ -28,7 +28,7 @@ import retrofit2.Call
 /**
  * UserTimeline provides a timeline of tweets from the statuses/userTimeline API source.
  */
-class UserTimeline() : BaseTimeline(), Timeline<Tweet> {
+class UserTimeline : BaseTimeline(), Timeline<Tweet> {
 
     /**
      * Loads Tweets with id greater than (newer than) sinceId. If sinceId is null, loads the newest

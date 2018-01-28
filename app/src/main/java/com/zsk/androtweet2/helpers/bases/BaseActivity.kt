@@ -150,7 +150,7 @@ open class BaseActivity : AppCompatActivity() {
             })
 
     /** use Long with {@code @Enum.FragmentContentTypes} {@link FragmentContentTypes com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes}*/
-    fun Long.twitter_timeline(): BaseFragment = TwitterTimelineFragment().getInstance(this)
+    fun Long.twitterTimeline(): BaseFragment = TwitterTimelineFragment().getInstance(this)
 
     internal fun SharedPreferences.put(key: String, value: Any) {
 

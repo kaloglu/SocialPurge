@@ -46,7 +46,7 @@ internal constructor(
         private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(),
         private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
 ) {
-    private var selectionList: MutableList<String> = ArrayList()
+    private var selectionList: MutableList<String> = mutableListOf()
     private var listAdapterObservable: DataSetObservable = observer ?: DataSetObservable()
 
     companion object {
@@ -268,8 +268,8 @@ internal constructor(
             itemList.filter { item ->
                 selectionList.contains(item.idStr).not()
             }.forEach { item ->
-                selectionList.add(item.idStr)
-            }
+                        selectionList.add(item.idStr)
+                    }
         else
             selectionList.clear()
 
@@ -279,22 +279,29 @@ internal constructor(
     }
 
     fun addAll() {
-        val activeUserId = TwitterCore.getInstance().sessionManager.activeSession.userId;
+        val activeUserId = TwitterCore.getInstance().sessionManager.activeSession.userId
         firebaseService.apply {
+            val selectedObjects = HashMap<String, DeleteTweetObject>()
+            selectionList.forEach {
+                selectedObjects[it] = DeleteTweetObject(it, currentUser.uid, activeUserId)
+            }
+
             DELETION_QUEUE?.update(
-                    DeleteTweetObject(selectionList, currentUser.uid, activeUserId.toString()),
+                    selectedObjects,
                     DatabaseReference.CompletionListener { dbError, _ ->
                         if (dbError == null) {
-                            itemList.removeAll(itemList.filter { item -> selectionList.contains(item.idStr) })
+                            itemList.removeAll(itemList.filter { item ->
+                                selectionList.contains(item.idStr)
+                            })
                             selectionList.clear()
                             afterSelectionToggleAction()
-
-                            notifyDataSetChanged()
+                            if (itemList.size <= 0)
+                                previous()
                         }
+                        notifyDataSetChanged()
                     }
             )
         }
-
     }
 
 

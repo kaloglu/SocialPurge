@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group
-        android:id="@+id/active"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/all_tweets_by_me"
-            android:title="All tweets by me" />
-    </group>
+    <item
+        android:id="@+id/all_tweets_by_me"
+        android:title="All tweets by me" />
+
     <group
         android:id="@+id/passive"
+        android:enabled="false"
         android:checkableBehavior="single">
         <item android:title="Coming soon...">
             <menu>

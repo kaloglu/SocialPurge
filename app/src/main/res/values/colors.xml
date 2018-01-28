@@ -19,4 +19,5 @@
     <color name="tw__tweet_dark_primary_text_color" tools:override="true">#e1ffffff</color>
     <color name="tw__tweet_light_container_bg_color" tools:override="true">#ffffff</color>
     <color name="tw__tweet_light_primary_text_color" tools:override="true">#292f33</color>
+    <color name="tweet_background_color">@color/md_white_1000</color>
 </resources>

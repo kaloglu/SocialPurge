@@ -5,6 +5,4 @@ package com.zsk.androtweet2.models
  */
 interface FirebaseObject {
     var id: String
-
-
 }

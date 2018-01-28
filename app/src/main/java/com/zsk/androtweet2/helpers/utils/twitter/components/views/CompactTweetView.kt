@@ -40,7 +40,7 @@ class CompactTweetView(
         // Redraw screen name on recycle, because TextView doesn't resize when text length changes
         screenNameView.requestLayout()
         isSelected = timelineDelegate.isSelected(tweet)
-        val color = if (isSelected) R.color.md_blue_50 else R.color.md_white_1000
+        val color = if (isSelected) R.color.md_blue_50 else R.color.tweet_background_color
         tweet_view?.setBackgroundColor(ContextCompat.getColor(context, color))
 
         setClickListener()
@@ -55,10 +55,6 @@ class CompactTweetView(
 
     override fun applyStyles() {
         super.applyStyles()
-
-        val paddingTop = resources
-                .getDimensionPixelSize(R.dimen.tw__compact_tweet_container_padding_top)
-        setPadding(0, paddingTop, 0, 0)
 
         val mediaViewRadius = resources.getDimensionPixelSize(R.dimen.tw__media_view_radius)
         tweetMediaView.setRoundedCornersRadii(mediaViewRadius, mediaViewRadius,

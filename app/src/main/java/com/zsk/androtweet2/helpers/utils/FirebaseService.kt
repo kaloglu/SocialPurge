@@ -75,7 +75,7 @@ class FirebaseService {
 
     @JvmOverloads
     fun String?.updateWithUID(
-            valueObj: HashMap<*, *>,
+            valueObj: Map<String, *>,
             completionListener: DatabaseReference.CompletionListener? = null
     ) = update(valueObj, completionListener, true)
 
@@ -111,10 +111,10 @@ class FirebaseService {
 
     @JvmOverloads
     fun String?.update(
-            valueObj: HashMap<*, *>,
+            valueObj: Map<String, *>,
             completionListener: DatabaseReference.CompletionListener? = null,
             hasUID: Boolean = false
-    ) = getDBRef(hasUID).setValue(valueObj, completionListener)
+    ) = getDBRef(hasUID).updateChildren(valueObj, completionListener)
 
     fun String?.putValueEventListener(
             valueEventListener: ValueEventListener,
