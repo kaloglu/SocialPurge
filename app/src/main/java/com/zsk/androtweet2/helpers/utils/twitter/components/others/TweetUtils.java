@@ -24,7 +24,7 @@ import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
-import com.zsk.androtweet2.components.twitter.TwitterApiClient;
+import com.zsk.androtweet2.components.twitter.CustomTwitterApiClient;
 
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +46,7 @@ public final class TweetUtils {
     private TweetUtils() {
     }
 
-    private static TwitterApiClient getApiClient() {
+    private static CustomTwitterApiClient getApiClient() {
         return null;
     }
 

@@ -59,6 +59,7 @@ class TwitterTimelineFragment : TimelineFragment() {
 
     override fun designScreen() {
         timeline_tweet = UserTimeline()
+
         adapter = AdapterFactory().create(context!!, timeline_tweet, toggleSheetMenuListener)
         super.designScreen()
     }

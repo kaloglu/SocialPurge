@@ -1,6 +1,7 @@
 package com.zsk.androtweet2.components.twitter
 
 import com.twitter.sdk.android.core.TwitterApiClient
+import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
 import com.zsk.androtweet2.BuildConfig
 import okhttp3.OkHttpClient
@@ -17,8 +18,8 @@ val build = OkHttpClient.Builder()
 /**
  * Created by kaloglu on 1.01.2018.
  */
-class TwitterApiClient(
-        session: TwitterSession,
+class CustomTwitterApiClient(
+        session: TwitterSession=TwitterCore.getInstance().sessionManager.activeSession,
         client: OkHttpClient = build
 ) : TwitterApiClient(session, client) {
 

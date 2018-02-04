@@ -4,28 +4,28 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
-import com.twitter.sdk.android.core.DefaultLogger
-import com.twitter.sdk.android.core.Twitter
-import com.twitter.sdk.android.core.TwitterAuthConfig
-import com.twitter.sdk.android.core.TwitterConfig
+import com.google.firebase.auth.TwitterAuthProvider
+import com.google.firebase.database.DatabaseReference
+import com.twitter.sdk.android.core.*
+import com.twitter.sdk.android.core.models.User
+import com.zsk.androtweet2.activities.LoginActivity
 import com.zsk.androtweet2.activities.MainActivity
+import com.zsk.androtweet2.components.twitter.CustomTwitterApiClient
 import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.helpers.utils.Enums.RequestCodes.RC_SIGN_IN
+import com.zsk.androtweet2.models.TwitterAccount
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.email
-import java.util.*
 
 
 class SplashScreen : BaseActivity() {
-    var signInProviders = Arrays.asList(
-            AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
-            , AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()
-//            , AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()
+//    var signInProviders = Arrays.asList(
+//            AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+//             AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+//             AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
 //            AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
-//            , AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()
-    )
+//            AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()
+//    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,58 +45,66 @@ class SplashScreen : BaseActivity() {
             if (config.info.configSettings.isDeveloperModeEnabled)
                 cacheSize = 0
 
-            config.fetch(cacheSize).addOnCompleteListener { result ->
-                if (result.isSuccessful) {
-                    config.getKeysByPrefix("twitter_").asSequence().forEach { configKey ->
-                        getTwitterSettings()?.let { twitterSettings ->
-                            when {
-                                twitterSettings.getString(configKey, "") != config.getString(configKey) -> {
-                                    twitterSettings.edit().putString(configKey, config.getString(configKey)).apply()
+            config.fetch(cacheSize)
+                    .addOnCompleteListener { result ->
+                        if (result.isSuccessful) {
+                            config.getKeysByPrefix("twitter_").asSequence().forEach { configKey ->
+                                getTwitterSettings()?.let { twitterSettings ->
+                                    when {
+                                        twitterSettings.getString(configKey, "") != config.getString(configKey) -> {
+                                            twitterSettings.edit().putString(configKey, config.getString(configKey)).apply()
+                                        }
+                                    }
+
                                 }
                             }
+                            config.activateFetched()
+                            loadingComplete()
 
+                        } else {
+                            getMaintenanceAlert()
                         }
+
                     }
-                    config.activateFetched()
-                    twitterImplementation()
-                    checkLogin()
-
-                } else {
-                    alert("Maintenance Time! plase try again few later...") {
-                        negativeButton("Close App", {
-                            finish()
-                        })
-                        neutralPressed("Report", {
-                            email(
-                                    "support@androtweet.net",
-                                    "App Working Issue[SplashScreen]",
-                                    "App doesn't open I do not know why!"
-                            )
-                        })
-                    }.show()
-                }
-
-            }.addOnFailureListener { exception ->
-                handleException(exception.message)
-            }
-
-
+                    .addOnFailureListener { exception ->
+                        handleException(exception.message)
+                    }
         }
+    }
+
+    private fun getMaintenanceAlert() {
+        alert("Maintenance Time! plase try again few later...") {
+            negativeButton("Close App", {
+                finish()
+            })
+            neutralPressed("Report", {
+                email(
+                        "support@androtweet.net",
+                        "App Working Issue[SplashScreen]",
+                        "App doesn't open I do not know why!"
+                )
+            })
+        }.show()
+    }
+
+    private fun loadingComplete() {
+        twitterImplementation()
+        checkLogin()
     }
 
     private fun checkLogin() = if (firebaseService.isSignedIn()) {
         onActivityResult(-1, -1, intent)
     } else {
-        val build = AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(signInProviders)
-                .setIsSmartLockEnabled(true, true)
-                .setAllowNewEmailAccounts(true)
-                .build()
+//        val build = AuthUI.getInstance()
+//                .createSignInIntentBuilder()
+//                .setAvailableProviders(signInProviders)
+//                .setIsSmartLockEnabled(true, true)
+//                .setAllowNewEmailAccounts(true)
+//                .build()
 
-        startActivityForResult(build, RC_SIGN_IN)
+        val loginIntent = Intent(this, LoginActivity::class.java)
+        startActivityForResult(loginIntent, RC_SIGN_IN)
     }
-
 
     private fun handleException(errorMessage: String?) {
         alert("Something goes Wrong") {
@@ -136,18 +144,58 @@ class SplashScreen : BaseActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        var idpResponse: IdpResponse? = null
-        val intent = Intent(this, MainActivity::class.java)
-        when (requestCode) {
-            RC_SIGN_IN -> idpResponse = IdpResponse.fromResultIntent(data)
-        }
-        idpResponse?.let { intent.putExtra("my_token", idpResponse.idpToken) }
-
-        if (resultCode == Activity.RESULT_OK) {
-            startActivity(intent)
-            finish()
+        if (resultCode == Activity.RESULT_OK)
+            when (requestCode) {
+                RC_SIGN_IN -> handleTwitterLogin()
+                else -> {
+                    startActivity(Intent(this@SplashScreen, MainActivity::class.java))
+                    finish()
+                }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+
+    private fun handleTwitterLogin() {
+        val session = TwitterCore.getInstance().sessionManager.activeSession
+        getAppSettings()?.put("selectedProfile", session.userId)
+        CustomTwitterApiClient(session).accountService
+                .verifyCredentials(false, true, false)
+                .enqueue(object : Callback<User>() {
+                    override fun success(userResult: Result<User>?) {
+                        val user = userResult?.data
+                        if (user == null) {
+                            failure(TwitterException("Twitter user data is null", NullPointerException()))
+                            return
+                        }
+                        startFirebaseSignIn(TwitterAccount(user, session.authToken))
+                    }
+
+                    override fun failure(exception: TwitterException?) {
+                        Log.e(baseActivity.TAG, "exception", exception)
+                    }
+                })
+    }
+
+    private fun startFirebaseSignIn(twitterAccount: TwitterAccount) {
+
+        val credential = TwitterAuthProvider.getCredential(twitterAccount.token, twitterAccount.secret)
+        firebaseService.apply {
+            auth.signInWithCredential(credential).addOnSuccessListener {
+                if (it.additionalUserInfo.isNewUser) {
+                    PROFILES?.updateWithUID(
+                            twitterAccount,
+                            DatabaseReference.CompletionListener { databaseError, databaseReference ->
+                                if (databaseError == null) {
+                                    startActivity(Intent(this@SplashScreen, MainActivity::class.java))
+                                    finish()
+                                }
+                            }
+                    )
+                }
+            }
+        }
+
     }
 
 }

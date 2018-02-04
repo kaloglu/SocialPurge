@@ -23,6 +23,8 @@
         <activity android:name=".activities.ManageTwitterAccounts"
             android:parentActivityName=".activities.MainActivity"/>
 
+        <activity android:name=".activities.LoginActivity" />
+
         <service
             android:name=".helpers.services.FirebaseMessagingService">
             <intent-filter>
