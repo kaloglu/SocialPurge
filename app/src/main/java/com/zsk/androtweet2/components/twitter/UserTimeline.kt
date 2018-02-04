@@ -61,7 +61,7 @@ class UserTimeline : BaseTimeline(), Timeline<Tweet> {
         val userName = activeSession.userName
         val userId = activeSession.userId
         Log.e(TAG, "screenName: " + userName)
-        val twitterApiClient = twitterCore.apiClient as TwitterApiClient
+        val twitterApiClient = twitterCore.apiClient as CustomTwitterApiClient
         return twitterApiClient.getTimeLineService().userTimeline(userId, userName, sinceId, maxId, 30)
     }
 

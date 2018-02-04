@@ -22,6 +22,7 @@ import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.fragments.TwitterTimelineFragment
 import com.zsk.androtweet2.helpers.utils.FirebaseService
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.email

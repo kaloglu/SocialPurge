@@ -16,7 +16,7 @@ import com.google.firebase.database.Query
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.models.TwitterAccount
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_manage_twitter_accounts.*
 import kotlinx.android.synthetic.main.twitter_user_layout.view.*
 import org.jetbrains.anko.alert

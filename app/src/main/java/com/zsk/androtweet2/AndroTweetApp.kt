@@ -7,7 +7,7 @@ import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
-import com.zsk.androtweet2.components.twitter.TwitterApiClient
+import com.zsk.androtweet2.components.twitter.CustomTwitterApiClient
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import com.zsk.androtweet2.models.TwitterAccount
 
@@ -37,10 +37,12 @@ class AndroTweetApp : Application() {
 
     fun initializeActiveUserAccount(activeAccount: TwitterAccount) {
         val activeTwitterProfile = TwitterCore.getInstance()
-        val session = with(activeAccount, { TwitterSession(twitterAuth(), id.toLong(), name) })
+        val session = with(activeAccount, { TwitterSession(twitterAuth(), id, name) })
 
         activeTwitterProfile.sessionManager.activeSession = session
-        activeTwitterProfile.addApiClient(session, TwitterApiClient(session))
+        activeTwitterProfile.addApiClient(session, CustomTwitterApiClient(session))
     }
+
+    val deleteQueue: MutableList<String> = mutableListOf()
 
 }

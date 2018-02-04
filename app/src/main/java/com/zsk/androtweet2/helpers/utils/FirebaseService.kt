@@ -3,7 +3,6 @@ package com.zsk.androtweet2.helpers.utils
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
@@ -20,8 +19,7 @@ import com.zsk.androtweet2.models.FirebaseObject
 class FirebaseService {
     internal val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val config: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
-    private val auth: FirebaseAuth? = FirebaseAuth.getInstance()
-    val currentUser: FirebaseUser = auth!!.currentUser!!
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     val PROFILES: String? = "profiles"
     val DELETION_QUEUE: String? = "delete_queue"
@@ -46,7 +44,7 @@ class FirebaseService {
     fun String?.getDBRef(hasUID: Boolean = false, vararg strArr: String): DatabaseReference {
         var ref = this.getDBRef()
         if (hasUID)
-            ref = ref.child(currentUser.uid)
+            ref = ref.child(auth.currentUser?.uid)
         strArr.filter { it != "" }.forEach { ref = ref.child(it) }
         return ref
     }
@@ -55,7 +53,7 @@ class FirebaseService {
     fun String?.getDBRef(hasUID: Boolean): DatabaseReference {
         var ref = this.getDBRef()
         if (hasUID)
-            ref = ref.child(currentUser.uid)
+            ref = ref.child(auth.currentUser?.uid)
 
         return ref
     }

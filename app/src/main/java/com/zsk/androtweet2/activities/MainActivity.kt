@@ -6,12 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import com.firebase.ui.auth.AuthUI
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.iid.FirebaseInstanceId
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
 import com.mikepenz.materialdrawer.Drawer
@@ -24,8 +21,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
-import com.twitter.sdk.android.core.*
-import com.twitter.sdk.android.core.models.User
 import com.zsk.androtweet2.BuildConfig
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.SplashScreen
@@ -36,7 +31,10 @@ import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
 import com.zsk.androtweet2.helpers.utils.FontIconDrawable
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.doAsyncResult
+import org.jetbrains.anko.onComplete
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 
 
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
@@ -106,16 +104,6 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .withTag(account)
     }
 
-    override fun initializeScreenObject() {
-        twitterLogin.callback = object : TwitterLoginCallBack() {}
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        twitterLogin.onActivityResult(requestCode, resultCode, data)
-    }
-
     private fun createNavigationDrawer(savedInstanceState: Bundle?, toolbar: Toolbar) {
         androTweetApp.accountHeader = createAccountHeader(savedInstanceState)
         androTweetApp.navigationDrawer = createDrawer(toolbar, androTweetApp.accountHeader, savedInstanceState)
@@ -154,12 +142,16 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     open fun signOut() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener({ _ ->
-                    startActivity(Intent(this, SplashScreen::class.java))
-                    finish()
-                })
+//        AuthUI.getInstance()
+//                .signOut(this)
+//                .addOnCompleteListener({ _ ->
+//                })
+        firebaseService.auth.signOut().doAsyncResult {
+            this.onComplete {
+                startActivity(Intent(this@MainActivity, SplashScreen::class.java))
+                finish()
+            }
+        }
     }
 
     private fun createDrawer(toolbar: Toolbar, headerResult: AccountHeader, savedInstanceState: Bundle?): Drawer {
@@ -180,16 +172,16 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
     override fun onItemClick(view: View?, position: Int, drawerItem: IDrawerItem<*, *>?): Boolean {
-        if (androTweetApp.accountHeader.activeProfile == null)
-            return false
 
         when (drawerItem?.identifier) {
             R.id.all_tweets_by_me.toLong() -> {
+                if (androTweetApp.accountHeader.activeProfile == null)
+                    return false
                 startFragment(TWEET.twitterTimeline())
             }
             LOGOUT -> signOut()
-            ADD_TWITTER_ACCOUNT -> twitterLogin.callOnClick()
-            MANAGE_ACCOUNTS -> getManageActivity()
+//            ADD_TWITTER_ACCOUNT -> twitterLogin.callOnClick()
+//            MANAGE_ACCOUNTS -> getManageActivity()
         }
         return true
     }
@@ -208,15 +200,30 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
 
                 when (profileModel) {
                     is TwitterAccount -> {
-                        val deviceTokenObject = HashMap<String, String>()
-                        deviceTokenObject[profileModel.id.toString()] = FirebaseInstanceId.getInstance().token!!
+                        val userId = profileModel.id.toString()
+                        firebaseService.apply {
+                            DELETION_QUEUE.orderByChild("userId").equalTo(userId)
+                                    .addChildEventListener(object : SimpleChildEventListener {
+                                        override fun onChildAdded(dataSnapShot: DataSnapshot?, p1: String?) {
+                                            dataSnapShot?.let {
+                                                androTweetApp.deleteQueue.add(it.key)
+                                            }
+                                        }
 
-                        with(firebaseService) {
-                            DEVICE_TOKENS.updateWithUID(deviceTokenObject)
+                                        override fun onChildRemoved(dataSnapShot: DataSnapshot?) {
+                                            dataSnapShot?.let {
+                                                androTweetApp.deleteQueue.remove(it.key)
+                                            }
+                                        }
+                                    })
                         }
-                        androTweetApp.initializeActiveUserAccount(profileModel)
 
-//                        startFragment(TWEET.twitterTimeline())
+                        androTweetApp.initializeActiveUserAccount(profileModel)
+                                .doAsyncResult {
+                                    this.uiThread {
+                                        androTweetApp.navigationDrawer.setSelection(R.id.all_tweets_by_me.toLong())
+                                    }
+                                }
 
                         if (BuildConfig.DEBUG)
                             toast(profileModel.name)
@@ -225,34 +232,6 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
             }
         }
         return true
-    }
-
-    open class TwitterLoginCallBack : Callback<TwitterSession>() {
-        override fun success(sessionResult: Result<TwitterSession>?) {
-            if (sessionResult?.data == null)
-                return
-
-            TwitterApiClient(sessionResult.data).accountService
-                    .verifyCredentials(false, true, false)
-                    .enqueue(object : Callback<User>() {
-                        override fun success(userResult: Result<User>?) {
-                            userResult?.data?.let { user ->
-                                firebaseService.apply {
-                                    PROFILES?.updateWithUID(TwitterAccount(user, sessionResult.data.authToken))
-                                }
-                            }
-                        }
-
-                        override fun failure(exception: TwitterException?) {
-                            Log.e(baseActivity.TAG, "exception", exception)
-                        }
-                    })
-
-        }
-
-        override fun failure(exception: TwitterException?) {
-        }
-
     }
 
     class PicassoLoader : AbstractDrawerImageLoader() {
@@ -267,3 +246,4 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     }
 
 }
+

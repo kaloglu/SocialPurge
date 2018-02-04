@@ -1,7 +1,6 @@
 package com.zsk.androtweet2.models
 
 import com.google.firebase.database.Exclude
-import com.google.gson.annotations.SerializedName
 import com.twitter.sdk.android.core.TwitterAuthToken
 import com.twitter.sdk.android.core.models.User
 
@@ -10,8 +9,7 @@ import com.twitter.sdk.android.core.models.User
  * Created by kaloglu on 12/11/2017.
  */
 class TwitterAccount : AccountObject {
-    @SerializedName("id", alternate = ["accountId"])
-    @Exclude
+    @get:Exclude
     override var id: Long = 0
 
     var name: String = ""

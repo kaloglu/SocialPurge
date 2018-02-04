@@ -37,17 +37,10 @@ import java.util.*
  * TimelineDelegate manages timeline data items and loads items from a Timeline.
  * @param <T> the item type
 </T> */
-class TimelineDelegate<T : Tweet>
-internal constructor(
-        val context: Context,
-        internal val timeline: Timeline<T>,
-        observer: DataSetObservable? = null,
-        var itemList: MutableList<T> = ArrayList(),
-        private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(),
-        private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
-) {
-    private var selectionList: MutableList<String> = mutableListOf()
-    private var listAdapterObservable: DataSetObservable = observer ?: DataSetObservable()
+class TimelineDelegate<T : Tweet> internal constructor(val context: Context, internal val timeline: Timeline<T>, observer: DataSetObservable? = null, var itemList: MutableList<T> = ArrayList(), private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(), private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null) {
+
+    private var selectionList: MutableList<String>
+    private var listAdapterObservable: DataSetObservable
 
     companion object {
         internal val CAPACITY = 200L
@@ -279,11 +272,11 @@ internal constructor(
     }
 
     fun addAll() {
-        val activeUserId = TwitterCore.getInstance().sessionManager.activeSession.userId
+        val activeUserId = TwitterCore.getInstance().sessionManager.activeSession.userId.toString()
         firebaseService.apply {
             val selectedObjects = HashMap<String, DeleteTweetObject>()
             selectionList.forEach {
-                selectedObjects[it] = DeleteTweetObject(it, currentUser.uid, activeUserId)
+                selectedObjects[it] = DeleteTweetObject(it, auth.currentUser?.uid!!, activeUserId)
             }
 
             DELETION_QUEUE?.update(
@@ -308,6 +301,11 @@ internal constructor(
     private fun afterSelectionToggleAction() {
         toggleSheetMenuListener?.onToggle(selectionList.size)
 
+    }
+
+    init {
+        this.selectionList = mutableListOf()
+        this.listAdapterObservable = observer ?: DataSetObservable()
     }
 
 }
