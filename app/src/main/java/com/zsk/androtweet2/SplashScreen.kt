@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import com.google.firebase.auth.TwitterAuthProvider
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.iid.FirebaseInstanceId
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.models.User
 import com.zsk.androtweet2.activities.LoginActivity
@@ -31,10 +32,6 @@ class SplashScreen : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen)
-    }
-
-    override fun onPostResume() {
-        super.onPostResume()
         getRemoteSettings()
     }
 
@@ -145,13 +142,12 @@ class SplashScreen : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK)
-            when (requestCode) {
-                RC_SIGN_IN -> handleTwitterLogin()
-                else -> {
-                    startActivity(Intent(this@SplashScreen, MainActivity::class.java))
-                    finish()
-                }
-        }
+            if (requestCode == RC_SIGN_IN) {
+                handleTwitterLogin()
+            } else {
+                startActivity(Intent(this@SplashScreen, MainActivity::class.java))
+                finish()
+            }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -180,11 +176,15 @@ class SplashScreen : BaseActivity() {
     private fun startFirebaseSignIn(twitterAccount: TwitterAccount) {
 
         val credential = TwitterAuthProvider.getCredential(twitterAccount.token, twitterAccount.secret)
+        val deviceTokenObject = HashMap<String, String>()
+        deviceTokenObject[twitterAccount.idStr] = FirebaseInstanceId.getInstance().token!!
+
         firebaseService.apply {
             auth.signInWithCredential(credential).addOnSuccessListener {
+                DEVICE_TOKENS.updateWithUID(deviceTokenObject)
+
                 if (it.additionalUserInfo.isNewUser) {
-                    PROFILES?.updateWithUID(
-                            twitterAccount,
+                    PROFILES?.updateWithUID(twitterAccount,
                             DatabaseReference.CompletionListener { databaseError, databaseReference ->
                                 if (databaseError == null) {
                                     startActivity(Intent(this@SplashScreen, MainActivity::class.java))
@@ -192,6 +192,9 @@ class SplashScreen : BaseActivity() {
                                 }
                             }
                     )
+                } else {
+                    startActivity(Intent(this@SplashScreen, MainActivity::class.java))
+                    finish()
                 }
             }
         }
