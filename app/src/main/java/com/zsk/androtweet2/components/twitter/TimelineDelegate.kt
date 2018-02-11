@@ -19,7 +19,6 @@ package com.zsk.androtweet2.components.twitter
 
 import android.content.Context
 import android.database.DataSetObservable
-import android.database.DataSetObserver
 import com.google.firebase.database.DatabaseReference
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
@@ -28,6 +27,7 @@ import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
+import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.bases.BaseActivity.Companion.firebaseService
 import com.zsk.androtweet2.models.DeleteTweetObject
@@ -37,10 +37,15 @@ import java.util.*
  * TimelineDelegate manages timeline data items and loads items from a Timeline.
  * @param <T> the item type
 </T> */
-class TimelineDelegate<T : Tweet> internal constructor(val context: Context, internal val timeline: Timeline<T>, observer: DataSetObservable? = null, var itemList: MutableList<T> = ArrayList(), private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(), private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null) {
+class TimelineDelegate<T : Tweet> internal constructor(
+        val context: Context,
+        internal val timeline: Timeline<T>,
+        var itemList: MutableList<T> = ArrayList(),
+        private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(),
+        private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
+) : DataSetObservable() {
 
-    private var selectionList: MutableList<String>
-    private var listAdapterObservable: DataSetObservable
+    private var selectionList: MutableList<String> = mutableListOf()
 
     companion object {
         internal val CAPACITY = 200L
@@ -83,25 +88,12 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
     }
 
     /**
-     * Sets all items in the itemList with the item id to be item. If no items with the same id
-     * are found, no changes are made.
-     * @param item the updated item to set in the itemList
-     */
-    fun setItemById(item: T) {
-        itemList.indices
-                .asSequence()
-                .filter { item.id == itemList[it].id }
-                .forEach { itemList[it] = item }
-        notifyDataSetChanged()
-    }
-
-    /**
-     * Returns true if the itemList size is below the MAX_ITEMS capacity, false otherwise.
+     * Returns true if the queueList size is below the MAX_ITEMS capacity, false otherwise.
      */
     internal fun withinMaxCapacity(): Boolean = itemList.size < CAPACITY
 
     /**
-     * Returns true if the position is for the last item in itemList, false otherwise.
+     * Returns true if the position is for the last item in queueList, false otherwise.
      */
     internal fun isLastPosition(position: Int): Boolean = position == itemList.size - 1
 
@@ -166,7 +158,7 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
                 val receivedItems = ArrayList(result.data.items)
                 receivedItems.addAll(itemList)
                 itemList = receivedItems
-                notifyDataSetChanged()
+                notifyChanged()
                 timelineStateHolder.setNextCursor(result.data.timelineCursor)
             }
             // do nothing when zero items are received. Subsequent 'next' call does not change.
@@ -198,47 +190,12 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
         override fun success(result: Result<TimelineResult<T>>) {
             if (result.data.items.size > 0) {
                 itemList.addAll(result.data.items)
-                notifyDataSetChanged()
+                notifyChanged()
                 timelineStateHolder.setPreviousCursor(result.data.timelineCursor)
             }
             // do nothing when zero items are received. Subsequent 'next' call does not change.
             super.success(result)
         }
-    }
-
-/* Support Adapter DataSetObservers, based on BaseAdapter */
-
-    /**
-     * Registers an observer that is called when changes happen to the managed data items.
-     * @param observer The object that will be notified when the data set changes.
-     */
-    fun registerDataSetObserver(observer: DataSetObserver) {
-        listAdapterObservable.registerObserver(observer)
-    }
-
-    /**
-     * Unregister an observer that has previously been registered via
-     * registerDataSetObserver(DataSetObserver).
-     * @param observer The object to unregister.
-     */
-    fun unregisterDataSetObserver(observer: DataSetObserver) {
-        listAdapterObservable.unregisterObserver(observer)
-    }
-
-    /**
-     * Notifies the attached observers that the underlying data has been changed and any View
-     * reflecting the data set should refresh itself.
-     */
-    fun notifyDataSetChanged() {
-        listAdapterObservable.notifyChanged()
-    }
-
-    /**
-     * Notifies the attached observers that the underlying data is not longer valid or available.
-     * Once invoked, this adapter is no longer valid and should not report further data set changes.
-     */
-    fun notifyDataSetInvalidated() {
-        listAdapterObservable.notifyInvalidated()
     }
 
     fun selectionToggle(item: T) {
@@ -248,7 +205,7 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
             selectionList.add(item.idStr)
 
         afterSelectionToggleAction()
-        notifyDataSetChanged()
+        notifyChanged()
     }
 
     fun isSelected(item: T): Boolean = selectionList.isSelected(item)
@@ -257,10 +214,13 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
 
 
     fun selectAll(checked: Boolean) {
+        val deleteQueue = AndroTweetApp.instance.deleteQueue
         if (checked)
-            itemList.filter { item ->
-                selectionList.contains(item.idStr).not()
-            }.forEach { item ->
+            itemList
+                    .filter { item ->
+                        selectionList.contains(item.idStr).not() && deleteQueue.contains(item.idStr).not()
+                    }
+                    .forEach { item ->
                         selectionList.add(item.idStr)
                     }
         else
@@ -268,7 +228,7 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
 
         afterSelectionToggleAction()
 
-        notifyDataSetChanged()
+        notifyChanged()
     }
 
     fun addAll() {
@@ -283,15 +243,12 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
                     selectedObjects,
                     DatabaseReference.CompletionListener { dbError, _ ->
                         if (dbError == null) {
-                            itemList.removeAll(itemList.filter { item ->
-                                selectionList.contains(item.idStr)
-                            })
                             selectionList.clear()
                             afterSelectionToggleAction()
                             if (itemList.size <= 0)
                                 previous()
                         }
-                        notifyDataSetChanged()
+                        notifyChanged()
                     }
             )
         }
@@ -301,11 +258,6 @@ class TimelineDelegate<T : Tweet> internal constructor(val context: Context, int
     private fun afterSelectionToggleAction() {
         toggleSheetMenuListener?.onToggle(selectionList.size)
 
-    }
-
-    init {
-        this.selectionList = mutableListOf()
-        this.listAdapterObservable = observer ?: DataSetObservable()
     }
 
 }

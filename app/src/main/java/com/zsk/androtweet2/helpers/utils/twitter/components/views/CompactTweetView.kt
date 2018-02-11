@@ -20,10 +20,13 @@ package com.zsk.androtweet2.helpers.utils.twitter.components.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.content.ContextCompat
+import android.view.View
 import com.twitter.sdk.android.core.models.MediaEntity
 import com.twitter.sdk.android.core.models.Tweet
+import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
+import kotlinx.android.synthetic.main.tw__tweet_compact.view.*
 import kotlinx.android.synthetic.main.tw__tweet_compact_card.view.*
 
 @SuppressLint("ViewConstructor")
@@ -33,24 +36,34 @@ class CompactTweetView(
         timelineDelegate: TimelineDelegate<Tweet>
 ) : BaseTweetView(context, tweet, timelineDelegate) {
 
+
     override fun getLayout(): Int = R.layout.tw__tweet_compact_card
 
     internal override fun render() {
         super.render()
+        if (tweet.idStr == null)
+            return
+        setOnClickListener {
+            if (it.isEnabled)
+                timelineDelegate.selectionToggle(tweet)
+        }
         // Redraw screen name on recycle, because TextView doesn't resize when text length changes
         screenNameView.requestLayout()
         isSelected = timelineDelegate.isSelected(tweet)
         val color = if (isSelected) R.color.md_blue_50 else R.color.tweet_background_color
         tweet_view?.setBackgroundColor(ContextCompat.getColor(context, color))
 
-        setClickListener()
-    }
+        this.alpha = 1f
+        this.isEnabled = true
+        tw__tweet_inqueue.visibility = View.GONE
 
-    private fun setClickListener() {
-        setOnClickListener {
-            timelineDelegate.selectionToggle(tweet)
+        if (AndroTweetApp.instance.deleteQueue.contains(tweet.idStr)) {
+            this.alpha = 0.5f
+            this.isEnabled = false
+            tw__tweet_inqueue.visibility = View.VISIBLE
         }
     }
+
 
 
     override fun applyStyles() {

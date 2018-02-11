@@ -28,18 +28,38 @@
         android:layout_width="@dimen/h_margin"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/tw__tweet_retweeted_by"
-        style="@style/tw__TweetRetweetedBy.Compact"
+    <LinearLayout
+        android:id="@+id/tw__tweet_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tw__author_attribution"
-        tools:text="Retweeted by Jack"
-        tools:visibility="visible"/>
+        android:orientation="horizontal">
 
+        <TextView
+        style="@style/tw__TweetRetweetedBy.Compact"
+            android:id="@+id/tw__tweet_retweeted_by"
+            tools:text="Retweeted by Jack"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tw__tweet_inqueue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/tw__tweet_retweeted_by"
+            android:layout_marginEnd="@dimen/h_margin_half"
+            android:layout_marginStart="@dimen/h_margin_half"
+            android:layout_weight="1"
+            android:gravity="end|right"
+            android:text="- in delete queue"
+            android:textColor="@color/md_red_200"
+            android:textStyle="bold"
+            tools:visibility="visible" />
+    </LinearLayout>
     <ImageView
         tools:ignore="ContentDescription"
         android:id="@+id/tw__tweet_author_avatar"
         android:layout_toRightOf="@id/leftMargin"
-        android:layout_below="@id/tw__tweet_retweeted_by"
+        android:layout_below="@id/tw__tweet_state"
         style="@style/tw__TweetAvatar.Compact"
         android:visibility="gone"
         tools:src="#CCCCCC"/>
@@ -48,7 +68,7 @@
     <LinearLayout
         android:id="@+id/tw__author_attribution"
         style="@style/tw__CompactAttributionLine"
-        android:layout_below="@id/tw__tweet_retweeted_by"
+        android:layout_below="@id/tw__tweet_state"
         android:layout_toEndOf="@id/tw__tweet_author_avatar"
         android:layout_toRightOf="@id/tw__tweet_author_avatar">
 
@@ -73,7 +93,7 @@
         tools:ignore="ContentDescription"
         android:id="@+id/tw__twitter_logo"
         style="@style/tw__TwitterLogo.Compact"
-        android:layout_below="@id/tw__tweet_retweeted_by"
+        android:layout_below="@id/tw__tweet_state"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:visibility="gone" />

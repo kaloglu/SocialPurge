@@ -20,6 +20,7 @@ package com.zsk.androtweet2.adapters
 import android.content.Context
 import android.database.DataSetObserver
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.view.ViewGroup
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
@@ -28,9 +29,13 @@ import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
+import com.zsk.androtweet2.AndroTweetApp
+import com.zsk.androtweet2.R
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
 import com.zsk.androtweet2.fragments.BaseFragment
+import com.zsk.androtweet2.helpers.utils.twitter.components.views.AdView
 import com.zsk.androtweet2.helpers.utils.twitter.components.views.CompactTweetView
+
 
 /**
  * TimelineAdapter is a RecyclerView adapter which can provide Timeline Tweets to
@@ -38,9 +43,16 @@ import com.zsk.androtweet2.helpers.utils.twitter.components.views.CompactTweetVi
  */
 class TimelineAdapter private constructor(
         private val context: Context,
-        private val timelineDelegate: TimelineDelegate<Tweet>
-) : RecyclerView.Adapter<TimelineAdapter.TweetViewHolder>() {
+        private val timelineDelegate: TimelineDelegate<Tweet>,
+        private val ITEMS_PER_AD: Int = 8
+) : RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
     private var previousCount: Int = 0
+
+    // A menu item view type.
+    private val STANDART_VIEW_TYPE = 0
+
+    // The Native Express ad view type.
+    private val NATIVE_EXPRESS_AD_VIEW_TYPE = 1
 
     fun selectAll(checked: Boolean) {
         timelineDelegate.selectAll(checked)
@@ -56,6 +68,7 @@ class TimelineAdapter private constructor(
             toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
     ) : this(context, TimelineDelegate<Tweet>(context, timeline, toggleSheetMenuListener = toggleSheetMenuListener))
 
+
     init {
         timelineDelegate.refresh(object : Callback<TimelineResult<Tweet>>() {
             override fun success(result: Result<TimelineResult<Tweet>>) {
@@ -67,8 +80,8 @@ class TimelineAdapter private constructor(
 
             }
         })
-
-        val dataSetObserver = object : DataSetObserver() {
+//        getAdsSettings()?.getInt("ads_items_per_ad", 8)
+        val itemListObserver = object : DataSetObserver() {
             override fun onChanged() {
                 super.onChanged()
                 when (itemCount) {
@@ -84,29 +97,78 @@ class TimelineAdapter private constructor(
                 super.onInvalidated()
             }
         }
+        val queueListObserver = object : DataSetObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                notifyDataSetChanged()
+            }
 
-        timelineDelegate.registerDataSetObserver(dataSetObserver)
+        }
+
+        timelineDelegate.registerObserver(itemListObserver)
+        AndroTweetApp.instance.deleteQueue.registerObserver(queueListObserver)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
+        when (viewType) {
+            STANDART_VIEW_TYPE -> {
+                val tweet = TweetBuilder().build()
+                val compactTweetView = CompactTweetView(context, tweet, timelineDelegate)
+                return TweetViewHolder(compactTweetView)
+            }
+
+            NATIVE_EXPRESS_AD_VIEW_TYPE -> {
+                val nativeExpressLayoutView = NativeAdView(context)
+                return NativeExpressAdViewHolder(nativeExpressLayoutView)
+            }
+
+            else -> {
+                return null
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (getItemViewType(position)) {
+            STANDART_VIEW_TYPE -> {
+                val compactTweetView = holder.itemView as CompactTweetView
+                compactTweetView.tweet = timelineDelegate.getItem(position)
+            }
+        }
+
     }
 
     override fun getItemCount(): Int = timelineDelegate.itemList.size
 
+    /**
+     * Determines the view type for the given position.
+     */
 
-    class TweetViewHolder(itemView: CompactTweetView) : RecyclerView.ViewHolder(itemView)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TweetViewHolder {
-        val tweet = TweetBuilder().build()
-        val compactTweetView = CompactTweetView(context, tweet, timelineDelegate)
-        return TweetViewHolder(compactTweetView)
+    override fun getItemViewType(position: Int): Int {
+        return when (position % ITEMS_PER_AD) {
+            0 -> NATIVE_EXPRESS_AD_VIEW_TYPE
+            else -> STANDART_VIEW_TYPE
+        }
     }
 
-    override fun onBindViewHolder(holder: TweetViewHolder, position: Int) {
-        val compactTweetView = holder.itemView as CompactTweetView
-        compactTweetView.tweet = timelineDelegate.getItem(position)
-    }
 
-    fun refresh(cb: Callback<TimelineResult<Tweet>>) {
-        timelineDelegate.refresh(cb)
-        previousCount = 0
-    }
+    open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class TweetViewHolder(itemView: CompactTweetView) : ViewHolder(itemView)
 
+    /**
+     * The [NativeExpressAdViewHolder] class.
+     */
+    inner class NativeExpressAdViewHolder internal constructor(view: View) : ViewHolder(view)
+
+    inner class NativeAdView(context: Context) : AdView(context) {
+        override val layout: Int
+            get() = R.layout.tw__tweet_compact_ads
+
+        override fun findSubviews() {
+        }
+
+        override fun render() {
+        }
+
+    }
 }

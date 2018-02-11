@@ -1,16 +1,19 @@
 package com.zsk.androtweet2.fragments
 
+import android.database.DataSetObserver
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.Timeline
+import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentItemTypes.LIST
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes
 import kotlinx.android.synthetic.main.actions_bottom_sheet.*
+import kotlinx.android.synthetic.main.actions_bottom_sheet.view.*
 
 
 /**
@@ -43,6 +46,17 @@ abstract class TimelineFragment : BaseFragment() {
         open_sheet?.setOnClickListener {
             toggleSheetMenu()
         }
+
+        AndroTweetApp.instance.deleteQueue.registerObserver(object : DataSetObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                val queueSize = AndroTweetApp.instance.deleteQueue.size()
+                if (queueSize > 0)
+                    bottom_sheet?.queue?.text = String.format(getString(R.string.queue_info), queueSize)
+                else
+                    bottom_sheet?.queue?.text = ""
+            }
+        })
     }
 
     override fun designScreen() {
