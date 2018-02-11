@@ -7,6 +7,7 @@ import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
+import com.zsk.androtweet2.components.DeleteQueue
 import com.zsk.androtweet2.components.twitter.CustomTwitterApiClient
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import com.zsk.androtweet2.models.TwitterAccount
@@ -43,6 +44,6 @@ class AndroTweetApp : Application() {
         activeTwitterProfile.addApiClient(session, CustomTwitterApiClient(session))
     }
 
-    val deleteQueue: MutableList<String> = mutableListOf()
+    val deleteQueue: DeleteQueue<String> = DeleteQueue()
 
 }

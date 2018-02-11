@@ -39,10 +39,14 @@ abstract class BaseFragment : Fragment() {
             override fun onAnimationEnd(animation: Animation?) {}
             override fun onAnimationStart(animation: Animation?) {}
             override fun onAnimationRepeat(animation: Animation?) {
+                var infoText: String
+
                 if (selectedCount > 0)
                     bottom_sheet?.info?.text = String.format(getString(R.string.selection_info), selectedCount)
-                else
-                    bottom_sheet?.info?.text = String.format(getString(R.string.selection_info), "No more")
+                else {
+                    bottom_sheet?.info?.text = String.format(getString(R.string.selection_info), "No")
+                    bottom_sheet?.select_all_icon?.isChecked = false
+                }
             }
         })
 

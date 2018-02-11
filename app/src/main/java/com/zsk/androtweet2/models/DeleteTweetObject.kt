@@ -6,7 +6,7 @@ import com.google.firebase.database.Exclude
 /**
  * Created by kaloglu on 12/11/2017.
  */
-class DeleteTweetObject : FirebaseObject {
+open class DeleteTweetObject : FirebaseObject {
     @get:Exclude
     override lateinit var id: String
     lateinit var uid: String

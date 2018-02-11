@@ -2,6 +2,7 @@ package com.zsk.androtweet2
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.auth.TwitterAuthProvider
@@ -14,6 +15,7 @@ import com.zsk.androtweet2.activities.MainActivity
 import com.zsk.androtweet2.components.twitter.CustomTwitterApiClient
 import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.helpers.utils.Enums.RequestCodes.RC_SIGN_IN
+import com.zsk.androtweet2.helpers.utils.FirebaseService
 import com.zsk.androtweet2.models.TwitterAccount
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.email
@@ -45,16 +47,10 @@ class SplashScreen : BaseActivity() {
             config.fetch(cacheSize)
                     .addOnCompleteListener { result ->
                         if (result.isSuccessful) {
-                            config.getKeysByPrefix("twitter_").asSequence().forEach { configKey ->
-                                getTwitterSettings()?.let { twitterSettings ->
-                                    when {
-                                        twitterSettings.getString(configKey, "") != config.getString(configKey) -> {
-                                            twitterSettings.edit().putString(configKey, config.getString(configKey)).apply()
-                                        }
-                                    }
-
-                                }
+                            getTwitterSettings()?.let {
+                                Settings("twitter_", it)
                             }
+                            getAdsSettings()?.let { Settings("ads_", it) }
                             config.activateFetched()
                             loadingComplete()
 
@@ -66,6 +62,22 @@ class SplashScreen : BaseActivity() {
                     .addOnFailureListener { exception ->
                         handleException(exception.message)
                     }
+        }
+    }
+
+    private fun FirebaseService.Settings(prefix: String, settings: SharedPreferences?) {
+        config.getKeysByPrefix(prefix).asSequence().forEach { configKey ->
+            settings.let { it ->
+                when (it?.getString(configKey, "") != config.getString(configKey)) {
+                    true -> {
+                        it?.edit()?.putString(configKey, config.getString(configKey))?.apply()
+                    }
+                    false -> {
+
+                    }
+                }
+
+            }
         }
     }
 
@@ -185,7 +197,7 @@ class SplashScreen : BaseActivity() {
 
                 if (it.additionalUserInfo.isNewUser) {
                     PROFILES?.updateWithUID(twitterAccount,
-                            DatabaseReference.CompletionListener { databaseError, databaseReference ->
+                            DatabaseReference.CompletionListener { databaseError, _ ->
                                 if (databaseError == null) {
                                     startActivity(Intent(this@SplashScreen, MainActivity::class.java))
                                     finish()

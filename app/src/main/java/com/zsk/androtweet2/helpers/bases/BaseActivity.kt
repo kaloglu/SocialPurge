@@ -43,17 +43,19 @@ open class BaseActivity : AppCompatActivity() {
         val androTweetApp = AndroTweetApp.instance
 
     }
+    fun getTwitterSettings(): SharedPreferences? =
+            getSharedPreferences("twitter_settings", Context.MODE_PRIVATE)
+
+    fun getAdsSettings(): SharedPreferences? =
+            getSharedPreferences("ads_settings", Context.MODE_PRIVATE)
+
+    fun getAppSettings(): SharedPreferences? =
+            getSharedPreferences("app_settings", Context.MODE_PRIVATE)
 
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(IconicsContextWrapper.wrap(newBase))
     }
-
-    fun getTwitterSettings(): SharedPreferences? =
-            getSharedPreferences("twitter_settings", Context.MODE_PRIVATE)
-
-    fun getAppSettings(): SharedPreferences? =
-            getSharedPreferences("app_settings", Context.MODE_PRIVATE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
