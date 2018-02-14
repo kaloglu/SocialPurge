@@ -22,6 +22,10 @@ import android.database.DataSetObserver
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
 import com.twitter.sdk.android.core.TwitterException
@@ -30,12 +34,10 @@ import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.AndroTweetApp
-import com.zsk.androtweet2.R
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
 import com.zsk.androtweet2.fragments.BaseFragment
-import com.zsk.androtweet2.helpers.utils.twitter.components.views.AdView
+import com.zsk.androtweet2.helpers.AppSettings
 import com.zsk.androtweet2.helpers.utils.twitter.components.views.CompactTweetView
-
 
 /**
  * TimelineAdapter is a RecyclerView adapter which can provide Timeline Tweets to
@@ -81,6 +83,7 @@ class TimelineAdapter private constructor(
             }
         })
 //        getAdsSettings()?.getInt("ads_items_per_ad", 8)
+        MobileAds.initialize(context, AppSettings.ADMOB_APP_ID)
         val itemListObserver = object : DataSetObserver() {
             override fun onChanged() {
                 super.onChanged()
@@ -118,7 +121,10 @@ class TimelineAdapter private constructor(
             }
 
             NATIVE_EXPRESS_AD_VIEW_TYPE -> {
-                val nativeExpressLayoutView = NativeAdView(context)
+                val nativeExpressLayoutView = AdView(context)
+                nativeExpressLayoutView.adSize = AdSize(-1,-2)
+                nativeExpressLayoutView.adUnitId = AppSettings.ADMOB_SMARTBANNER_UNIT_ID
+                nativeExpressLayoutView.loadAd(AdRequest.Builder().build())
                 return NativeExpressAdViewHolder(nativeExpressLayoutView)
             }
 
@@ -145,8 +151,8 @@ class TimelineAdapter private constructor(
      */
 
     override fun getItemViewType(position: Int): Int {
-        return when (position % ITEMS_PER_AD) {
-            0 -> NATIVE_EXPRESS_AD_VIEW_TYPE
+        return when (position % ITEMS_PER_AD == 0) { //TODO: will add removeAds parameter.
+            true -> NATIVE_EXPRESS_AD_VIEW_TYPE
             else -> STANDART_VIEW_TYPE
         }
     }
@@ -160,15 +166,4 @@ class TimelineAdapter private constructor(
      */
     inner class NativeExpressAdViewHolder internal constructor(view: View) : ViewHolder(view)
 
-    inner class NativeAdView(context: Context) : AdView(context) {
-        override val layout: Int
-            get() = R.layout.tw__tweet_compact_ads
-
-        override fun findSubviews() {
-        }
-
-        override fun render() {
-        }
-
-    }
 }

@@ -6,8 +6,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.database.DataSnapshot
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
@@ -25,6 +30,7 @@ import com.zsk.androtweet2.BuildConfig
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.SplashScreen
 import com.zsk.androtweet2.components.SimpleChildEventListener
+import com.zsk.androtweet2.helpers.AppSettings
 import com.zsk.androtweet2.helpers.bases.BaseActivity
 import com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.*
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
@@ -40,13 +46,44 @@ import org.jetbrains.anko.uiThread
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
     var selectedProfile = -1L
 
+    private lateinit var mInterstitialAd: InterstitialAd
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        MobileAds.initialize(this, AppSettings.ADMOB_APP_ID)
         setContentView(R.layout.activity_main)
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar!!)
         DrawerImageLoader.init(PicassoLoader())
         createNavigationDrawer(savedInstanceState, toolbar)
         selectedProfile = getAppSettings()?.get("selectedProfile", -1L) as Long
+
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = AppSettings.ADMOB_INTERSTITIAL_UNIT_ID
+
+        mInterstitialAd.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                Log.e("Admob", "AdLoaded")
+                mInterstitialAd.show()
+            }
+
+            override fun onAdFailedToLoad(errorCode: Int) {
+                Log.e("Admob", "onAdFailedToLoad: " + errorCode)
+            }
+
+            override fun onAdOpened() {
+                Log.e("Admob", "AdOpened")
+            }
+
+            override fun onAdLeftApplication() {
+                Log.e("Admob", "AdLeftApplication")
+            }
+
+            override fun onAdClosed() {
+                Log.e("Admob", "AdClosed")
+            }
+        }
+
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
 
     }
 

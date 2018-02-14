@@ -52,6 +52,7 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging:$google_version"
     implementation "com.google.android.gms:play-services-auth:$google_version"
     implementation "com.google.android.gms:play-services-analytics:$google_version"
+    implementation "com.google.android.gms:play-services-ads:$google_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUI_version"
 
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
