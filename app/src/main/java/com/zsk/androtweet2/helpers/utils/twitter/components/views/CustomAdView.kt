@@ -23,7 +23,7 @@ import android.view.LayoutInflater
 import android.widget.RelativeLayout
 
 
-abstract class AdView
+abstract class CustomAdView
 /**
  * Performs inflation from XML and apply a class-specific base style with the given dependency
  * provider.

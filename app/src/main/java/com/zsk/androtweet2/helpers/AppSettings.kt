@@ -1,0 +1,12 @@
+package com.zsk.androtweet2.helpers
+
+/**
+ * Created by kaloglu on 14.02.2018.
+ */
+object AppSettings {
+    val ADMOB_APP_ID = "ca-app-pub-0165663276066705~6120744313"
+//    val ADMOB_SMARTBANNER_UNIT_ID = "ca-app-pub-0165663276066705/1511517091"
+    val ADMOB_SMARTBANNER_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+//    val ADMOB_INTERSTITIAL_UNIT_ID = "ca-app-pub-0165663276066705/5741571990"
+    val ADMOB_INTERSTITIAL_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
+}

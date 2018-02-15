@@ -33,6 +33,7 @@ class AndroTweetApp : Application() {
         FirebaseApp.initializeApp(this)
         val configSettings = FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG).build()
         FirebaseService().config.setConfigSettings(configSettings)
+
         super.onCreate()
     }
 
