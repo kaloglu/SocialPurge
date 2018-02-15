@@ -1,6 +1,7 @@
 package com.zsk.androtweet2
 
 import android.app.Application
+import android.support.multidex.MultiDexApplication
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.mikepenz.materialdrawer.AccountHeader
@@ -16,7 +17,7 @@ import com.zsk.androtweet2.models.TwitterAccount
 /**
  * Created by kaloglu on 22/10/2017.
  */
-class AndroTweetApp : Application() {
+class AndroTweetApp : MultiDexApplication() {
 
     private object Holder {
         val INSTANCE = AndroTweetApp()

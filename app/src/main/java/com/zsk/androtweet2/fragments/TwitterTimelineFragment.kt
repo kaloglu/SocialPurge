@@ -1,6 +1,5 @@
 package com.zsk.androtweet2.fragments
 
-import android.app.AlertDialog
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.RecyclerView
@@ -14,6 +13,7 @@ import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentTypes.TWITTER
 import kotlinx.android.synthetic.main.actions_bottom_sheet.*
 import kotlinx.android.synthetic.main.twitter_timeline_layout.*
+import org.jetbrains.anko.alert
 
 /**
  * Created by kaloglu on 16.12.2017.
@@ -41,18 +41,19 @@ class TwitterTimelineFragment : TimelineFragment() {
             adapter.selectAll(isChecked)
         }
         add_queue_fab.setOnClickListener {
-            AlertDialog.Builder(context).create().apply {
-                setMessage("Are you sure delete all selected tweets?")
-                setButton(AlertDialog.BUTTON_POSITIVE, "YES", { _, _ ->
-                    adapter.addAll()
-                })
-                setButton(AlertDialog.BUTTON_NEGATIVE, "NO", { _, _ ->
-                    dismiss()
-                })
-                show()
+            with(activity!!) {
+                alert(
+                        "Are you sure delete all selected tweets?"
+                ) {
+                    positiveButton("YES", {
+                        adapter.addAll()
+                        showMobileAd()
+                    })
+                    negativeButton("No", { })
+                }.show()
             }
-
         }
+        showMobileAd()
 
 
     }
@@ -67,6 +68,7 @@ class TwitterTimelineFragment : TimelineFragment() {
     private fun RecyclerView.Adapter<*>.addAll() {
         (this as? TimelineAdapter)?.addAll()
     }
+
     private fun RecyclerView.Adapter<*>.selectAll(checked: Boolean) {
         (this as? TimelineAdapter)?.selectAll(checked)
     }
