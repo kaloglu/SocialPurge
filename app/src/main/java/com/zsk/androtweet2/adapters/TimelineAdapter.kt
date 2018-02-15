@@ -22,10 +22,7 @@ import android.database.DataSetObserver
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
 import com.twitter.sdk.android.core.TwitterException
@@ -72,6 +69,7 @@ class TimelineAdapter private constructor(
 
 
     init {
+        MobileAds.initialize(context, AppSettings.ADMOB_APP_ID)
         timelineDelegate.refresh(object : Callback<TimelineResult<Tweet>>() {
             override fun success(result: Result<TimelineResult<Tweet>>) {
                 notifyDataSetChanged()
@@ -83,7 +81,6 @@ class TimelineAdapter private constructor(
             }
         })
 //        getAdsSettings()?.getInt("ads_items_per_ad", 8)
-        MobileAds.initialize(context, AppSettings.ADMOB_APP_ID)
         val itemListObserver = object : DataSetObserver() {
             override fun onChanged() {
                 super.onChanged()

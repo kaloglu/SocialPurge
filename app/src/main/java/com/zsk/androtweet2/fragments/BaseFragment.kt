@@ -12,13 +12,22 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.reward.RewardItem
+import com.google.android.gms.ads.reward.RewardedVideoAd
+import com.google.android.gms.ads.reward.RewardedVideoAdListener
 import com.zsk.androtweet2.R
+import com.zsk.androtweet2.helpers.AppSettings
 import com.zsk.androtweet2.helpers.utils.Enums
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
 import kotlinx.android.synthetic.main.actions_bottom_sheet.*
 import kotlinx.android.synthetic.main.actions_bottom_sheet.view.*
+import org.jetbrains.anko.alert
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment : Fragment(), RewardedVideoAdListener {
     abstract val layoutId: Int
     abstract val fab: FloatingActionButton
     abstract val bottomSheetBehavior: BottomSheetBehavior<RelativeLayout>?
@@ -39,7 +48,6 @@ abstract class BaseFragment : Fragment() {
             override fun onAnimationEnd(animation: Animation?) {}
             override fun onAnimationStart(animation: Animation?) {}
             override fun onAnimationRepeat(animation: Animation?) {
-                var infoText: String
 
                 if (selectedCount > 0)
                     bottom_sheet?.info?.text = String.format(getString(R.string.selection_info), selectedCount)
@@ -62,8 +70,62 @@ abstract class BaseFragment : Fragment() {
 
     open var TAG = this.javaClass.simpleName!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
-            = inflater.inflate(layoutId, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = inflater.inflate(layoutId, container, false)
+
+    private lateinit var mInterstitialAd: InterstitialAd
+    private lateinit var mRewardedAd: RewardedVideoAd
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MobileAds.initialize(context,AppSettings.ADMOB_APP_ID)
+
+//        initInterstitialAd()
+        initRewardedAd()
+
+    }
+
+
+    private fun initRewardedAd() {
+        mRewardedAd = MobileAds.getRewardedVideoAdInstance(context)
+        mRewardedAd.rewardedVideoAdListener = this
+    }
+
+    private fun showRewardedVideoAd() {
+        mRewardedAd.loadAd(AppSettings.ADMOB_REWARDED_VIDEO_UNIT_ID, AdRequest.Builder().build())
+    }
+
+    private fun initInterstitialAd() {
+        mInterstitialAd = InterstitialAd(context)
+        mInterstitialAd.adUnitId = AppSettings.ADMOB_INTERSTITIAL_UNIT_ID
+
+        mInterstitialAd.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                Log.e("Admob", "AdLoaded")
+                mInterstitialAd.show()
+            }
+
+            override fun onAdFailedToLoad(errorCode: Int) {
+                Log.e("Admob", "onAdFailedToLoad: " + errorCode)
+            }
+
+            override fun onAdOpened() {
+                Log.e("Admob", "AdOpened")
+            }
+
+            override fun onAdLeftApplication() {
+                Log.e("Admob", "AdLeftApplication")
+            }
+
+            override fun onAdClosed() {
+                showRewardedVideoAd()
+            }
+        }
+    }
+
+    fun showMobileAd() {
+//        mInterstitialAd.loadAd(AdRequest.Builder().build())
+        showRewardedVideoAd()
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         onFragmentCreated(savedInstanceState)
@@ -77,9 +139,20 @@ abstract class BaseFragment : Fragment() {
         designScreen()
     }
 
+    override fun onPause() {
+        super.onPause()
+        mRewardedAd.pause(context)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mRewardedAd.destroy(context)
+    }
+
     override fun onResume() {
         super.onResume()
         setInfoText(0)
+        mRewardedAd.resume(context)
 //        toggleSheetMenuListener?.onToggle(0)
     }
 
@@ -130,6 +203,44 @@ abstract class BaseFragment : Fragment() {
                 .scaleY(scale)
                 .setDuration(200)
                 .setInterpolator(LinearInterpolator()).start()
+    }
+
+    override fun onRewardedVideoAdClosed() {
+        Log.e("Admob", "RewardedAdLoaded")
+    }
+
+    override fun onRewardedVideoAdLeftApplication() {
+        Log.e("Admob", "RewardedVideoAdLeftApplication")
+    }
+
+    override fun onRewardedVideoAdLoaded() {
+
+        mRewardedAd.show()
+//        with(activity!!) {
+//            alert(
+//                    "When you finished video ad, removed all of ads in app for 3 days!"
+//            ) {
+//                positiveButton("Remove Ads", { mRewardedAd.show() })
+//                negativeButton("No Thanks", {})
+//            }.show()
+//        }
+
+    }
+
+    override fun onRewardedVideoAdOpened() {
+        Log.e("Admob", "RewardedVideoAdOpened")
+    }
+
+    override fun onRewarded(rewardedItem: RewardItem?) {
+        Log.e("Admob", "Rewarded " + rewardedItem?.amount + " " + rewardedItem?.type)
+    }
+
+    override fun onRewardedVideoStarted() {
+        Log.e("Admob", "RewardedVideoStarted")
+    }
+
+    override fun onRewardedVideoAdFailedToLoad(p0: Int) {
+        Log.e("Admob", "RewardedAdFailedLoad => " + p0)
     }
 
 }

@@ -46,45 +46,14 @@ import org.jetbrains.anko.uiThread
 open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, AccountHeader.OnAccountHeaderListener {
     var selectedProfile = -1L
 
-    private lateinit var mInterstitialAd: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        MobileAds.initialize(this, AppSettings.ADMOB_APP_ID)
         setContentView(R.layout.activity_main)
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar!!)
         DrawerImageLoader.init(PicassoLoader())
         createNavigationDrawer(savedInstanceState, toolbar)
         selectedProfile = getAppSettings()?.get("selectedProfile", -1L) as Long
-
-        mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = AppSettings.ADMOB_INTERSTITIAL_UNIT_ID
-
-        mInterstitialAd.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                Log.e("Admob", "AdLoaded")
-                mInterstitialAd.show()
-            }
-
-            override fun onAdFailedToLoad(errorCode: Int) {
-                Log.e("Admob", "onAdFailedToLoad: " + errorCode)
-            }
-
-            override fun onAdOpened() {
-                Log.e("Admob", "AdOpened")
-            }
-
-            override fun onAdLeftApplication() {
-                Log.e("Admob", "AdLeftApplication")
-            }
-
-            override fun onAdClosed() {
-                Log.e("Admob", "AdClosed")
-            }
-        }
-
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
-
     }
 
     override fun addEventListenerForFirebase() {

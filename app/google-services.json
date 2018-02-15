@@ -15,11 +15,27 @@
       },
       "oauth_client": [
         {
-          "client_id": "64575397446-g4us8vcrl9mjf4bhgiv3bdung6sgl2a8.apps.googleusercontent.com",
+          "client_id": "64575397446-j32bc8mqmm8h8mhp9ppld7ec4u5hrvr7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.zsk.androtweet2",
             "certificate_hash": "6825ed1e0e9bd9d40bf096bdab9832e7f30a0b24"
+          }
+        },
+        {
+          "client_id": "64575397446-84tvqmjj7uh6q0j5kd2kufvkr0mg88tm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zsk.androtweet2",
+            "certificate_hash": "3c81a1425ea19b434024aa90920d402b422716de"
+          }
+        },
+        {
+          "client_id": "64575397446-r8cf462ib69ieih3q47292lkgta3ilrj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zsk.androtweet2",
+            "certificate_hash": "964b1e59d0aa1c310a5d193395d630acc2e2d98a"
           }
         },
         {
@@ -39,6 +55,13 @@
         "appinvite_service": {
           "status": 2,
           "other_platform_oauth_client": [
+            {
+              "client_id": "64575397446-mklshmvs398c6oe3rtlq1kpnb04eohh1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zsk.androtweet2"
+              }
+            },
             {
               "client_id": "64575397446-pjrtmhantfu3s7c0rootj8lov2h7jtc6.apps.googleusercontent.com",
               "client_type": 3
