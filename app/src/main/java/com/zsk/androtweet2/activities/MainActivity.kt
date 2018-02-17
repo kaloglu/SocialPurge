@@ -4,15 +4,9 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
 import com.google.firebase.database.DataSnapshot
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
@@ -30,11 +24,9 @@ import com.zsk.androtweet2.BuildConfig
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.SplashScreen
 import com.zsk.androtweet2.components.SimpleChildEventListener
-import com.zsk.androtweet2.helpers.AppSettings
 import com.zsk.androtweet2.helpers.bases.BaseActivity
-import com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.*
+import com.zsk.androtweet2.helpers.utils.Enums.DrawItemTypes.LOGOUT
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentContentTypes.TWEET
-import com.zsk.androtweet2.helpers.utils.FontIconDrawable
 import com.zsk.androtweet2.models.TwitterAccount
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.doAsyncResult
@@ -54,6 +46,35 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         DrawerImageLoader.init(PicassoLoader())
         createNavigationDrawer(savedInstanceState, toolbar)
         selectedProfile = getAppSettings()?.get("selectedProfile", -1L) as Long
+
+//        mInterstitialAd = InterstitialAd(this)
+//        mInterstitialAd.adUnitId = AppSettings.ADMOB_INTERSTITIAL_UNIT_ID
+//
+//        mInterstitialAd.adListener = object : AdListener() {
+//            override fun onAdLoaded() {
+//                Log.e("Admob", "AdLoaded")
+//                mInterstitialAd.show()
+//            }
+//
+//            override fun onAdFailedToLoad(errorCode: Int) {
+//                Log.e("Admob", "onAdFailedToLoad: " + errorCode)
+//            }
+//
+//            override fun onAdOpened() {
+//                Log.e("Admob", "AdOpened")
+//            }
+//
+//            override fun onAdLeftApplication() {
+//                Log.e("Admob", "AdLeftApplication")
+//            }
+//
+//            override fun onAdClosed() {
+//                Log.e("Admob", "AdClosed")
+//            }
+//        }
+//
+//        mInterstitialAd.loadAd(AdRequest.Builder().build())
+
     }
 
     override fun addEventListenerForFirebase() {
@@ -110,7 +131,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                 .withTag(account)
     }
 
-    private fun createNavigationDrawer(savedInstanceState: Bundle?, toolbar: Toolbar) {
+    private fun createNavigationDrawer(savedInstanceState: Bundle?, toolbar: Toolbar?) {
         androTweetApp.accountHeader = createAccountHeader(savedInstanceState)
         androTweetApp.navigationDrawer = createDrawer(toolbar, androTweetApp.accountHeader, savedInstanceState)
     }
@@ -118,32 +139,34 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
     private fun createAccountHeader(savedInstanceState: Bundle?): AccountHeader {
         return AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.color.md_red_500)
+                .withTranslucentStatusBar(true)
                 .withOnAccountHeaderListener(this)
                 .withCompactStyle(true)
+                .withSelectionListEnabledForSingleProfile(false)
+//                .withHeaderBackground(R.color.material_drawer_dark_background)
+//                .addProfiles(
+////                        Settings for Account
+//                        ProfileSettingDrawerItem()
+//                                .withName("Add Account")
+//                                .withDescription("Coming soon...")
+////                                .withTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText))
+////                                .withDescriptionTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText))
+//                                .withIdentifier(ADD_TWITTER_ACCOUNT)
+//                                .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus)))
+//                                .withEnabled(false),
+//                        ProfileSettingDrawerItem().withName("Manage Account")
+//                                .withIdentifier(MANAGE_ACCOUNTS)
+//                                .withDescription("Add / Remove your accounts")
+////                                .withTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText))
+////                                .withDescriptionTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText))
+//                                .withIcon(FontIconDrawable(this, getString(R.string.ic_cog)))
+//                                .withDescription("Coming soon...")
+//                                .withEnabled(false)
+//                )
+//                .withAlternativeProfileHeaderSwitching(true)
+//                .withCurrentProfileHiddenInList(true)
+//                .withThreeSmallProfileImages(true)
                 .withSavedInstance(savedInstanceState)
-                .addProfiles(
-//                        Settings for Account
-                        ProfileSettingDrawerItem()
-                                .withName("Add Account")
-                                .withDescription("Coming soon...")
-                                .withTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
-                                .withDescriptionTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
-                                .withIdentifier(ADD_TWITTER_ACCOUNT)
-                                .withIcon(FontIconDrawable(this, getString(R.string.ic_user_plus), R.color.tw__composer_light_gray))
-                                .withEnabled(false),
-                        ProfileSettingDrawerItem().withName("Manage Account")
-                                .withIdentifier(MANAGE_ACCOUNTS)
-                                .withDescription("Add / Remove your accounts")
-                                .withTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
-                                .withDescriptionTextColor(ContextCompat.getColor(this, R.color.tw__composer_light_gray))
-                                .withIcon(FontIconDrawable(this, getString(R.string.ic_cog), R.color.tw__composer_light_gray))
-                                .withDescription("Coming soon...")
-                                .withEnabled(false)
-                )
-                .withAlternativeProfileHeaderSwitching(true)
-                .withCurrentProfileHiddenInList(true)
-                .withThreeSmallProfileImages(true)
                 .build()
     }
 
@@ -160,20 +183,28 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         }
     }
 
-    private fun createDrawer(toolbar: Toolbar, headerResult: AccountHeader, savedInstanceState: Bundle?): Drawer {
+    private fun createDrawer(toolbar: Toolbar?, headerResult: AccountHeader, savedInstanceState: Bundle?): Drawer {
 //        getMenuItems()
 
-        return DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withFireOnInitialOnClick(true)
-                .withAccountHeader(headerResult, true)
-                .inflateMenu(R.menu.activity_main_drawer)
-                .addStickyDrawerItems(PrimaryDrawerItem().withName("Logout").withIdentifier(LOGOUT))
-                .withOnDrawerItemClickListener(this)
-                .withSavedInstance(savedInstanceState)
-                .withCloseOnClick(true)
-                .withFullscreen(false)
+        val withFullscreen = DrawerBuilder()
+        withFullscreen.apply {
+            withActivity(this@MainActivity)
+            withHasStableIds(true)
+            withFireOnInitialOnClick(true)
+            withAccountHeader(headerResult, true)
+            inflateMenu(R.menu.activity_main_drawer)
+            addStickyDrawerItems(PrimaryDrawerItem().withName("Logout").withIdentifier(LOGOUT))
+            withOnDrawerItemClickListener(this@MainActivity)
+            withSavedInstance(savedInstanceState)
+            withCloseOnClick(true)
+            withFullscreen(false)
+
+            toolbar?.let {
+                withToolbar(toolbar)
+
+            }
+        }
+        return withFullscreen
                 .build()
     }
 

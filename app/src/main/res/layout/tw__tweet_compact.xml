@@ -19,7 +19,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:clickable="true"
-    style="@style/tw__TweetFillWidth"
+    style="@style/tw__TweetFillWidth_"
     tools:parentTag="android.widget.RelativeLayout"
     android:focusable="true">
 
@@ -74,7 +74,7 @@
 
         <TextView
             android:id="@+id/tw__tweet_author_full_name"
-            style="@style/tw__TweetFullName.Compact"
+            style="@style/tw__TweetFullName_.Compact"
             tools:text="Jack"/>
 
         <TextView

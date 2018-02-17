@@ -16,7 +16,6 @@ import android.support.v4.content.ContextCompat
 import android.text.TextPaint
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.util.TypedValue.applyDimension
-import com.zsk.androtweet2.R
 import com.zsk.androtweet2.Sealed.Enums
 import com.zsk.androtweet2.components.CustomTypeFace
 
@@ -401,7 +400,7 @@ class FontIconDrawable @JvmOverloads constructor(
     init {
         var iconstr = icon
         if (color == -1)
-            this.color = R.color.colorPrimary
+            this.color = com.mikepenz.materialdrawer.R.attr.material_drawer_primary_text
         else
             this.color = ContextCompat.getColor(context, color)
 

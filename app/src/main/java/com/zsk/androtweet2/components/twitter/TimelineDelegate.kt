@@ -19,6 +19,8 @@ package com.zsk.androtweet2.components.twitter
 
 import android.content.Context
 import android.database.DataSetObservable
+import android.os.Handler
+import android.os.Looper
 import com.google.firebase.database.DatabaseReference
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
@@ -30,6 +32,7 @@ import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.bases.BaseActivity.Companion.firebaseService
+import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetRepository
 import com.zsk.androtweet2.models.DeleteTweetObject
 import java.util.*
 
@@ -40,9 +43,13 @@ import java.util.*
 class TimelineDelegate<T : Tweet> internal constructor(
         val context: Context,
         internal val timeline: Timeline<T>,
-        var itemList: MutableList<T> = ArrayList(),
+        var itemList: MutableList<T> = mutableListOf(),
         private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(),
-        private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
+        private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null,
+        val tweetRepository: TweetRepository = TweetRepository(
+                Handler(Looper.getMainLooper()),
+                TwitterCore.getInstance().sessionManager
+        )
 ) : DataSetObservable() {
 
     private var selectionList: MutableList<String> = mutableListOf()

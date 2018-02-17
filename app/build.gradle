@@ -70,6 +70,17 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
+    //used to provide different itemAnimators for the RecyclerView
+    //https://github.com/mikepenz/ItemAnimators
+    implementation 'com.mikepenz:itemanimators:1.0.1@aar'
+    // used to provide the MiniDrawer to normal Drawer crossfade effect via a SlidingPane layout
+    // --> https://github.com/mikepenz/MaterialDrawer/blob/develop/app/src/main/java/com/mikepenz/materialdrawer/app/MiniDrawerActivity.java
+    // https://github.com/mikepenz/Crossfader
+    implementation 'com.mikepenz:crossfader:1.5.1@aar'
+    // used to provide the two step crossfade DrawerLayout. Which allows to have a mini layout which transforms to a normal layout within the drawer
+    // --> https://github.com/mikepenz/MaterialDrawer/blob/develop/app/src/main/java/com/mikepenz/materialdrawer/app/CrossfadeDrawerLayoutActvitiy.java
+    // https://github.com/mikepenz/CrossfadeDrawerLayout
+    implementation('com.mikepenz:crossfadedrawerlayout:1.0.1@aar')
     implementation("com.mikepenz:materialdrawer:6.0.0@aar") {
         transitive = true
     }
