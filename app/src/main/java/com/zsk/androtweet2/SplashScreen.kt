@@ -116,6 +116,7 @@ class SplashScreen : BaseActivity() {
     }
 
     private fun handleException(errorMessage: String?) {
+        Log.e("AndroTweet Error: ", "error message=> " + errorMessage)
         alert("Something goes Wrong") {
             negativeButton("Close App", {
                 finish()
@@ -195,7 +196,7 @@ class SplashScreen : BaseActivity() {
             auth.signInWithCredential(credential).addOnSuccessListener {
                 DEVICE_TOKENS.updateWithUID(deviceTokenObject)
 
-                if (it.additionalUserInfo.isNewUser) {
+//                if (it.additionalUserInfo.isNewUser) {
                     PROFILES?.updateWithUID(twitterAccount,
                             DatabaseReference.CompletionListener { databaseError, _ ->
                                 if (databaseError == null) {
@@ -204,10 +205,10 @@ class SplashScreen : BaseActivity() {
                                 }
                             }
                     )
-                } else {
-                    startActivity(Intent(this@SplashScreen, MainActivity::class.java))
-                    finish()
-                }
+//                } else {
+//                    startActivity(Intent(this@SplashScreen, MainActivity::class.java))
+//                    finish()
+//                }
             }
         }
 

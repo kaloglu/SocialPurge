@@ -42,7 +42,7 @@ public final class Utils {
         return (candidate != null) ? candidate : defaultString;
     }
 
-    static CharSequence charSeqOrEmpty(CharSequence candidate) {
+    public static CharSequence charSeqOrEmpty(CharSequence candidate) {
         return charSeqOrDefault(candidate, "");
     }
 

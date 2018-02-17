@@ -18,6 +18,8 @@
 package com.zsk.androtweet2.helpers.utils.twitter.components.views;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -26,12 +28,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.twitter.sdk.android.core.IntentUtils;
+import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.internal.UserUtils;
 import com.twitter.sdk.android.core.internal.VineCardUtils;
 import com.twitter.sdk.android.core.models.Card;
 import com.twitter.sdk.android.core.models.ImageValue;
 import com.twitter.sdk.android.core.models.MediaEntity;
 import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.tweetui.TweetLinkClickListener;
+import com.twitter.sdk.android.tweetui.TweetMediaClickListener;
 import com.twitter.sdk.android.tweetui.internal.AspectRatioFrameLayout;
 import com.twitter.sdk.android.tweetui.internal.MediaBadgeView;
 import com.twitter.sdk.android.tweetui.internal.SpanClickHandler;
@@ -40,7 +46,11 @@ import com.twitter.sdk.android.tweetui.internal.TweetMediaView;
 import com.zsk.androtweet2.R;
 import com.zsk.androtweet2.components.twitter.TimelineDelegate;
 import com.zsk.androtweet2.components.twitter.utils.TweetDateUtils;
+import com.zsk.androtweet2.helpers.utils.twitter.components.others.FormattedTweetText;
+import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetTextLinkifier;
 import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetUtils;
+import com.zsk.androtweet2.helpers.utils.twitter.components.others.Utils;
+import com.zsk.androtweet2.helpers.utils.twitter.intefaces.LinkClickListener;
 
 import java.text.DateFormat;
 import java.util.Collections;
@@ -50,7 +60,7 @@ import java.util.List;
 
 abstract class AbstractTweetView extends RelativeLayout {
     static final String TAG = AbstractTweetView.class.getSimpleName();
-    public static final int DEFAULT_STYLE = R.style.tw__TweetLightStyle;
+    public static final int DEFAULT_STYLE = R.style.tw__TweetDarkStyle_;
     static final String EMPTY_STRING = "";
     static final double DEFAULT_ASPECT_RATIO = 16.0 / 9.0;
 
@@ -67,7 +77,10 @@ abstract class AbstractTweetView extends RelativeLayout {
     // for testing
     int styleResId;
     boolean tweetActionsEnabled;
-
+    private LinkClickListener linkClickListener;
+    TweetLinkClickListener tweetLinkClickListener;
+    TweetMediaClickListener tweetMediaClickListener;
+    private Uri permalinkUri;
     // layout views
     TextView fullNameView;
     TextView screenNameView;
@@ -187,12 +200,55 @@ abstract class AbstractTweetView extends RelativeLayout {
         }
     }
 
+    protected LinkClickListener getLinkClickListener() {
+        if (linkClickListener == null) {
+            linkClickListener = new LinkClickListener() {
+                @Override
+                public void onUrlClicked(String url) {
+                    if (TextUtils.isEmpty(url)) return;
+
+                    if (tweetLinkClickListener != null) {
+                        tweetLinkClickListener.onLinkClick(tweet, url);
+                    } else {
+                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        if (!IntentUtils.safeStartActivity(getContext(), intent)) {
+                            Twitter.getLogger().e("AndroTweet",
+                                    "Activity cannot be found to open URL");
+                        }
+                    }
+                }
+            };
+        }
+        return linkClickListener;
+    }
+
+    /**
+     * @param displayTweet The unformatted Tweet
+     * @return The linkified text with display url's subbed for t.co links
+     */
+    protected CharSequence getLinkifiedText(Tweet displayTweet) {
+        FormattedTweetText formattedText = null;
+        if (timelineDelegate != null && timelineDelegate.getTweetRepository() != null)
+            formattedText = timelineDelegate.getTweetRepository().formatTweetText(displayTweet);
+
+        if (formattedText == null) return null;
+
+        final boolean stripVineCard = displayTweet.card != null
+                && VineCardUtils.isVine(displayTweet.card);
+
+        final boolean stripQuoteTweet = TweetUtils.showQuoteTweet(displayTweet);
+
+        return TweetTextLinkifier.linkifyUrls(formattedText, getLinkClickListener(), actionColor,
+                actionHighlightColor, stripQuoteTweet, stripVineCard);
+    }
+
     /**
      * Sets the Tweet text. If the Tweet text is unavailable, resets to empty string.
      */
     private void setText(Tweet displayTweet) {
         contentView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        final CharSequence tweetText = displayTweet.text;
+//        final CharSequence tweetText = displayTweet.text;
+        final CharSequence tweetText = Utils.charSeqOrEmpty(getLinkifiedText(displayTweet));
         SpanClickHandler.enableClicksOnSpans(contentView);
         if (!TextUtils.isEmpty(tweetText)) {
             contentView.setText(tweetText);

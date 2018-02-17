@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -277,7 +278,10 @@ public abstract class BaseTweetView extends AbstractTweetView {
      * findSubviews.
      */
     protected void applyStyles() {
-        setBackgroundColor(containerBgColor);
+        if (isSelected())
+            setBackgroundColor(ContextCompat.getColor(getContext(),R.color.tw__tweet_action_dark_highlight_color));
+        else
+            setBackgroundColor(containerBgColor);
         fullNameView.setTextColor(primaryTextColor);
         screenNameView.setTextColor(secondaryTextColor);
         contentView.setTextColor(primaryTextColor);
