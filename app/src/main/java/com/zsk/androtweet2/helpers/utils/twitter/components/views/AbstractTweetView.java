@@ -18,7 +18,6 @@
 package com.zsk.androtweet2.helpers.utils.twitter.components.views;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -28,15 +27,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.twitter.sdk.android.core.IntentUtils;
-import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.internal.UserUtils;
 import com.twitter.sdk.android.core.internal.VineCardUtils;
 import com.twitter.sdk.android.core.models.Card;
 import com.twitter.sdk.android.core.models.ImageValue;
 import com.twitter.sdk.android.core.models.MediaEntity;
 import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.tweetui.TweetLinkClickListener;
 import com.twitter.sdk.android.tweetui.TweetMediaClickListener;
 import com.twitter.sdk.android.tweetui.internal.AspectRatioFrameLayout;
 import com.twitter.sdk.android.tweetui.internal.MediaBadgeView;
@@ -73,12 +69,13 @@ abstract class AbstractTweetView extends RelativeLayout {
     protected final TimelineDelegate<Tweet> timelineDelegate;
 
     Tweet tweet;
+    Tweet parent;
 
     // for testing
     int styleResId;
     boolean tweetActionsEnabled;
-    private LinkClickListener linkClickListener;
-    TweetLinkClickListener tweetLinkClickListener;
+    //    private LinkClickListener linkClickListener;
+//    TweetLinkClickListener tweetLinkClickListener;
     TweetMediaClickListener tweetMediaClickListener;
     private Uri permalinkUri;
     // layout views
@@ -151,8 +148,14 @@ abstract class AbstractTweetView extends RelativeLayout {
      *
      * @param tweet Tweet data
      */
+
     public void setTweet(Tweet tweet) {
+        setTweet(tweet, null);
+    }
+
+    public void setTweet(Tweet tweet, Tweet parent) {
         this.tweet = tweet;
+        this.parent = parent;
         render();
     }
 
@@ -170,11 +173,19 @@ abstract class AbstractTweetView extends RelativeLayout {
      */
     void render() {
         final Tweet displayTweet = TweetUtils.getDisplayTweet(tweet);
+
         setName(displayTweet);
         setScreenName(displayTweet);
         setTweetMedia(displayTweet);
         setText(displayTweet);
         setContentDescription(displayTweet);
+        this.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view.isEnabled())
+                    timelineDelegate.selectionToggle((parent == null) ? tweet : parent);
+            }
+        });
 
     }
 
@@ -200,27 +211,27 @@ abstract class AbstractTweetView extends RelativeLayout {
         }
     }
 
-    protected LinkClickListener getLinkClickListener() {
-        if (linkClickListener == null) {
-            linkClickListener = new LinkClickListener() {
-                @Override
-                public void onUrlClicked(String url) {
-                    if (TextUtils.isEmpty(url)) return;
-
-                    if (tweetLinkClickListener != null) {
-                        tweetLinkClickListener.onLinkClick(tweet, url);
-                    } else {
-                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        if (!IntentUtils.safeStartActivity(getContext(), intent)) {
-                            Twitter.getLogger().e("AndroTweet",
-                                    "Activity cannot be found to open URL");
-                        }
-                    }
-                }
-            };
-        }
-        return linkClickListener;
-    }
+//    protected LinkClickListener getLinkClickListener() {
+//        if (linkClickListener == null) {
+//            linkClickListener = new LinkClickListener() {
+//                @Override
+//                public void onUrlClicked(String url) {
+//                    if (TextUtils.isEmpty(url)) return;
+//
+//                    if (tweetLinkClickListener != null) {
+//                        tweetLinkClickListener.onLinkClick(tweet, url);
+//                    } else {
+//                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                        if (!IntentUtils.safeStartActivity(getContext(), intent)) {
+//                            Twitter.getLogger().e("AndroTweet",
+//                                    "Activity cannot be found to open URL");
+//                        }
+//                    }
+//                }
+//            };
+//        }
+//        return linkClickListener;
+//    }
 
     /**
      * @param displayTweet The unformatted Tweet
@@ -228,17 +239,20 @@ abstract class AbstractTweetView extends RelativeLayout {
      */
     protected CharSequence getLinkifiedText(Tweet displayTweet) {
         FormattedTweetText formattedText = null;
-        if (timelineDelegate != null && timelineDelegate.getTweetRepository() != null)
+        if (timelineDelegate != null)
             formattedText = timelineDelegate.getTweetRepository().formatTweetText(displayTweet);
-
-        if (formattedText == null) return null;
 
         final boolean stripVineCard = displayTweet.card != null
                 && VineCardUtils.isVine(displayTweet.card);
 
         final boolean stripQuoteTweet = TweetUtils.showQuoteTweet(displayTweet);
 
-        return TweetTextLinkifier.linkifyUrls(formattedText, getLinkClickListener(), actionColor,
+        return TweetTextLinkifier.linkifyUrls(formattedText, new LinkClickListener() {
+                    @Override
+                    public void onUrlClicked(String url) {
+                        AbstractTweetView.this.callOnClick();
+                    }
+                }, actionColor,
                 actionHighlightColor, stripQuoteTweet, stripVineCard);
     }
 
@@ -258,6 +272,7 @@ abstract class AbstractTweetView extends RelativeLayout {
             contentView.setVisibility(GONE);
         }
     }
+
 
     final void setTweetMedia(Tweet displayTweet) {
         clearTweetMedia();
@@ -287,6 +302,12 @@ abstract class AbstractTweetView extends RelativeLayout {
             final List<MediaEntity> mediaEntities = TweetMediaUtils.getPhotoEntities(displayTweet);
             setViewsForMedia(getAspectRatioForPhotoEntity(mediaEntities.size()));
             tweetMediaView.setTweetMediaEntities(displayTweet, mediaEntities);
+            tweetMediaView.setTweetMediaClickListener(new TweetMediaClickListener() {
+                @Override
+                public void onMediaEntityClick(Tweet tweet, MediaEntity entity) {
+                    AbstractTweetView.this.callOnClick();
+                }
+            });
             mediaBadgeView.setVisibility(View.GONE);
         }
     }

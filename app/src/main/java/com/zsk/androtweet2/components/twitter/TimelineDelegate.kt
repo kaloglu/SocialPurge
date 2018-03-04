@@ -261,7 +261,6 @@ class TimelineDelegate<T : Tweet> internal constructor(
         }
     }
 
-
     private fun afterSelectionToggleAction() {
         toggleSheetMenuListener?.onToggle(selectionList.size)
 

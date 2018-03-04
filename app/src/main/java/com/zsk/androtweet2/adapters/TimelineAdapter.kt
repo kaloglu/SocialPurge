@@ -22,7 +22,10 @@ import android.database.DataSetObserver
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
 import com.twitter.sdk.android.core.TwitterException
@@ -31,6 +34,7 @@ import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.AndroTweetApp
+import com.zsk.androtweet2.components.ListObserver
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.AppSettings
@@ -97,12 +101,17 @@ class TimelineAdapter private constructor(
                 super.onInvalidated()
             }
         }
-        val queueListObserver = object : DataSetObserver() {
-            override fun onChanged() {
-                super.onChanged()
-                notifyDataSetChanged()
+        val queueListObserver = object : ListObserver<Tweet>() {
+
+            override fun onItemAdded(tweet: Tweet) {
+                val index = timelineDelegate.itemList.indexOf(tweet)
+                notifyItemChanged(tweet)
             }
 
+            override fun onItemRemoved(tweet: Tweet) {
+//                timelineDelegate.itemList.removeAt(position)
+                notifyItemRemoved(tweet)
+            }
         }
 
         timelineDelegate.registerObserver(itemListObserver)

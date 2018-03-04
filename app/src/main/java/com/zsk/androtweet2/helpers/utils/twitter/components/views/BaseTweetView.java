@@ -248,10 +248,10 @@ public abstract class BaseTweetView extends AbstractTweetView {
         quoteTweetView = null;
         quoteTweetHolder.removeAllViews();
         if (tweet != null && TweetUtils.showQuoteTweet(tweet)) {
-            quoteTweetView = new QuoteTweetView(getContext());
+            quoteTweetView = new QuoteTweetView(getContext(),timelineDelegate);
             quoteTweetView.setStyle(primaryTextColor, secondaryTextColor, actionColor,
                     actionHighlightColor, mediaBgColor, photoErrorResId);
-            quoteTweetView.setTweet(tweet.quotedStatus);
+            quoteTweetView.setTweet(tweet.quotedStatus,tweet);
             quoteTweetHolder.setVisibility(VISIBLE);
             quoteTweetHolder.addView(quoteTweetView);
         } else {
@@ -320,7 +320,7 @@ public abstract class BaseTweetView extends AbstractTweetView {
     Picasso getImageLoader() {
         return TweetUi.getInstance().getImageLoader();
     }
-    
+
     /**
      * Sets the profile photo. If the profile photo url is available from the Tweet, sets the the
      * default avatar background and attempts to load the image. If the url is not available, just
