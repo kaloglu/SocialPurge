@@ -54,7 +54,7 @@ import java.util.Date;
 import java.util.List;
 
 
-abstract class AbstractTweetView extends RelativeLayout {
+abstract class AbstractTweetView<T extends Tweet> extends RelativeLayout {
     static final String TAG = AbstractTweetView.class.getSimpleName();
     public static final int DEFAULT_STYLE = R.style.tw__TweetDarkStyle_;
     static final String EMPTY_STRING = "";
@@ -66,10 +66,10 @@ abstract class AbstractTweetView extends RelativeLayout {
     static final double MEDIA_BG_DARK_OPACITY = 0.12;
 
     static final long INVALID_ID = -1L;
-    protected final TimelineDelegate<Tweet> timelineDelegate;
+    protected final TimelineDelegate<T> timelineDelegate;
 
-    Tweet tweet;
-    Tweet parent;
+    T tweet;
+    T parent;
 
     // for testing
     int styleResId;
@@ -105,7 +105,7 @@ abstract class AbstractTweetView extends RelativeLayout {
      *                 resource to apply to this view. If 0, no default style will be applied.
      * @throws IllegalArgumentException if the Tweet id is invalid.
      */
-    AbstractTweetView(Context context, AttributeSet attrs, int defStyle, TimelineDelegate<Tweet> timelineDelegate) {
+    AbstractTweetView(Context context, AttributeSet attrs, int defStyle, TimelineDelegate<T> timelineDelegate) {
         super(context, attrs, defStyle);
 
         inflateView(context);
@@ -149,11 +149,11 @@ abstract class AbstractTweetView extends RelativeLayout {
      * @param tweet Tweet data
      */
 
-    public void setTweet(Tweet tweet) {
+    public void setTweet(T tweet) {
         setTweet(tweet, null);
     }
 
-    public void setTweet(Tweet tweet, Tweet parent) {
+    public void setTweet(T tweet, T parent) {
         this.tweet = tweet;
         this.parent = parent;
         render();
@@ -162,7 +162,7 @@ abstract class AbstractTweetView extends RelativeLayout {
     /**
      * @return the Tweet of the TweetView
      */
-    public Tweet getTweet() {
+    public T getTweet() {
         return tweet;
     }
 
@@ -172,7 +172,7 @@ abstract class AbstractTweetView extends RelativeLayout {
      * Do not call with render true until inflation has completed.
      */
     void render() {
-        final Tweet displayTweet = TweetUtils.getDisplayTweet(tweet);
+        final T displayTweet = (T)TweetUtils.getDisplayTweet(tweet);
 
         setName(displayTweet);
         setScreenName(displayTweet);
@@ -192,7 +192,7 @@ abstract class AbstractTweetView extends RelativeLayout {
     /**
      * Sets the Tweet author name. If author name is unavailable, resets to empty string.
      */
-    private void setName(Tweet displayTweet) {
+    private void setName(T displayTweet) {
         if (displayTweet != null && displayTweet.user != null) {
             fullNameView.setText(displayTweet.user.name);
         } else {
@@ -203,7 +203,7 @@ abstract class AbstractTweetView extends RelativeLayout {
     /**
      * Sets the Tweet author screen name. If screen name is unavailable, resets to empty string.
      */
-    private void setScreenName(Tweet displayTweet) {
+    private void setScreenName(T displayTweet) {
         if (displayTweet != null && displayTweet.user != null) {
             screenNameView.setText(UserUtils.formatScreenName(displayTweet.user.screenName));
         } else {
@@ -211,33 +211,11 @@ abstract class AbstractTweetView extends RelativeLayout {
         }
     }
 
-//    protected LinkClickListener getLinkClickListener() {
-//        if (linkClickListener == null) {
-//            linkClickListener = new LinkClickListener() {
-//                @Override
-//                public void onUrlClicked(String url) {
-//                    if (TextUtils.isEmpty(url)) return;
-//
-//                    if (tweetLinkClickListener != null) {
-//                        tweetLinkClickListener.onLinkClick(tweet, url);
-//                    } else {
-//                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//                        if (!IntentUtils.safeStartActivity(getContext(), intent)) {
-//                            Twitter.getLogger().e("AndroTweet",
-//                                    "Activity cannot be found to open URL");
-//                        }
-//                    }
-//                }
-//            };
-//        }
-//        return linkClickListener;
-//    }
-
     /**
      * @param displayTweet The unformatted Tweet
      * @return The linkified text with display url's subbed for t.co links
      */
-    protected CharSequence getLinkifiedText(Tweet displayTweet) {
+    protected CharSequence getLinkifiedText(T displayTweet) {
         FormattedTweetText formattedText = null;
         if (timelineDelegate != null)
             formattedText = timelineDelegate.getTweetRepository().formatTweetText(displayTweet);
@@ -259,7 +237,7 @@ abstract class AbstractTweetView extends RelativeLayout {
     /**
      * Sets the Tweet text. If the Tweet text is unavailable, resets to empty string.
      */
-    private void setText(Tweet displayTweet) {
+    private void setText(T displayTweet) {
         contentView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
 //        final CharSequence tweetText = displayTweet.text;
         final CharSequence tweetText = Utils.charSeqOrEmpty(getLinkifiedText(displayTweet));
@@ -274,7 +252,7 @@ abstract class AbstractTweetView extends RelativeLayout {
     }
 
 
-    final void setTweetMedia(Tweet displayTweet) {
+    final void setTweetMedia(T displayTweet) {
         clearTweetMedia();
 
         if (displayTweet == null) {
@@ -341,7 +319,7 @@ abstract class AbstractTweetView extends RelativeLayout {
         mediaContainer.setVisibility(ImageView.GONE);
     }
 
-    void setContentDescription(Tweet displayTweet) {
+    void setContentDescription(T displayTweet) {
         if (!resolvableTweet(displayTweet))
             return;
 
@@ -354,7 +332,7 @@ abstract class AbstractTweetView extends RelativeLayout {
                 displayTweet.user.name, tweetText, timestamp));
     }
 
-    private boolean resolvableTweet(Tweet displayTweet) {
+    private boolean resolvableTweet(T displayTweet) {
         return displayTweet.text != null && displayTweet.user != null && displayTweet.createdAt != null;
     }
 

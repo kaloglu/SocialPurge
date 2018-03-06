@@ -28,11 +28,11 @@ import com.zsk.androtweet2.components.twitter.TimelineDelegate
 import kotlinx.android.synthetic.main.tw__tweet_compact.view.*
 
 @SuppressLint("ViewConstructor")
-class CompactTweetView(
+class CompactTweetView<T:Tweet>(
         context: Context,
-        tweet: Tweet,
-        timelineDelegate: TimelineDelegate<Tweet>
-) : BaseTweetView(context, tweet, timelineDelegate) {
+        tweet: T,
+        timelineDelegate: TimelineDelegate<T>
+) : BaseTweetView<T>(context, tweet, timelineDelegate) {
 
     override fun getLayout(): Int = R.layout.tw__tweet_compact_card
 

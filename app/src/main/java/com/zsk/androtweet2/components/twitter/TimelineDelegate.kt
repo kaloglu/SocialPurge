@@ -43,7 +43,7 @@ import java.util.*
 class TimelineDelegate<T : Tweet> internal constructor(
         val context: Context,
         internal val timeline: Timeline<T>,
-        var itemList: MutableList<T> = mutableListOf(),
+        var tweetList: MutableList<T> = mutableListOf(),
         private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(),
         private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null,
         val tweetRepository: TweetRepository = TweetRepository(
@@ -91,18 +91,18 @@ class TimelineDelegate<T : Tweet> internal constructor(
         if (isLastPosition(position)) {
             previous()
         }
-        return itemList[position]
+        return tweetList[position]
     }
 
     /**
      * Returns true if the queueList size is below the MAX_ITEMS capacity, false otherwise.
      */
-    internal fun withinMaxCapacity(): Boolean = itemList.size < CAPACITY
+    internal fun withinMaxCapacity(): Boolean = tweetList.size < CAPACITY
 
     /**
      * Returns true if the position is for the last item in queueList, false otherwise.
      */
-    internal fun isLastPosition(position: Int): Boolean = position == itemList.size - 1
+    internal fun isLastPosition(position: Int): Boolean = position == tweetList.size - 1
 
     /**
      * Checks the capacity and sets requestInFlight before calling timeline.next.
@@ -163,8 +163,8 @@ class TimelineDelegate<T : Tweet> internal constructor(
         override fun success(result: Result<TimelineResult<T>>) {
             if (result.data.items.size > 0) {
                 val receivedItems = ArrayList(result.data.items)
-                receivedItems.addAll(itemList)
-                itemList = receivedItems
+                receivedItems.addAll(tweetList)
+                tweetList = receivedItems
                 notifyChanged()
                 timelineStateHolder.setNextCursor(result.data.timelineCursor)
             }
@@ -183,7 +183,7 @@ class TimelineDelegate<T : Tweet> internal constructor(
 
         override fun success(result: Result<TimelineResult<T>>) {
             if (result.data.items.size > 0) {
-                itemList.clear()
+                tweetList.clear()
             }
             super.success(result)
         }
@@ -196,7 +196,7 @@ class TimelineDelegate<T : Tweet> internal constructor(
 
         override fun success(result: Result<TimelineResult<T>>) {
             if (result.data.items.size > 0) {
-                itemList.addAll(result.data.items)
+                tweetList.addAll(result.data.items)
                 notifyChanged()
                 timelineStateHolder.setPreviousCursor(result.data.timelineCursor)
             }
@@ -223,7 +223,7 @@ class TimelineDelegate<T : Tweet> internal constructor(
     fun selectAll(checked: Boolean) {
         val deleteQueue = AndroTweetApp.instance.deleteQueue
         if (checked)
-            itemList
+            tweetList
                     .filter { item ->
                         selectionList.contains(item.idStr).not() && deleteQueue.contains(item.idStr).not()
                     }
@@ -252,7 +252,7 @@ class TimelineDelegate<T : Tweet> internal constructor(
                         if (dbError == null) {
                             selectionList.clear()
                             afterSelectionToggleAction()
-                            if (itemList.size <= 0)
+                            if (tweetList.size <= 0)
                                 previous()
                         }
                         notifyChanged()
@@ -266,4 +266,11 @@ class TimelineDelegate<T : Tweet> internal constructor(
 
     }
 
+    private inline fun <reified O> List<T>.indexOf(id: O): T? =
+            this.find {
+                when (O::class) {
+                    Int::class -> it.id == id
+                    else -> it.idStr == id.toString()
+                }
+            }
 }

@@ -25,9 +25,9 @@ import com.zsk.androtweet2.R
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
 
 @SuppressLint("ViewConstructor")
-internal class QuoteTweetView
-(context: Context, timelineDelegate: TimelineDelegate<Tweet>) :
-        AbstractTweetView(
+internal class QuoteTweetView<T:Tweet>
+(context: Context, timelineDelegate: TimelineDelegate<T>) :
+        AbstractTweetView<T>(
                 context,
                 null,
                 0,

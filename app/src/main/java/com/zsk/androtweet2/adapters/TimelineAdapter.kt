@@ -19,6 +19,7 @@ package com.zsk.androtweet2.adapters
 
 import android.content.Context
 import android.database.DataSetObserver
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -40,13 +41,14 @@ import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.AppSettings
 import com.zsk.androtweet2.helpers.utils.twitter.components.views.CompactTweetView
 
+@Suppress("UNCHECKED_CAST")
 /**
  * TimelineAdapter is a RecyclerView adapter which can provide Timeline Tweets to
  * RecyclerViews.
  */
-class TimelineAdapter private constructor(
+class TimelineAdapter<T:Tweet> private constructor(
         private val context: Context,
-        private val timelineDelegate: TimelineDelegate<Tweet>,
+        private val timelineDelegate: TimelineDelegate<T>,
         private val ITEMS_PER_AD: Int = 8
 ) : RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
     private var previousCount: Int = 0
@@ -67,17 +69,17 @@ class TimelineAdapter private constructor(
 
     constructor(
             context: Context,
-            timeline: Timeline<Tweet>,
+            timeline: Timeline<T>,
             toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
-    ) : this(context, TimelineDelegate<Tweet>(context, timeline, toggleSheetMenuListener = toggleSheetMenuListener))
+    ) : this(context, TimelineDelegate<T>(context, timeline, toggleSheetMenuListener = toggleSheetMenuListener))
 
 
     init {
         MobileAds.initialize(context, AppSettings.ADMOB_APP_ID)
-        timelineDelegate.refresh(object : Callback<TimelineResult<Tweet>>() {
-            override fun success(result: Result<TimelineResult<Tweet>>) {
-                notifyDataSetChanged()
-                previousCount = timelineDelegate.itemList.size
+        timelineDelegate.refresh(object : Callback<TimelineResult<T>>() {
+            override fun success(result: Result<TimelineResult<T>>) {
+                dispatch(getItemList())
+                previousCount = timelineDelegate.tweetList.size
             }
 
             override fun failure(exception: TwitterException) {
@@ -88,12 +90,14 @@ class TimelineAdapter private constructor(
         val itemListObserver = object : DataSetObserver() {
             override fun onChanged() {
                 super.onChanged()
-                when (itemCount) {
-                    in Int.MIN_VALUE..itemCount ->
-                        notifyDataSetChanged()
-                    else -> notifyItemRangeInserted(previousCount, itemCount - previousCount)
-                }
-                previousCount = itemCount
+                dispatch(getItemList())
+
+//                when (itemCount) {
+//                    in Int.MIN_VALUE..itemCount ->
+//                        notifyDataSetChanged()
+//                    else -> notifyItemRangeInserted(previousCount, itemCount - previousCount)
+//                }
+//                previousCount = itemCount
             }
 
             override fun onInvalidated() {
@@ -101,16 +105,20 @@ class TimelineAdapter private constructor(
                 super.onInvalidated()
             }
         }
-        val queueListObserver = object : ListObserver<Tweet>() {
 
-            override fun onItemAdded(tweet: Tweet) {
-                val index = timelineDelegate.itemList.indexOf(tweet)
-                notifyItemChanged(tweet)
+
+        val queueListObserver = object : ListObserver<String>() {
+
+            override fun onItemAdded(tweetId: String) {
+//                val index = timelineDelegate.apply {
+//                    return tweetList.indexOf(tweetId)
+//                }
+                notifyItemChanged(0)
             }
 
-            override fun onItemRemoved(tweet: Tweet) {
-//                timelineDelegate.itemList.removeAt(position)
-                notifyItemRemoved(tweet)
+            override fun onItemRemoved(tweetId: String) {
+//                timelineDelegate.tweetList.removeAt(position)
+                notifyItemRemoved(0)
             }
         }
 
@@ -118,17 +126,47 @@ class TimelineAdapter private constructor(
         AndroTweetApp.instance.deleteQueue.registerObserver(queueListObserver)
     }
 
+    fun getItemList(): MutableList<T> = this.timelineDelegate.tweetList
+
+    private fun dispatch(tweetList: MutableList<T>) {
+        var tweetDiffCallback:TweetDiffCallBack=TweetDiffCallBack(tweetList,oldTweetList)
+        var diffResult= DiffUtil.calculateDiff(TweetDiffCallBack)
+        oldTweetList.clear()
+        oldTweetList.addAll(tweetList)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    class TweetDiffCallBack(tweetList: MutableList<T>, oldTweetList: Any?) : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun getOldListSize(): Int {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun getNewListSize(): Int {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
         when (viewType) {
             STANDART_VIEW_TYPE -> {
-                val tweet = TweetBuilder().build()
+                val tweet = TweetBuilder().build() as T
                 val compactTweetView = CompactTweetView(context, tweet, timelineDelegate)
                 return TweetViewHolder(compactTweetView)
             }
 
             NATIVE_EXPRESS_AD_VIEW_TYPE -> {
                 val nativeExpressLayoutView = AdView(context)
-                nativeExpressLayoutView.adSize = AdSize(-1,-2)
+                nativeExpressLayoutView.adSize = AdSize(-1, -2)
                 nativeExpressLayoutView.adUnitId = AppSettings.ADMOB_SMARTBANNER_UNIT_ID
                 nativeExpressLayoutView.loadAd(AdRequest.Builder().build())
                 return NativeExpressAdViewHolder(nativeExpressLayoutView)
@@ -143,14 +181,14 @@ class TimelineAdapter private constructor(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             STANDART_VIEW_TYPE -> {
-                val compactTweetView = holder.itemView as CompactTweetView
+                val compactTweetView = holder.itemView as CompactTweetView<*>
                 compactTweetView.tweet = timelineDelegate.getItem(position)
             }
         }
 
     }
 
-    override fun getItemCount(): Int = timelineDelegate.itemList.size
+    override fun getItemCount(): Int = timelineDelegate.tweetList.size
 
     /**
      * Determines the view type for the given position.
@@ -165,7 +203,7 @@ class TimelineAdapter private constructor(
 
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-    class TweetViewHolder(itemView: CompactTweetView) : ViewHolder(itemView)
+    class TweetViewHolder(itemView: CompactTweetView<*>) : ViewHolder(itemView)
 
     /**
      * The [NativeExpressAdViewHolder] class.
@@ -173,3 +211,4 @@ class TimelineAdapter private constructor(
     inner class NativeExpressAdViewHolder internal constructor(view: View) : ViewHolder(view)
 
 }
+
