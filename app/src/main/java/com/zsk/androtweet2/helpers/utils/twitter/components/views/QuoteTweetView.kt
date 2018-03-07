@@ -20,14 +20,13 @@ package com.zsk.androtweet2.helpers.utils.twitter.components.views
 import android.annotation.SuppressLint
 import android.content.Context
 import com.twitter.sdk.android.core.models.MediaEntity
-import com.twitter.sdk.android.core.models.Tweet
 import com.zsk.androtweet2.R
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
 
 @SuppressLint("ViewConstructor")
-internal class QuoteTweetView<T:Tweet>
-(context: Context, timelineDelegate: TimelineDelegate<T>) :
-        AbstractTweetView<T>(
+internal class QuoteTweetView
+(context: Context, timelineDelegate: TimelineDelegate) :
+        AbstractTweetView(
                 context,
                 null,
                 0,

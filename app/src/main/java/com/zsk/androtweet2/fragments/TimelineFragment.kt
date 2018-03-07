@@ -47,7 +47,7 @@ abstract class TimelineFragment : BaseFragment() {
             toggleSheetMenu()
         }
 
-        AndroTweetApp.instance.deleteQueue.registerObserver(object : ListObserver() {
+        AndroTweetApp.instance.deleteQueue.registerObserver(object : ListObserver<String>() {
             override fun onChanged() {
                 super.onChanged()
                 val queueSize = AndroTweetApp.instance.deleteQueue.size()

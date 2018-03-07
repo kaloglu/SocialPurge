@@ -10,7 +10,7 @@ abstract class ListObserver<in T> : DataSetObserver() {
      * This method is called when the entire data set has changed,
      * most likely through a call to [Cursor.requery] on a [Cursor].
      */
-    open fun onItemAdded(position: T) {
+    open fun onItemAdded(item: T) {
         onChanged()
     }
 
@@ -19,7 +19,7 @@ abstract class ListObserver<in T> : DataSetObserver() {
      * most likely through a call to [Cursor.deactivate] or [Cursor.close] on a
      * [Cursor].
      */
-    open fun onItemRemoved(position: T) {
+    open fun onItemRemoved(item: T) {
         onChanged()
     }
 }

@@ -18,8 +18,6 @@
 package com.zsk.androtweet2.adapters
 
 import android.content.Context
-import android.database.DataSetObserver
-import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -27,13 +25,9 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.twitter.sdk.android.core.Callback
-import com.twitter.sdk.android.core.Result
-import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
-import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.components.ListObserver
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
@@ -46,12 +40,12 @@ import com.zsk.androtweet2.helpers.utils.twitter.components.views.CompactTweetVi
  * TimelineAdapter is a RecyclerView adapter which can provide Timeline Tweets to
  * RecyclerViews.
  */
-class TimelineAdapter<T:Tweet> private constructor(
+class TimelineAdapter private constructor(
         private val context: Context,
-        private val timelineDelegate: TimelineDelegate<T>,
-        private val ITEMS_PER_AD: Int = 8
+        private val timelineDelegate: TimelineDelegate
 ) : RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
-    private var previousCount: Int = 0
+
+//    private var previousCount: Int = 0
 
     // A menu item view type.
     private val STANDART_VIEW_TYPE = 0
@@ -69,97 +63,39 @@ class TimelineAdapter<T:Tweet> private constructor(
 
     constructor(
             context: Context,
-            timeline: Timeline<T>,
+            timeline: Timeline<Tweet>,
             toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null
-    ) : this(context, TimelineDelegate<T>(context, timeline, toggleSheetMenuListener = toggleSheetMenuListener))
+    ) : this(context, TimelineDelegate(context, timeline, toggleSheetMenuListener = toggleSheetMenuListener))
 
 
     init {
         MobileAds.initialize(context, AppSettings.ADMOB_APP_ID)
-        timelineDelegate.refresh(object : Callback<TimelineResult<T>>() {
-            override fun success(result: Result<TimelineResult<T>>) {
-                dispatch(getItemList())
-                previousCount = timelineDelegate.tweetList.size
-            }
+        timelineDelegate.refresh(this)
 
-            override fun failure(exception: TwitterException) {
-
-            }
-        })
 //        getAdsSettings()?.getInt("ads_items_per_ad", 8)
-        val itemListObserver = object : DataSetObserver() {
-            override fun onChanged() {
-                super.onChanged()
-                dispatch(getItemList())
-
-//                when (itemCount) {
-//                    in Int.MIN_VALUE..itemCount ->
-//                        notifyDataSetChanged()
-//                    else -> notifyItemRangeInserted(previousCount, itemCount - previousCount)
-//                }
-//                previousCount = itemCount
-            }
-
-            override fun onInvalidated() {
-                notifyDataSetChanged()
-                super.onInvalidated()
-            }
-        }
 
 
         val queueListObserver = object : ListObserver<String>() {
 
-            override fun onItemAdded(tweetId: String) {
-//                val index = timelineDelegate.apply {
-//                    return tweetList.indexOf(tweetId)
-//                }
-                notifyItemChanged(0)
+            override fun onItemAdded(item: String) {
+                val indexOfFirst = timelineDelegate.tweetList.indexOfFirst { it.idStr == item }
+                notifyItemChanged(indexOfFirst)
             }
 
-            override fun onItemRemoved(tweetId: String) {
-//                timelineDelegate.tweetList.removeAt(position)
-                notifyItemRemoved(0)
+            override fun onItemRemoved(item: String) {
+                notifyItemRemoved(timelineDelegate.tweetList.indexOfFirst { it.idStr == item })
             }
         }
 
-        timelineDelegate.registerObserver(itemListObserver)
         AndroTweetApp.instance.deleteQueue.registerObserver(queueListObserver)
     }
 
-    fun getItemList(): MutableList<T> = this.timelineDelegate.tweetList
-
-    private fun dispatch(tweetList: MutableList<T>) {
-        var tweetDiffCallback:TweetDiffCallBack=TweetDiffCallBack(tweetList,oldTweetList)
-        var diffResult= DiffUtil.calculateDiff(TweetDiffCallBack)
-        oldTweetList.clear()
-        oldTweetList.addAll(tweetList)
-        diffResult.dispatchUpdatesTo(this)
-    }
-
-    class TweetDiffCallBack(tweetList: MutableList<T>, oldTweetList: Any?) : DiffUtil.Callback() {
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun getOldListSize(): Int {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun getNewListSize(): Int {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-    }
+    fun getItemList(): MutableList<Tweet> = this.timelineDelegate.tweetList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
         when (viewType) {
             STANDART_VIEW_TYPE -> {
-                val tweet = TweetBuilder().build() as T
+                val tweet = TweetBuilder().build() as Tweet
                 val compactTweetView = CompactTweetView(context, tweet, timelineDelegate)
                 return TweetViewHolder(compactTweetView)
             }
@@ -181,8 +117,8 @@ class TimelineAdapter<T:Tweet> private constructor(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             STANDART_VIEW_TYPE -> {
-                val compactTweetView = holder.itemView as CompactTweetView<*>
-                compactTweetView.tweet = timelineDelegate.getItem(position)
+                val compactTweetView = holder.itemView as CompactTweetView
+                compactTweetView.position = position
             }
         }
 
@@ -195,7 +131,8 @@ class TimelineAdapter<T:Tweet> private constructor(
      */
 
     override fun getItemViewType(position: Int): Int {
-        return when (position % ITEMS_PER_AD == 0) { //TODO: will add removeAds parameter.
+        return when (getItemList()[position].id == Tweet.INVALID_ID) { //TODO: will add removeAds parameter.
+//        return when (position % ITEMS_PER_AD == 0) { //TODO: will add removeAds parameter.
             true -> NATIVE_EXPRESS_AD_VIEW_TYPE
             else -> STANDART_VIEW_TYPE
         }
@@ -203,12 +140,11 @@ class TimelineAdapter<T:Tweet> private constructor(
 
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-    class TweetViewHolder(itemView: CompactTweetView<*>) : ViewHolder(itemView)
+    class TweetViewHolder(itemView: CompactTweetView) : ViewHolder(itemView)
 
     /**
      * The [NativeExpressAdViewHolder] class.
      */
     inner class NativeExpressAdViewHolder internal constructor(view: View) : ViewHolder(view)
-
 }
 

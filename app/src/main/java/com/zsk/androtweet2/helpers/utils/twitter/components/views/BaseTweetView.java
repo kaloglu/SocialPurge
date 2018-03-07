@@ -44,7 +44,7 @@ import com.zsk.androtweet2.helpers.utils.twitter.components.others.Utils;
 import static com.zsk.androtweet2.R.styleable.tw__TweetView_tw__tweet_id;
 
 @SuppressLint("PrivateResource")
-public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T> {
+public abstract class BaseTweetView extends AbstractTweetView {
 
     TextView retweetedByView;
     ImageView twitterLogoView;
@@ -66,7 +66,7 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
      * @param context the context of the view
      * @param tweet a Tweet object
      */
-    BaseTweetView(Context context, T tweet, TimelineDelegate<T> timelineDelegate) {
+    BaseTweetView(Context context, Tweet tweet, TimelineDelegate timelineDelegate) {
         this(context, tweet, DEFAULT_STYLE,timelineDelegate);
     }
 
@@ -76,7 +76,7 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
      * @param tweet a Tweet object
      * @param styleResId resource id of the Tweet view style
      */
-    BaseTweetView(Context context, T tweet, int styleResId, TimelineDelegate<T> timelineDelegate) {
+    BaseTweetView(Context context, Tweet tweet, int styleResId, TimelineDelegate timelineDelegate) {
         super(context, null, styleResId, timelineDelegate);
 
         initAttributes(styleResId);
@@ -159,7 +159,7 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
         }
         // XML special case. The screen_name is not known yet. A permalink can be constructed and
         // followed. Permalink should be updated once the loadTweet call receives the Tweet.
-        this.tweet = (T)new TweetBuilder().setId(tweetId).build();
+        this.tweet = new TweetBuilder().setId(tweetId).build();
     }
 
     /**
@@ -236,7 +236,7 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
     void render() {
         super.render();
 
-        final T displayTweet = (T)TweetUtils.getDisplayTweet(tweet);
+        final Tweet displayTweet = TweetUtils.getDisplayTweet(tweet);
         setProfilePhotoView(displayTweet);
         setTimestamp(displayTweet);
         showRetweetedBy(tweet);
@@ -244,11 +244,11 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
 
     }
 
-    void setQuoteTweet(T tweet) {
+    void setQuoteTweet(Tweet tweet) {
         quoteTweetView = null;
         quoteTweetHolder.removeAllViews();
         if (tweet != null && TweetUtils.showQuoteTweet(tweet)) {
-            quoteTweetView = new QuoteTweetView<T>(getContext(),timelineDelegate);
+            quoteTweetView = new QuoteTweetView(getContext(),timelineDelegate);
             quoteTweetView.setStyle(primaryTextColor, secondaryTextColor, actionColor,
                     actionHighlightColor, mediaBgColor, photoErrorResId);
             quoteTweetView.setTweet(tweet.quotedStatus,tweet);
@@ -263,7 +263,7 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
      * Toggles display of "Retweeted by" text based on status from the API.
      * @param tweet The status from the API, if it is a retweet show the "retweeted by" text
      */
-    void showRetweetedBy(T tweet) {
+    void showRetweetedBy(Tweet tweet) {
         if (tweet == null || tweet.retweetedStatus == null) {
             retweetedByView.setVisibility(GONE);
         } else {
@@ -297,7 +297,7 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
      * Set the timestamp if data from the Tweet is available. If timestamp cannot be determined,
      * set the timestamp to an empty string to handle view recycling.
      */
-    private void setTimestamp(T displayTweet) {
+    private void setTimestamp(Tweet displayTweet) {
         final String formattedTimestamp;
         if (displayTweet != null && displayTweet.createdAt != null &&
                 TweetDateUtils.isValidTimestamp(displayTweet.createdAt)) {
@@ -327,7 +327,7 @@ public abstract class BaseTweetView<T extends Tweet> extends AbstractTweetView<T
      * sets the default avatar background. Setting the default background upfront handles view
      * recycling.
      */
-    void setProfilePhotoView(T displayTweet) {
+    void setProfilePhotoView(Tweet displayTweet) {
         final Picasso imageLoader = getImageLoader();
 
         if (imageLoader == null) return;
