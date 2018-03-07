@@ -8,19 +8,16 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 
-val level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.BASIC
-val build = OkHttpClient.Builder()
-        .addInterceptor(
-                HttpLoggingInterceptor().setLevel(level)
-        )
-        .build()!!
-
 /**
  * Created by kaloglu on 1.01.2018.
  */
 class CustomTwitterApiClient(
         session: TwitterSession=TwitterCore.getInstance().sessionManager.activeSession,
-        client: OkHttpClient = build
+        client: OkHttpClient = OkHttpClient.Builder()
+                .addInterceptor(
+                        HttpLoggingInterceptor().setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.BASIC)
+                )
+                .build()!!
 ) : TwitterApiClient(session, client) {
 
     /**

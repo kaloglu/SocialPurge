@@ -17,16 +17,13 @@
 
 package com.zsk.androtweet2.components
 
-import android.database.DataSetObservable
-
 /**
  * TimelineDelegate manages timeline data items and loads items from a Timeline.
  * @param <T> the item type
 </T> */
-class DeleteQueue<T> internal constructor(
+class List<T> internal constructor(
         var queueList: MutableList<T> = mutableListOf()
-) : DataSetObservable() {
-
+) : ListObservable<T>() {
 
     companion object {
         internal val CAPACITY = 200L
@@ -46,13 +43,16 @@ class DeleteQueue<T> internal constructor(
 
     fun add(element: T): Boolean {
         val add = queueList.add(element)
-        notifyChanged()
+            val index = queueList.indexOf(element)
+            notifyItemAdded(element)
         return add
     }
 
     fun remove(element: T): Boolean {
+
+        val index = queueList.indexOf(element)
         val remove = queueList.remove(element)
-        notifyChanged()
+            notifyItemRemoved(element)
         return remove
     }
 
@@ -67,4 +67,6 @@ class DeleteQueue<T> internal constructor(
         notifyInvalidated()
         return size
     }
+
+
 }

@@ -47,16 +47,16 @@ public class TweetRepository {
     private final SessionManager<TwitterSession> userSessionManagers;
 
     // leave this package accessible for testing
-    final LruCache<Long, Tweet> tweetCache;
-    final LruCache<Long, FormattedTweetText> formatCache;
+    private final LruCache<Long, Tweet> tweetCache;
+    private final LruCache<Long, FormattedTweetText> formatCache;
 
     public TweetRepository(Handler mainHandler, SessionManager<TwitterSession> userSessionManagers) {
         this(mainHandler, userSessionManagers, TwitterCore.getInstance());
     }
 
     // Testing only
-    TweetRepository(Handler mainHandler, SessionManager<TwitterSession> userSessionManagers,
-                    TwitterCore twitterCore) {
+    private TweetRepository(Handler mainHandler, SessionManager<TwitterSession> userSessionManagers,
+                            TwitterCore twitterCore) {
         this.twitterCore = twitterCore;
         this.mainHandler = mainHandler;
         this.userSessionManagers = userSessionManagers;
@@ -71,7 +71,6 @@ public class TweetRepository {
      * @return      the formatted values suitable for display, can be null
      */
     public FormattedTweetText formatTweetText(final Tweet tweet) {
-        if (tweet == null) return null;
 
         final FormattedTweetText cached = formatCache.get(tweet.id);
 

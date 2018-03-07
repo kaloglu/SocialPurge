@@ -1,6 +1,5 @@
 package com.zsk.androtweet2
 
-import android.app.Application
 import android.support.multidex.MultiDexApplication
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -8,7 +7,7 @@ import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.Drawer
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
-import com.zsk.androtweet2.components.DeleteQueue
+import com.zsk.androtweet2.components.List
 import com.zsk.androtweet2.components.twitter.CustomTwitterApiClient
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import com.zsk.androtweet2.models.TwitterAccount
@@ -46,6 +45,6 @@ class AndroTweetApp : MultiDexApplication() {
         activeTwitterProfile.addApiClient(session, CustomTwitterApiClient(session))
     }
 
-    val deleteQueue: DeleteQueue<String> = DeleteQueue()
+    val deleteQueue: List<String> = List()
 
 }

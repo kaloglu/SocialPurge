@@ -21,15 +21,18 @@ import android.content.Context
 import android.database.DataSetObservable
 import android.os.Handler
 import android.os.Looper
+import android.support.v7.util.DiffUtil
 import com.google.firebase.database.DatabaseReference
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.models.Tweet
+import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.AndroTweetApp
+import com.zsk.androtweet2.adapters.TimelineAdapter
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.bases.BaseActivity.Companion.firebaseService
 import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetRepository
@@ -38,12 +41,12 @@ import java.util.*
 
 /**
  * TimelineDelegate manages timeline data items and loads items from a Timeline.
- * @param <T> the item type
+ * @param <Tweet> the item type
 </T> */
-class TimelineDelegate<T : Tweet> internal constructor(
+class TimelineDelegate internal constructor(
         val context: Context,
-        internal val timeline: Timeline<T>,
-        var itemList: MutableList<T> = mutableListOf(),
+        internal val timeline: Timeline<Tweet>,
+        var tweetList: MutableList<Tweet> = mutableListOf(),
         private val timelineStateHolder: TimelineStateHolder = TimelineStateHolder(),
         private var toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null,
         val tweetRepository: TweetRepository = TweetRepository(
@@ -52,62 +55,85 @@ class TimelineDelegate<T : Tweet> internal constructor(
         )
 ) : DataSetObservable() {
 
+    lateinit var adapter: TimelineAdapter
     private var selectionList: MutableList<String> = mutableListOf()
 
     companion object {
+        const val ITEMS_PER_AD: Int = 8
         internal val CAPACITY = 200L
     }
 
+
+    private fun dispatch(newTweetList: MutableList<Tweet>) {
+        val tweetDiffCallback = TweetDiffCallBack(newTweetList, tweetList)
+        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(tweetDiffCallback)
+        tweetList = newTweetList
+        tweetList.adBanner(true)
+        diffResult.dispatchUpdatesTo(adapter)
+    }
+
+    private fun MutableList<Tweet>.adBanner(showAds: Boolean) {
+        val iterate = this.listIterator()
+        var index = 0
+        while (iterate.hasNext()) {
+            val tweet = iterate.next()
+            if (showAds && index % TimelineDelegate.ITEMS_PER_AD == 0)
+                iterate.add(TweetBuilder().build())
+            else if (showAds.not() && tweet.id == Tweet.INVALID_ID)
+                iterate.remove()
+            index++
+        }
+    }
+
+    private val TAG: String? = this::class.java.simpleName
 
     /**
      * Triggers loading the latest items and calls through to the developer callback. If items are
      * received, they replace existing items.
      */
-    fun refresh(developerCb: Callback<TimelineResult<T>>) {
+    fun refresh(newAdapter: TimelineAdapter) {
+        this.adapter = newAdapter
         // reset scrollStateHolder cursors to be null, loadNext will get latest items
         timelineStateHolder.resetCursors()
         // load latest timeline items and replace existing items
-        loadNext(timelineStateHolder.positionForNext(),
-                RefreshCallback(developerCb, timelineStateHolder))
+        loadNext(timelineStateHolder.positionForNext(), RefreshCallback(timelineStateHolder))
     }
 
     /**
      * Triggers loading next items and calls through to the developer callback.
      */
-    fun next(developerCb: Callback<TimelineResult<T>>) {
-        loadNext(timelineStateHolder.positionForNext(),
-                NextCallback(developerCb, timelineStateHolder))
+    fun next(developerCb: Callback<TimelineResult<Tweet>>) {
+        loadNext(timelineStateHolder.positionForNext(), NextCallback(timelineStateHolder, developerCb))
     }
 
     /**
      * Triggers loading previous items.
      */
     private fun previous() {
-        loadPrevious(timelineStateHolder.positionForPrevious(),
-                PreviousCallback(timelineStateHolder))
+        loadPrevious(timelineStateHolder.positionForPrevious(), PreviousCallback(timelineStateHolder))
     }
 
-    fun getItem(position: Int): T {
+    fun getItem(position: Int): Tweet {
         if (isLastPosition(position)) {
             previous()
         }
-        return itemList[position]
+        return tweetList[position]
     }
 
     /**
      * Returns true if the queueList size is below the MAX_ITEMS capacity, false otherwise.
      */
-    internal fun withinMaxCapacity(): Boolean = itemList.size < CAPACITY
+    internal fun withinMaxCapacity(): Boolean = tweetList.size < CAPACITY
 
     /**
      * Returns true if the position is for the last item in queueList, false otherwise.
      */
-    internal fun isLastPosition(position: Int): Boolean = position == itemList.size - 1
+    internal fun isLastPosition(position: Int): Boolean = position == tweetList.size - 1
 
     /**
      * Checks the capacity and sets requestInFlight before calling timeline.next.
      */
-    internal fun loadNext(minPosition: Long?, cb: Callback<TimelineResult<T>>) {
+    internal fun loadNext(minPosition: Long?, cb: Callback<TimelineResult<Tweet>>) {
         if (withinMaxCapacity()) {
             if (timelineStateHolder.startTimelineRequest()) {
                 timeline.next(minPosition, cb)
@@ -122,7 +148,7 @@ class TimelineDelegate<T : Tweet> internal constructor(
     /**
      * Checks the capacity and sets requestInFlight before calling timeline.previous.
      */
-    internal fun loadPrevious(maxPosition: Long?, cb: Callback<TimelineResult<T>>) {
+    internal fun loadPrevious(maxPosition: Long?, cb: Callback<TimelineResult<Tweet>>) {
         if (withinMaxCapacity()) {
             if (timelineStateHolder.startTimelineRequest()) {
                 timeline.previous(maxPosition, cb)
@@ -139,10 +165,12 @@ class TimelineDelegate<T : Tweet> internal constructor(
      * false on both success and failure and calling through to a wrapped developer Callback.
      * Subclass methods must call through to the parent method after their custom implementation.
      */
-    internal open inner class DefaultCallback(val developerCallback: Callback<TimelineResult<T>>?,
-                                              val timelineStateHolder: TimelineStateHolder) : Callback<TimelineResult<T>>() {
+    internal open inner class DefaultCallback(
+            val timelineStateHolder: TimelineStateHolder,
+            val developerCallback: Callback<TimelineResult<Tweet>>? = null
+    ) : Callback<TimelineResult<Tweet>>() {
 
-        override fun success(result: Result<TimelineResult<T>>) {
+        override fun success(result: Result<TimelineResult<Tweet>>) {
             timelineStateHolder.finishTimelineRequest()
             developerCallback?.success(result)
         }
@@ -153,19 +181,22 @@ class TimelineDelegate<T : Tweet> internal constructor(
         }
     }
 
+
     /**
      * Handles receiving next timeline items. Prepends received items to listItems, updates the
      * scrollStateHolder nextCursor, and calls notifyDataSetChanged.
      */
-    internal open inner class NextCallback(developerCb: Callback<TimelineResult<T>>,
-                                           timelineStateHolder: TimelineStateHolder) : DefaultCallback(developerCb, timelineStateHolder) {
+    internal open inner class NextCallback(
+            timelineStateHolder: TimelineStateHolder,
+            developerCb: Callback<TimelineResult<Tweet>>? = null
+    ) : DefaultCallback(timelineStateHolder, developerCb) {
 
-        override fun success(result: Result<TimelineResult<T>>) {
+        override fun success(result: Result<TimelineResult<Tweet>>) {
+            tweetList.adBanner(false)
             if (result.data.items.size > 0) {
-                val receivedItems = ArrayList(result.data.items)
-                receivedItems.addAll(itemList)
-                itemList = receivedItems
-                notifyChanged()
+                val newTweetList = ArrayList(result.data.items)
+                newTweetList.addAll(tweetList)
+                dispatch(newTweetList)
                 timelineStateHolder.setNextCursor(result.data.timelineCursor)
             }
             // do nothing when zero items are received. Subsequent 'next' call does not change.
@@ -178,12 +209,14 @@ class TimelineDelegate<T : Tweet> internal constructor(
      * sets received items, updates the scrollStateHolder nextCursor, and calls
      * notifyDataSetChanged. If the results have no items, does nothing.
      */
-    internal inner class RefreshCallback(developerCb: Callback<TimelineResult<T>>,
-                                         timelineStateHolder: TimelineStateHolder) : NextCallback(developerCb, timelineStateHolder) {
+    internal inner class RefreshCallback(
+            timelineStateHolder: TimelineStateHolder,
+            developerCb: Callback<TimelineResult<Tweet>>? = null
+    ) : NextCallback(timelineStateHolder, developerCb) {
 
-        override fun success(result: Result<TimelineResult<T>>) {
+        override fun success(result: Result<TimelineResult<Tweet>>) {
             if (result.data.items.size > 0) {
-                itemList.clear()
+                tweetList.clear()
             }
             super.success(result)
         }
@@ -192,12 +225,16 @@ class TimelineDelegate<T : Tweet> internal constructor(
     /**
      * Handles appending listItems and updating the scrollStateHolder previousCursor.
      */
-    internal inner class PreviousCallback(timelineStateHolder: TimelineStateHolder) : DefaultCallback(null, timelineStateHolder) {
+    internal inner class PreviousCallback(timelineStateHolder: TimelineStateHolder) : DefaultCallback(timelineStateHolder) {
 
-        override fun success(result: Result<TimelineResult<T>>) {
+        override fun success(result: Result<TimelineResult<Tweet>>) {
+            tweetList.adBanner(false)
             if (result.data.items.size > 0) {
-                itemList.addAll(result.data.items)
-                notifyChanged()
+                val newTweetList = mutableListOf<Tweet>()
+                newTweetList.addAll(tweetList)
+                newTweetList.addAll(ArrayList(result.data.items))
+                dispatch(newTweetList)
+//                notifyChanged()
                 timelineStateHolder.setPreviousCursor(result.data.timelineCursor)
             }
             // do nothing when zero items are received. Subsequent 'next' call does not change.
@@ -205,37 +242,39 @@ class TimelineDelegate<T : Tweet> internal constructor(
         }
     }
 
-    fun selectionToggle(item: T) {
+    fun selectionToggle(position: Int = -1, item: Tweet) {
         if (selectionList.isSelected(item)) {
             selectionList.remove(item.idStr)
         } else
             selectionList.add(item.idStr)
 
         afterSelectionToggleAction()
-        notifyChanged()
+        adapter.notifyItemChanged(position)
     }
 
-    fun isSelected(item: T): Boolean = selectionList.isSelected(item)
+    fun isSelected(item: Tweet): Boolean = selectionList.isSelected(item)
 
-    private fun MutableList<String>.isSelected(item: T): Boolean = item.id.toString().let(this::contains)
+    private fun MutableList<String>.isSelected(item: Tweet): Boolean = item.id.toString().let(this::contains)
 
 
     fun selectAll(checked: Boolean) {
         val deleteQueue = AndroTweetApp.instance.deleteQueue
         if (checked)
-            itemList
+            tweetList
                     .filter { item ->
-                        selectionList.contains(item.idStr).not() && deleteQueue.contains(item.idStr).not()
+                        item.idStr.isNullOrEmpty().not() && selectionList.contains(item.idStr).not() && deleteQueue.contains(item.idStr).not()
                     }
-                    .forEach { item ->
+                    .forEachIndexed { index, item ->
                         selectionList.add(item.idStr)
+                        adapter.notifyItemChanged(index)
                     }
-        else
+        else {
             selectionList.clear()
+            adapter.notifyItemRangeChanged(0,tweetList.size)
+        }
 
         afterSelectionToggleAction()
 
-        notifyChanged()
     }
 
     fun addAll() {
@@ -252,7 +291,7 @@ class TimelineDelegate<T : Tweet> internal constructor(
                         if (dbError == null) {
                             selectionList.clear()
                             afterSelectionToggleAction()
-                            if (itemList.size <= 0)
+                            if (tweetList.size <= 0)
                                 previous()
                         }
                         notifyChanged()
@@ -261,9 +300,20 @@ class TimelineDelegate<T : Tweet> internal constructor(
         }
     }
 
-
     private fun afterSelectionToggleAction() {
         toggleSheetMenuListener?.onToggle(selectionList.size)
+
+    }
+
+    class TweetDiffCallBack(private val newTweetList: MutableList<Tweet>, private val oldTweetList: MutableList<Tweet>) : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldTweetList[oldItemPosition].id == newTweetList[newItemPosition].id
+
+        override fun getOldListSize(): Int = oldTweetList.size
+
+        override fun getNewListSize(): Int = newTweetList.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldTweetList[oldItemPosition] == newTweetList[newItemPosition]
 
     }
 

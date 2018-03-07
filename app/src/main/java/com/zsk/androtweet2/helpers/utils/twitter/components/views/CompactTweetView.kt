@@ -31,20 +31,16 @@ import kotlinx.android.synthetic.main.tw__tweet_compact.view.*
 class CompactTweetView(
         context: Context,
         tweet: Tweet,
-        timelineDelegate: TimelineDelegate<Tweet>
+        timelineDelegate: TimelineDelegate
 ) : BaseTweetView(context, tweet, timelineDelegate) {
-
 
     override fun getLayout(): Int = R.layout.tw__tweet_compact_card
 
-    internal override fun render() {
+    override fun render() {
         super.render()
         if (tweet.idStr == null)
             return
-        setOnClickListener {
-            if (it.isEnabled)
-                timelineDelegate.selectionToggle(tweet)
-        }
+
         // Redraw screen name on recycle, because TextView doesn't resize when text length changes
         screenNameView.requestLayout()
         isSelected = timelineDelegate.isSelected(tweet)
