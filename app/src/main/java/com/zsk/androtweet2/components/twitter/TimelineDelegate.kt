@@ -33,6 +33,8 @@ import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.adapters.TimelineAdapter
+import com.zsk.androtweet2.components.List
+import com.zsk.androtweet2.components.ListObserver
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.bases.BaseActivity.Companion.firebaseService
 import com.zsk.androtweet2.helpers.utils.twitter.components.others.TweetRepository
@@ -63,11 +65,36 @@ class TimelineDelegate internal constructor(
         internal val CAPACITY = 200L
     }
 
+    private val queueListObserver = object : ListObserver<String>() {
 
-    private fun dispatch(newTweetList: MutableList<Tweet>) {
-        val tweetDiffCallback = TweetDiffCallBack(newTweetList, tweetList)
+        override fun onItemAdded(item: String) {
+            val indexOfFirst = tweetList.indexOfFirst { it.idStr == item }
+//            dispatch()
+            adapter.notifyItemChanged(indexOfFirst)
+        }
+
+        override fun onItemRemoved(item: String) {
+            val indexOfFirst = tweetList.indexOfFirst { it.idStr == item }
+//            val removedItem = tweetList.find { it.idStr == item }
+//            tweetList.remove(removedItem)
+            tweetList.removeAt(indexOfFirst)
+//            dispatch(newList)
+            adapter.notifyItemRemoved(indexOfFirst)
+        }
+    }
+    private val deleteQueue = AndroTweetApp.instance.deleteQueue
+
+    init {
+        deleteQueue.registerObserver(queueListObserver)
+    }
+
+
+    private fun dispatch(newTweetList: MutableList<Tweet>? = null) {
+        val tweetDiffCallback = TweetDiffCallBack(newTweetList, tweetList, selectionList, deleteQueue)
         val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(tweetDiffCallback)
-        tweetList = newTweetList
+        newTweetList?.let {
+            tweetList = newTweetList
+        }
         tweetList.adBanner(true)
         diffResult.dispatchUpdatesTo(adapter)
     }
@@ -270,7 +297,7 @@ class TimelineDelegate internal constructor(
                     }
         else {
             selectionList.clear()
-            adapter.notifyItemRangeChanged(0,tweetList.size)
+            adapter.notifyItemRangeChanged(0, tweetList.size)
         }
 
         afterSelectionToggleAction()
@@ -305,15 +332,35 @@ class TimelineDelegate internal constructor(
 
     }
 
-    class TweetDiffCallBack(private val newTweetList: MutableList<Tweet>, private val oldTweetList: MutableList<Tweet>) : DiffUtil.Callback() {
+    class TweetDiffCallBack(
+            newList: MutableList<Tweet>? = null,
+            private val oldTweetList: MutableList<Tweet>,
+            private val selectionList: MutableList<String>,
+            private val deleteQueue: List<String>
+    ) : DiffUtil.Callback() {
 
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldTweetList[oldItemPosition].id == newTweetList[newItemPosition].id
+        private var newTweetList = newList
+
+        init {
+            if (newTweetList == null) newTweetList = oldTweetList
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val isTheSameItems = oldTweetList[oldItemPosition].id == newTweetList!![newItemPosition].id
+//            val isTheSameSelections = checkSelection(oldTweetList[oldItemPosition].idStr) && checkSelection(newTweetList!![newItemPosition].idStr)
+//            val inTheQueue = checkQueue(oldTweetList[oldItemPosition].idStr)
+            return isTheSameItems //&& isTheSameSelections && inTheQueue
+        }
+
+        private fun checkQueue(idStr: String) = deleteQueue.contains(idStr)
+        private fun checkSelection(idStr: String) = selectionList.contains(idStr)
+
 
         override fun getOldListSize(): Int = oldTweetList.size
 
-        override fun getNewListSize(): Int = newTweetList.size
+        override fun getNewListSize(): Int = newTweetList?.size ?: oldListSize
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldTweetList[oldItemPosition] == newTweetList[newItemPosition]
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldTweetList[oldItemPosition] == newTweetList?.get(newItemPosition)
 
     }
 

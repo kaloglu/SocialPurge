@@ -73,21 +73,6 @@ class TimelineAdapter private constructor(
         timelineDelegate.refresh(this)
 
 //        getAdsSettings()?.getInt("ads_items_per_ad", 8)
-
-
-        val queueListObserver = object : ListObserver<String>() {
-
-            override fun onItemAdded(item: String) {
-                val indexOfFirst = timelineDelegate.tweetList.indexOfFirst { it.idStr == item }
-                notifyItemChanged(indexOfFirst)
-            }
-
-            override fun onItemRemoved(item: String) {
-                notifyItemRemoved(timelineDelegate.tweetList.indexOfFirst { it.idStr == item })
-            }
-        }
-
-        AndroTweetApp.instance.deleteQueue.registerObserver(queueListObserver)
     }
 
     fun getItemList(): MutableList<Tweet> = this.timelineDelegate.tweetList
