@@ -25,7 +25,6 @@ class TwitterTimelineFragment : TimelineFragment() {
         get() = R.layout.twitter_timeline_layout
     override val bottomSheetBehavior: BottomSheetBehavior<RelativeLayout>?
         get() = BottomSheetBehavior.from(bottom_sheet)
-
     override val fab: FloatingActionButton
         get() = add_queue_fab
 
@@ -53,10 +52,19 @@ class TwitterTimelineFragment : TimelineFragment() {
                 }.show()
             }
         }
+        swipe_refresh.setOnRefreshListener {
+            adapter.checkNewItems {
+                swipe_refresh.isRefreshing = false
+                timeline_rv.smoothScrollToPosition(0)
+            }
+        }
         showMobileAd()
-
-
     }
+
+    /**
+     * Set the listener to be notified when a refresh is triggered via the swipe
+     * gesture.
+     */
 
     override fun designScreen() {
         timeline_tweet = UserTimeline()
@@ -71,6 +79,10 @@ class TwitterTimelineFragment : TimelineFragment() {
 
     private fun RecyclerView.Adapter<*>.selectAll(checked: Boolean) {
         (this as? TimelineAdapter)?.selectAll(checked)
+    }
+
+    private fun RecyclerView.Adapter<*>.checkNewItems(refreshListener: () -> Unit) {
+        (this as? TimelineAdapter)?.checkNewItems(refreshListener)
     }
 
 }

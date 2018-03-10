@@ -25,11 +25,13 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.twitter.sdk.android.core.Callback
+import com.twitter.sdk.android.core.Result
+import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
-import com.zsk.androtweet2.AndroTweetApp
-import com.zsk.androtweet2.components.ListObserver
+import com.twitter.sdk.android.tweetui.TimelineResult
 import com.zsk.androtweet2.components.twitter.TimelineDelegate
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.helpers.AppSettings
@@ -52,6 +54,20 @@ class TimelineAdapter private constructor(
 
     // The Native Express ad view type.
     private val NATIVE_EXPRESS_AD_VIEW_TYPE = 1
+
+    fun checkNewItems(onFinished: () -> Unit) {
+        timelineDelegate.next(object : Callback<TimelineResult<Tweet>>() {
+            override fun success(result: Result<TimelineResult<Tweet>>?) {
+                onFinished()
+
+            }
+
+            override fun failure(exception: TwitterException?) {
+                onFinished()
+            }
+
+        })
+    }
 
     fun selectAll(checked: Boolean) {
         timelineDelegate.selectAll(checked)

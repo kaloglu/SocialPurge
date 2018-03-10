@@ -61,7 +61,7 @@ class TimelineDelegate internal constructor(
     private var selectionList: MutableList<String> = mutableListOf()
 
     companion object {
-        const val ITEMS_PER_AD: Int = 8
+        const val ITEMS_PER_AD: Int = 4
         internal val CAPACITY = 200L
     }
 
@@ -102,13 +102,15 @@ class TimelineDelegate internal constructor(
     private fun MutableList<Tweet>.adBanner(showAds: Boolean) {
         val iterate = this.listIterator()
         var index = 0
+        if (showAds)
+            iterate.add(TweetBuilder().build())
         while (iterate.hasNext()) {
+            index++
             val tweet = iterate.next()
             if (showAds && index % TimelineDelegate.ITEMS_PER_AD == 0)
                 iterate.add(TweetBuilder().build())
             else if (showAds.not() && tweet.id == Tweet.INVALID_ID)
                 iterate.remove()
-            index++
         }
     }
 
@@ -129,7 +131,7 @@ class TimelineDelegate internal constructor(
     /**
      * Triggers loading next items and calls through to the developer callback.
      */
-    fun next(developerCb: Callback<TimelineResult<Tweet>>) {
+    fun next(developerCb: Callback<TimelineResult<Tweet>>? = null) {
         loadNext(timelineStateHolder.positionForNext(), NextCallback(timelineStateHolder, developerCb))
     }
 
@@ -160,15 +162,15 @@ class TimelineDelegate internal constructor(
     /**
      * Checks the capacity and sets requestInFlight before calling timeline.next.
      */
-    internal fun loadNext(minPosition: Long?, cb: Callback<TimelineResult<Tweet>>) {
+    internal fun loadNext(minPosition: Long?, cb: Callback<TimelineResult<Tweet>>? = null) {
         if (withinMaxCapacity()) {
             if (timelineStateHolder.startTimelineRequest()) {
                 timeline.next(minPosition, cb)
             } else {
-                cb.failure(TwitterException("Request already in flight"))
+                cb?.failure(TwitterException("Request already in flight"))
             }
         } else {
-            cb.failure(TwitterException("Max capacity reached"))
+            cb?.failure(TwitterException("Max capacity reached"))
         }
     }
 
@@ -219,8 +221,8 @@ class TimelineDelegate internal constructor(
     ) : DefaultCallback(timelineStateHolder, developerCb) {
 
         override fun success(result: Result<TimelineResult<Tweet>>) {
-            tweetList.adBanner(false)
             if (result.data.items.size > 0) {
+                tweetList.adBanner(false)
                 val newTweetList = ArrayList(result.data.items)
                 newTweetList.addAll(tweetList)
                 dispatch(newTweetList)
@@ -255,8 +257,8 @@ class TimelineDelegate internal constructor(
     internal inner class PreviousCallback(timelineStateHolder: TimelineStateHolder) : DefaultCallback(timelineStateHolder) {
 
         override fun success(result: Result<TimelineResult<Tweet>>) {
-            tweetList.adBanner(false)
             if (result.data.items.size > 0) {
+                tweetList.adBanner(false)
                 val newTweetList = mutableListOf<Tweet>()
                 newTweetList.addAll(tweetList)
                 newTweetList.addAll(ArrayList(result.data.items))
