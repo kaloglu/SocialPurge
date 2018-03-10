@@ -220,7 +220,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
 //            ADD_TWITTER_ACCOUNT -> twitterLogin.callOnClick()
 //            MANAGE_ACCOUNTS -> getManageActivity()
         }
-        return true
+        return false
     }
 
     private fun getManageActivity() {
