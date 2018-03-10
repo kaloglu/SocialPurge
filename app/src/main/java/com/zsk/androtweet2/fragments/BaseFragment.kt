@@ -25,7 +25,6 @@ import com.zsk.androtweet2.helpers.utils.Enums
 import com.zsk.androtweet2.helpers.utils.Enums.FragmentArguments.*
 import kotlinx.android.synthetic.main.actions_bottom_sheet.*
 import kotlinx.android.synthetic.main.actions_bottom_sheet.view.*
-import org.jetbrains.anko.alert
 
 abstract class BaseFragment : Fragment(), RewardedVideoAdListener {
     abstract val layoutId: Int
@@ -78,7 +77,7 @@ abstract class BaseFragment : Fragment(), RewardedVideoAdListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(context,AppSettings.ADMOB_APP_ID)
-
+        Log.e(TAG, "Fragment open.=>" + this.id )
 //        initInterstitialAd()
         initRewardedAd()
 

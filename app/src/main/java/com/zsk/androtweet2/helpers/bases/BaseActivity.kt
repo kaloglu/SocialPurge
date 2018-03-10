@@ -21,6 +21,7 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import com.zsk.androtweet2.AndroTweetApp
 import com.zsk.androtweet2.fragments.BaseFragment
 import com.zsk.androtweet2.fragments.TwitterTimelineFragment
+import com.zsk.androtweet2.helpers.utils.Enums
 import com.zsk.androtweet2.helpers.utils.FirebaseService
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -43,6 +44,7 @@ open class BaseActivity : AppCompatActivity() {
         val androTweetApp = AndroTweetApp.instance
 
     }
+
     fun getTwitterSettings(): SharedPreferences? =
             getSharedPreferences("twitter_settings", Context.MODE_PRIVATE)
 
@@ -134,21 +136,29 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit) {
-        val fragmentTransaction = beginTransaction()
-        fragmentTransaction.func()
-        fragmentTransaction.commit()
+    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit, final: () -> Unit) {
+        val frgTrx = beginTransaction()
+        frgTrx.func()
+        frgTrx.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        frgTrx.commit()
+        final()
     }
 
-    fun AppCompatActivity.startFragment(fragment: Fragment, containerViewId: Int = fragment_container.id) =
-            supportFragmentManager.let({
-                it.inTransaction({
-                    fragment.let {
+    fun AppCompatActivity.startFragment(fragment: Fragment, containerViewId: Int = fragment_container.id, isReplace: Boolean = true) =
+            supportFragmentManager.let({ frgMngr ->
+                var frgTag = "undefinedContentType"
+                fragment.arguments?.let { args -> frgTag = args[Enums.FragmentArguments.CONTENT_TYPE].toString() }
+
+                frgMngr.inTransaction({
+                    fragment.let { frg ->
                         when {
-                            it.isAdded -> replace(containerViewId, it, it.id.toString())
-                            else -> add(containerViewId, it, it.id.toString())
+                            isReplace -> replace(containerViewId, frg, frgTag)
+                            else -> add(containerViewId, frg, frgTag).addToBackStack(frgTag)
                         }
+
                     }
+                }, {
+                    frgMngr.executePendingTransactions()
                 })
             })
 
