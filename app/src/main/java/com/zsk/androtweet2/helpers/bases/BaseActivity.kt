@@ -136,7 +136,7 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit, final: () -> Unit) {
+    private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit, final: () -> Unit) {
         val frgTrx = beginTransaction()
         frgTrx.func()
         frgTrx.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

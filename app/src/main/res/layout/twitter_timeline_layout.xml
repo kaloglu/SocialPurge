@@ -5,12 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/timeline_rv"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="1dp"
-        tools:listitem="@layout/tw__tweet_compact_card" />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/timeline_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="1dp"
+            tools:listitem="@layout/tw__tweet_compact_card" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <include layout="@layout/actions_bottom_sheet" />
 
