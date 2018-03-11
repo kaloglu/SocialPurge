@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryDark"
+    android:clickable="true"
+    android:elevation="5dp"
+    android:focusable="true"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="30dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/material_drawer_shadow_top" />
+
+    <LinearLayout
+        android:id="@+id/info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingTop="4dp"
+        android:paddingEnd="@dimen/h_margin_half"
+        android:paddingStart="@dimen/h_margin_half">
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="3dp"
+            tools:text="@string/selection_info"
+            android:textColor="@color/md_blue_A400"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/info_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text=" selected tweets" />
+
+        <TextView
+            android:id="@+id/queue"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:padding="3dp"
+            tools:text="@string/selection_info"
+            android:textColor="@color/md_grey_500"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/open_sheet"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:alpha="0.8"
+            android:padding="@dimen/h_margin_half"
+            android:src="@drawable/ic_swap_vert_16dp"
+            android:visibility="gone"
+            app:layout_constraintRight_toRightOf="parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/info_layout"
+        android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/select_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half">
+
+            <CheckBox
+                android:id="@+id/select_all_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/ic_check_box"
+                android:tint="@color/md_grey_900"
+                app:layout_constraintBottom_toBottomOf="@id/select_all_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/select_all_title" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/select_all_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Select All"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/select_all_icon" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/select_all_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Select all of listed tweets"
+                app:layout_constraintLeft_toLeftOf="@id/select_all_title"
+                app:layout_constraintTop_toBottomOf="@+id/select_all_title" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/show_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/select_all"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/show_all_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_show_all_32dp"
+                android:tint="@color/md_blue_400"
+                app:layout_constraintBottom_toBottomOf="@id/show_all_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/show_all_title"
+                tools:src="@drawable/ic_show_off_whitelist_32dp" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/show_all_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Show All"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/show_all_icon" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/show_all_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Show all tweets also whitelist"
+                app:layout_constraintLeft_toLeftOf="@id/show_all_title"
+                app:layout_constraintTop_toBottomOf="@+id/show_all_title" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/add_queue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/show_all"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/add_queue_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_deletion_queue_32dp"
+                android:tint="@color/md_red_A700"
+                app:layout_constraintBottom_toBottomOf="@id/add_queue_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/add_queue_title" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/add_queue_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Delete"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/add_queue_icon" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/add_queue_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Add deletion queue selected tweets"
+                app:layout_constraintLeft_toLeftOf="@id/add_queue_title"
+                app:layout_constraintTop_toBottomOf="@+id/add_queue_title" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/add_whitelist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/add_queue"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/h_margin_half"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/add_whitelist_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_whitelist_32dp"
+                android:tint="@color/md_green_A700"
+                app:layout_constraintBottom_toBottomOf="@id/add_whitelist_desc"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/add_whitelist_title" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/add_whitelist_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/h_margin_half"
+                android:text="Whitelist"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/add_whitelist_icon" />
+
+            <zao.kaloglu.com.socialpurge.components.CustomTextView
+                android:id="@+id/add_whitelist_desc"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Add whitelist selected tweets"
+                app:layout_constraintLeft_toLeftOf="@id/add_whitelist_title"
+                app:layout_constraintTop_toBottomOf="@+id/add_whitelist_title" />
+        </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
+</RelativeLayout>
