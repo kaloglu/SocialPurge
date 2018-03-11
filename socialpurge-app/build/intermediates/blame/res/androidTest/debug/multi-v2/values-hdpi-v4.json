@@ -1,0 +1,38 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/kaloglu/projects/SocialPurge/socialpurge-app/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/Users/kaloglu/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.0.2.aar/ed2374e4bbea4280b90f43e5530e76af/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    },
+                    "to": {
+                        "startLines": "7",
+                        "startColumns": "4",
+                        "startOffsets": "340",
+                        "endLines": "11",
+                        "endColumns": "13",
+                        "endOffsets": "612"
+                    }
+                },
+                {
+                    "source": "/Users/kaloglu/.gradle/caches/transforms-1/files-1.1/twitter-core-3.1.1.aar/dd37363ce06a7d62837587c8254dd8de/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6",
+                        "startColumns": "4,4,4,4,4",
+                        "startOffsets": "55,116,168,226,285",
+                        "endColumns": "60,51,57,58,54",
+                        "endOffsets": "111,163,221,280,335"
+                    }
+                }
+            ]
+        }
+    ]
+}
