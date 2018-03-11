@@ -5,8 +5,8 @@
 /.idea/
 /gradle/
 .DS_Store
-/socialpurge-app/build
 !/socialpurge-app/build.gradle
 !/socialpurge-app/google-services.json
 !/socialpurge-app/libs/
 !/socialpurge-app/proguard-rules.pro
+/build/
