@@ -20,11 +20,12 @@ class CustomTwitterApiClient(
                 .build()!!
 ) : TwitterApiClient(session, client) {
 
+
     /**
      * Provide CustomService with defined endpoints
      */
-    fun getUserService(): zao.kaloglu.com.socialpurge.components.twitter.UserService = getService(zao.kaloglu.com.socialpurge.components.twitter.UserService::class.java)
+    fun getUserService(): UserService = getService(UserService::class.java)
 
-    fun getTimeLineService(): zao.kaloglu.com.socialpurge.components.twitter.TimelineService = getService(zao.kaloglu.com.socialpurge.components.twitter.TimelineService::class.java)
+    fun getTimeLineService(): TimelineService = getService(TimelineService::class.java)
 
 }
