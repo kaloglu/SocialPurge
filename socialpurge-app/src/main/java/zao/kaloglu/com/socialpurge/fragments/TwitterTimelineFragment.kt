@@ -7,7 +7,13 @@ import android.widget.RelativeLayout
 import kotlinx.android.synthetic.main.actions_bottom_sheet.*
 import kotlinx.android.synthetic.main.twitter_timeline_layout.*
 import org.jetbrains.anko.alert
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import zao.kaloglu.com.socialpurge.components.twitter.UserTimeline
+import zao.kaloglu.com.socialpurge.helpers.responses.CheckResponse
+import zao.kaloglu.com.socialpurge.helpers.responses.SimpleResponses
+import zao.kaloglu.com.socialpurge.helpers.services.SocialPurgeApiClient
 import zao.kaloglu.com.socialpurge.helpers.utils.Enums.FragmentContentTypes
 import zao.kaloglu.com.socialpurge.helpers.utils.Enums.FragmentContentTypes.TWEET
 import zao.kaloglu.com.socialpurge.helpers.utils.Enums.FragmentTypes.TWITTER
@@ -44,6 +50,26 @@ class TwitterTimelineFragment : TimelineFragment() {
                     positiveButton("YES", {
                         adapter.addAll()
                         showMobileAd()
+                        SocialPurgeApiClient().apply {
+                            this.requestGET(
+                                    CheckResponse.getClass(),
+                                    {
+                                        getSimpleServices().check()
+                                    }
+                            ) {
+                                object : Callback<SimpleResponses.BaseResponse> {
+                                    override fun onFailure(call: Call<SimpleResponses.BaseResponse>?, t: Throwable?) {
+                                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                                    }
+
+                                    override fun onResponse(call: Call<SimpleResponses.BaseResponse>?, response: Response<SimpleResponses.BaseResponse>?) {
+                                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                                    }
+
+                                }
+
+                            }
+                        }
                     })
                     negativeButton("No", { })
                 }.show()
