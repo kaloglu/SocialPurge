@@ -44,7 +44,7 @@ import zao.kaloglu.com.socialpurge.helpers.utils.twitter.components.views.Compac
  */
 class TimelineAdapter private constructor(
         private val context: Context,
-        private val timelineDelegate: TimelineDelegate
+        val timelineDelegate: TimelineDelegate
 ) : RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
 
 //    private var previousCount: Int = 0

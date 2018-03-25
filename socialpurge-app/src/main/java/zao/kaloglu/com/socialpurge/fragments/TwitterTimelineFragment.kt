@@ -15,6 +15,7 @@ import retrofit2.Response
 import zao.kaloglu.com.socialpurge.SocialPurgeApp
 import zao.kaloglu.com.socialpurge.adapters.AdapterFactory
 import zao.kaloglu.com.socialpurge.adapters.TimelineAdapter
+import zao.kaloglu.com.socialpurge.components.twitter.TimelineDelegate
 import zao.kaloglu.com.socialpurge.components.twitter.UserTimeline
 import zao.kaloglu.com.socialpurge.helpers.responses.CheckResponse
 import zao.kaloglu.com.socialpurge.helpers.services.SocialPurgeApiClient
@@ -85,6 +86,10 @@ class TwitterTimelineFragment : TimelineFragment() {
         }
         swipe_refresh.setOnRefreshListener {
             adapter.checkNewItems {
+                adapter.timelineDelegate?.let {
+                    if (it.tweetList.size == 0)
+                        it.previous()
+                }
                 swipe_refresh.isRefreshing = false
                 timeline_rv.smoothScrollToPosition(0)
             }
@@ -115,4 +120,7 @@ class TwitterTimelineFragment : TimelineFragment() {
         (this as? TimelineAdapter)?.checkNewItems(refreshListener)
     }
 
+    private val RecyclerView.Adapter<*>.timelineDelegate: TimelineDelegate?
+        get() = (this as? TimelineAdapter)?.timelineDelegate
 }
+
