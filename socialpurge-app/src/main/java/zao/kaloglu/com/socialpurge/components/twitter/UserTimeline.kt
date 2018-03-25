@@ -24,11 +24,12 @@ import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import retrofit2.Call
+import zao.kaloglu.com.socialpurge.SocialPurgeApp
 
 /**
  * UserTimeline provides a timeline of tweets from the statuses/userTimeline API source.
  */
-class UserTimeline : zao.kaloglu.com.socialpurge.components.twitter.BaseTimeline(), Timeline<Tweet> {
+class UserTimeline : BaseTimeline(), Timeline<Tweet> {
 
     /**
      * Loads Tweets with id greater than (newer than) sinceId. If sinceId is null, loads the newest
@@ -37,7 +38,8 @@ class UserTimeline : zao.kaloglu.com.socialpurge.components.twitter.BaseTimeline
      * @param cb callback.
      */
     override fun next(sinceId: Long?, cb: Callback<TimelineResult<Tweet>>) {
-        createUserTimelineRequest(sinceId, null).enqueue(zao.kaloglu.com.socialpurge.components.twitter.BaseTimeline.TweetsCallback(cb))
+        createUserTimelineRequest(sinceId, null).enqueue(TweetsCallback(cb))
+        SocialPurgeApp.instance.showMobileAd(null)
     }
 
     /**
@@ -48,7 +50,7 @@ class UserTimeline : zao.kaloglu.com.socialpurge.components.twitter.BaseTimeline
     override fun previous(maxId: Long?, cb: Callback<TimelineResult<Tweet>>) {
         // user timeline api provides results which are inclusive, decrement the maxId to get
         // exclusive results
-        createUserTimelineRequest(null, zao.kaloglu.com.socialpurge.components.twitter.BaseTimeline.decrementMaxId(maxId)).enqueue(zao.kaloglu.com.socialpurge.components.twitter.BaseTimeline.TweetsCallback(cb))
+        createUserTimelineRequest(null, decrementMaxId(maxId)).enqueue(TweetsCallback(cb))
     }
 
     override fun getTimelineType(): String = SCRIBE_SECTION

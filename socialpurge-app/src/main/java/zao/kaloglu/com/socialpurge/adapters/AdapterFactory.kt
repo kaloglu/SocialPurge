@@ -11,10 +11,10 @@ import zao.kaloglu.com.socialpurge.fragments.BaseFragment
  */
 class AdapterFactory {
 
-    fun create(context: Context, timeline: Timeline<Tweet>, toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null): zao.kaloglu.com.socialpurge.adapters.TimelineAdapter {
-        adapter = zao.kaloglu.com.socialpurge.adapters.TimelineAdapter(context, timeline, toggleSheetMenuListener)
+    fun create(context: Context, timeline: Timeline<Tweet>, toggleSheetMenuListener: BaseFragment.ToggleSheetMenuListener? = null): TimelineAdapter {
+        adapter = TimelineAdapter(context, timeline, toggleSheetMenuListener)
 
-        return adapter as zao.kaloglu.com.socialpurge.adapters.TimelineAdapter
+        return adapter as TimelineAdapter
     }
 
     lateinit var adapter: RecyclerView.Adapter<*>

@@ -80,7 +80,7 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
         firebaseService.apply {
             PROFILES.putChildEventListener(object : SimpleChildEventListener {
 
-                override fun onChildAdded(dataSnapshot: DataSnapshot?, p1: String?) {
+                override fun onChildAdded(dataSnapShot: DataSnapshot?, p1: String?) {
                     socialPurgeApp.accountHeader.let {
                         val index: Int = when {
                             it.profiles.count() >= 2 -> {
@@ -88,23 +88,15 @@ open class MainActivity : BaseActivity(), Drawer.OnDrawerItemClickListener, Acco
                             }
                             else -> 0
                         }
-                        dataSnapshot?.getValue<TwitterAccount>(TwitterAccount::class.java)
+                        dataSnapShot?.getValue<TwitterAccount>(TwitterAccount::class.java)
                                 ?.let { account ->
-                                    account.id = dataSnapshot.key.toLong()
+                                    account.id = dataSnapShot.key.toLong()
                                     it.addProfile(getProfileDrawerItem(account), index)
                                     index.inc()
                                 }
                         if (selectedProfile != -1L)
                             it.setActiveProfile(selectedProfile, true)
                     }
-                }
-
-                override fun onChildChanged(dataSnapShot: DataSnapshot?, p1: String?) {
-                    super.onChildChanged(dataSnapShot, p1)
-//                    socialPurgeApp.accountHeader.let { accountHeader ->
-//                        if (selectedProfile != -1L)
-//                            accountHeader.setActiveProfile(selectedProfile, true)
-//                    }
                 }
 
                 override fun onChildRemoved(dataSnapShot: DataSnapshot?) {

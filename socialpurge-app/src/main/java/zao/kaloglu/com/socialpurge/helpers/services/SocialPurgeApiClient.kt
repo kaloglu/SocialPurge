@@ -17,19 +17,12 @@
 
 package zao.kaloglu.com.socialpurge.helpers.services
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.twitter.sdk.android.core.models.BindingValues
-import com.twitter.sdk.android.core.models.BindingValuesAdapter
-import com.twitter.sdk.android.core.models.SafeListAdapter
-import com.twitter.sdk.android.core.models.SafeMapAdapter
-import com.twitter.sdk.android.core.services.StatusesService
 import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Callback
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import zao.kaloglu.com.socialpurge.helpers.responses.SimpleResponses
+import zao.kaloglu.com.socialpurge.BuildConfig
 import zao.kaloglu.com.socialpurge.helpers.services.api.SocialPurgeApi
 import java.util.concurrent.ConcurrentHashMap
 
@@ -38,57 +31,35 @@ import java.util.concurrent.ConcurrentHashMap
  * Can be extended to provided additional endpoints by extending and providing Retrofit API
  * interfaces to [SocialPurgeApiClient.getService]
  */
-class SocialPurgeApiClient internal constructor(client: OkHttpClient, socialPurgeApi: SocialPurgeApi) {
+open class SocialPurgeApiClient internal constructor() {
     internal val services: ConcurrentHashMap<Class<*>, Any>
-    internal val retrofit: Retrofit
-
-    /**
-     * Constructs Guest Session based TwitterApiClient.
-     */
-    constructor() : this(OkHttpClient(), SocialPurgeApi())
-
+    private val retrofit: Retrofit
 
     init {
         this.services = buildConcurrentMap()
-        this.retrofit = buildRetrofit(client, socialPurgeApi)
+        this.retrofit = buildRetrofit()
     }
 
-    private fun buildRetrofit(httpClient: OkHttpClient, socialPurgeApi: SocialPurgeApi): Retrofit {
+    private fun buildRetrofit(): Retrofit {
         return Retrofit.Builder()
-                .client(httpClient)
-                .baseUrl(socialPurgeApi.baseHostUrl)
-                .addConverterFactory(GsonConverterFactory.create(buildGson()))
+                .client(OkHttpClient.Builder()
+                        .addInterceptor(
+                                HttpLoggingInterceptor()
+                                        .setLevel(when {
+                                            BuildConfig.DEBUG -> HttpLoggingInterceptor.Level.BODY
+                                            else -> HttpLoggingInterceptor.Level.BASIC
+                                        })
+                        )!!.build()!!)
+                .baseUrl(SocialPurgeApi().baseHostUrl)
+                .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                 .build()
-    }
-
-    private fun buildGson(): Gson {
-        return GsonBuilder()
-                .registerTypeAdapterFactory(SafeListAdapter())
-                .registerTypeAdapterFactory(SafeMapAdapter())
-                .registerTypeAdapter(BindingValues::class.java, BindingValuesAdapter())
-                .create()
     }
 
     private fun <K, V> buildConcurrentMap(): ConcurrentHashMap<K, V> = ConcurrentHashMap()
 
-    /**
-     * @return [StatusesService] to access TwitterApi
-     */
-    internal fun getSimpleServices(): SimpleGetServices = getService(SimpleGetServices::class.java)
+    internal fun getSimpleGetServices(): SimpleGetServices = getService(SimpleGetServices::class.java)
 
-    fun <responseClass : SimpleResponses.BaseResponse> requestGET(
-            lambda: Any,
-            action: (Any) -> Call<responseClass>,
-            callbackAction: (Class<responseClass>) -> Callback<responseClass>
-    ) =
-            action(lambda).enqueue(callbackAction(this))
-
-
-    fun <ResponseClass> requestPOST(service: BaseServices.PostServices, action: () -> Call<ResponseClass>, cb: Callback<ResponseClass>) {
-        service.apply {
-            action().enqueue(cb)
-        }
-    }
+    internal fun getSimplePostServices(): SimplePostServices = getService(SimplePostServices::class.java)
 
     /**
      * Converts Retrofit style interface into instance for API access
@@ -103,5 +74,6 @@ class SocialPurgeApiClient internal constructor(client: OkHttpClient, socialPurg
         }
         return services[cls] as T
     }
+
 
 }
