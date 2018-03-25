@@ -138,7 +138,7 @@ class TimelineDelegate internal constructor(
     /**
      * Triggers loading previous items.
      */
-    private fun previous() {
+    fun previous() {
         loadPrevious(timelineStateHolder.positionForPrevious(), PreviousCallback(timelineStateHolder))
     }
 
