@@ -8,6 +8,7 @@ import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.Timeline
 import kotlinx.android.synthetic.main.actions_bottom_sheet.*
 import kotlinx.android.synthetic.main.actions_bottom_sheet.view.*
+import zao.kaloglu.com.socialpurge.SocialPurgeApp
 import zao.kaloglu.com.socialpurge.helpers.utils.Enums.FragmentContentTypes
 import zao.kaloglu.com.socialpurge.helpers.utils.Enums.FragmentItemTypes.LIST
 import zao.kaloglu.com.socialpurge.helpers.utils.Enums.FragmentTypes
@@ -44,7 +45,7 @@ abstract class TimelineFragment : BaseFragment() {
             toggleSheetMenu()
         }
 
-        zao.kaloglu.com.socialpurge.SocialPurgeApp.instance.deleteQueue.registerObserver(object : zao.kaloglu.com.socialpurge.components.ListObserver<String>() {
+        SocialPurgeApp.instance.deleteQueue.registerObserver(object : zao.kaloglu.com.socialpurge.components.ListObserver<String>() {
             override fun onChanged() {
                 super.onChanged()
                 val queueSize = zao.kaloglu.com.socialpurge.SocialPurgeApp.instance.deleteQueue.size()

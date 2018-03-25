@@ -31,6 +31,7 @@ import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
+import zao.kaloglu.com.socialpurge.adapters.TimelineAdapter
 import zao.kaloglu.com.socialpurge.fragments.BaseFragment
 import zao.kaloglu.com.socialpurge.helpers.bases.BaseActivity.Companion.firebaseService
 import zao.kaloglu.com.socialpurge.models.DeleteTweetObject
@@ -52,7 +53,7 @@ class TimelineDelegate internal constructor(
         )
 ) : DataSetObservable() {
 
-    lateinit var adapter: zao.kaloglu.com.socialpurge.adapters.TimelineAdapter
+    lateinit var adapter: TimelineAdapter
     private var selectionList: MutableList<String> = mutableListOf()
 
     companion object {
@@ -69,10 +70,12 @@ class TimelineDelegate internal constructor(
         }
 
         override fun onItemRemoved(item: String) {
-            val indexOfFirst = tweetList.indexOfFirst { it.idStr == item }
             val newList = mutableListOf<Tweet>()
-            tweetList.adBanner(false)
+//            tweetList.adBanner(false)
             newList.addAll(tweetList)
+            val indexOfFirst = newList.indexOfFirst { it.idStr == item }
+            if (indexOfFirst==-1)
+                return
             newList.removeAt(indexOfFirst)
             dispatch(newList)
 //            adapter.notifyItemRemoved(indexOfFirst)
@@ -91,7 +94,8 @@ class TimelineDelegate internal constructor(
         newTweetList?.let {
             tweetList = newTweetList
         }
-        tweetList.adBanner()
+//        tweetList.adBanner(false)
+//        tweetList.adBanner()
         diffResult.dispatchUpdatesTo(adapter)
     }
 
@@ -116,7 +120,7 @@ class TimelineDelegate internal constructor(
      * Triggers loading the latest items and calls through to the developer callback. If items are
      * received, they replace existing items.
      */
-    fun refresh(newAdapter: zao.kaloglu.com.socialpurge.adapters.TimelineAdapter) {
+    fun refresh(newAdapter: TimelineAdapter) {
         this.adapter = newAdapter
         // reset scrollStateHolder cursors to be null, loadNext will get latest items
         timelineStateHolder.resetCursors()
@@ -219,7 +223,7 @@ class TimelineDelegate internal constructor(
         override fun success(result: Result<TimelineResult<Tweet>>) {
             if (result.data.items.size > 0) {
                 val newTweetList = ArrayList(result.data.items)
-                tweetList.adBanner(false)
+//                tweetList.adBanner(false)
                 newTweetList.addAll(tweetList)
                 dispatch(newTweetList)
                 timelineStateHolder.setNextCursor(result.data.timelineCursor)
@@ -255,7 +259,7 @@ class TimelineDelegate internal constructor(
         override fun success(result: Result<TimelineResult<Tweet>>) {
             if (result.data.items.size > 0) {
                 val newTweetList = mutableListOf<Tweet>()
-                tweetList.adBanner(false)
+//                tweetList.adBanner(false)
                 newTweetList.addAll(tweetList)
                 newTweetList.addAll(ArrayList(result.data.items))
                 dispatch(newTweetList)

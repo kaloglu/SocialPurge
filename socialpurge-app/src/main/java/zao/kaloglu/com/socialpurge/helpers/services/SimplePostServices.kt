@@ -17,12 +17,9 @@
 
 package zao.kaloglu.com.socialpurge.helpers.services
 
-import retrofit2.Call
-import retrofit2.http.GET
+interface SimplePostServices {
 
-interface SimplePostServices : BaseServices.PostServices {
-
-    @GET("/requestGET")
-    fun <T> check(): Call<T>
+//    @GET("/requestGET")
+//    fun <T> check(): Call<T>
 
 }

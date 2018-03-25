@@ -45,7 +45,7 @@ import zao.kaloglu.com.socialpurge.helpers.utils.twitter.components.views.Compac
 class TimelineAdapter private constructor(
         private val context: Context,
         private val timelineDelegate: TimelineDelegate
-) : RecyclerView.Adapter<zao.kaloglu.com.socialpurge.adapters.TimelineAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
 
 //    private var previousCount: Int = 0
 
@@ -93,12 +93,12 @@ class TimelineAdapter private constructor(
 
     fun getItemList(): MutableList<Tweet> = this.timelineDelegate.tweetList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): zao.kaloglu.com.socialpurge.adapters.TimelineAdapter.ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
         when (viewType) {
             STANDART_VIEW_TYPE -> {
                 val tweet = TweetBuilder().build() as Tweet
                 val compactTweetView = CompactTweetView(context, tweet, timelineDelegate)
-                return zao.kaloglu.com.socialpurge.adapters.TimelineAdapter.TweetViewHolder(compactTweetView)
+                return TweetViewHolder(compactTweetView)
             }
 
             NATIVE_EXPRESS_AD_VIEW_TYPE -> {
@@ -115,7 +115,7 @@ class TimelineAdapter private constructor(
         }
     }
 
-    override fun onBindViewHolder(holder: zao.kaloglu.com.socialpurge.adapters.TimelineAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             STANDART_VIEW_TYPE -> {
                 val compactTweetView = holder.itemView as CompactTweetView
@@ -141,11 +141,11 @@ class TimelineAdapter private constructor(
 
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-    class TweetViewHolder(itemView: CompactTweetView) : zao.kaloglu.com.socialpurge.adapters.TimelineAdapter.ViewHolder(itemView)
+    class TweetViewHolder(itemView: CompactTweetView) : ViewHolder(itemView)
 
     /**
      * The [NativeExpressAdViewHolder] class.
      */
-    inner class NativeExpressAdViewHolder internal constructor(view: View) : zao.kaloglu.com.socialpurge.adapters.TimelineAdapter.ViewHolder(view)
+    inner class NativeExpressAdViewHolder internal constructor(view: View) : ViewHolder(view)
 }
 

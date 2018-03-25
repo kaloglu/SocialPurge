@@ -24,8 +24,8 @@ import java.text.Normalizer;
 
 public class SocialPurgeApi {
 
-    public static final String BASE_HOST = "localhost";
-    public static final String BASE_HOST_URL = "http://" + BASE_HOST;
+    private static final String BASE_HOST = "10.144.210.173:8080";
+    public static final String  BASE_HOST_URL = "http://" + BASE_HOST;
 
     private final String baseHostUrl;
 

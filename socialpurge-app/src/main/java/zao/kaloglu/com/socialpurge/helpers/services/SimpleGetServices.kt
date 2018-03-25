@@ -19,10 +19,11 @@ package zao.kaloglu.com.socialpurge.helpers.services
 
 import retrofit2.Call
 import retrofit2.http.GET
+import zao.kaloglu.com.socialpurge.helpers.responses.CheckResponse
 
-interface SimpleGetServices : BaseServices.GetServices {
+interface SimpleGetServices {
 
     @GET("/check")
-    fun <T> check(): Call<T>
+    fun check(): Call<CheckResponse>
 
 }
