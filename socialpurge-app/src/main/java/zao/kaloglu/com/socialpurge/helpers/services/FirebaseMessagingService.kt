@@ -4,11 +4,21 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.RingtoneManager
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
+import zao.kaloglu.com.socialpurge.R
+import zao.kaloglu.com.socialpurge.activities.MainActivity
+
+
 
 
 /**
@@ -40,12 +50,12 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "From: " + remoteMessage!!.from!!)
 
         // Check if message contains a data payload.
-        if (remoteMessage.data.size > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.data)
-
-            handleNow(remoteMessage.data)
-
-        }
+//        if (remoteMessage.data.size > 0) {
+//            Log.d(TAG, "Message data payload: " + remoteMessage.data)
+//
+//            handleNow(remoteMessage.data)
+//
+//        }
 
         // Check if message contains a notification payload.
         if (remoteMessage.notification != null) {
@@ -57,42 +67,59 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
-    private fun handleNow(notification: Map<String, String>) {
-        notification["message"]?.let {
-            sendNotification(it)
-        }
-    }
+//    private fun handleNow(notification: Map<String, String>) {
+//        notification["message"]?.let {
+//            sendNotification(it)
+//        }
+//    }
 
-    private fun handleNow(notification: RemoteMessage.Notification) {
-        notification.body?.let {
-            sendNotification(it)
-        }
+    private fun handleNow(notification: RemoteMessage.Notification) = notification.let {
+        sendNotification(it)
     }
-    // [END receive_message]
 
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param messageBody FCM message body received.
+     * @param notification FCM message body received.
      */
-    private fun sendNotification(messageBody: String) {
-        val intent = Intent(this, zao.kaloglu.com.socialpurge.activities.MainActivity::class.java)
+    private fun sendNotification(notification: RemoteMessage.Notification) {
+        // [END receive_message]
+        val channelId = getString(R.string.default_notification_channel_id)
+        val notificationBuilder: NotificationCompat.Builder? = NotificationCompat.Builder(this, channelId)
+
+        val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT)
-
-        val channelId = getString(zao.kaloglu.com.socialpurge.R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(zao.kaloglu.com.socialpurge.R.mipmap.ic_launcher_round)
-                .setContentTitle("FCM Message")
-                .setContentText(messageBody)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
+        val icon = zao.kaloglu.com.socialpurge.R.mipmap.ic_launcher_round
+        notificationBuilder?.apply {
+            this.setSmallIcon(icon)
+                    .setContentTitle(notification.title)
+                    .setContentText(notification.body)
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent)
+        }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val uiHandler = Handler(Looper.getMainLooper())
+        uiHandler.post({
+            Picasso.with(this).load(notification.icon).into(object : Target {
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+                override fun onBitmapFailed(errorDrawable: Drawable?) {
+                    notificationManager.notify(0 /* ID of notification */, notificationBuilder!!.build())
+                }
+
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    notificationManager.notify(0 /* ID of notification */, notificationBuilder!!.setLargeIcon(bitmap).build())
+                }
+
+            })
+        })
+
+
     }
 }
