@@ -1,5 +1,6 @@
 package zao.kaloglu.com.socialpurge.helpers.bases
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,8 +11,16 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.reward.RewardItem
+import com.google.android.gms.ads.reward.RewardedVideoAd
+import com.google.android.gms.ads.reward.RewardedVideoAdListener
 import com.mikepenz.iconics.context.IconicsContextWrapper
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 import com.squareup.picasso.Picasso
@@ -20,23 +29,35 @@ import com.twitter.sdk.android.core.TwitterAuthException
 import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.email
+import zao.kaloglu.com.socialpurge.R
 import zao.kaloglu.com.socialpurge.fragments.BaseFragment
 import zao.kaloglu.com.socialpurge.fragments.TwitterTimelineFragment
+import zao.kaloglu.com.socialpurge.helpers.AppSettings
 import zao.kaloglu.com.socialpurge.helpers.utils.FirebaseService
 
 open class BaseActivity : AppCompatActivity() {
+    private lateinit var mInterstitialAd: InterstitialAd
+    private lateinit var mRewardedAd: RewardedVideoAd
+
+    open fun loadAds() = loadRewardedAd()
+
+    internal fun loadRewardedAd() =
+            mRewardedAd.loadAd(AppSettings.ADMOB_REWARDED_VIDEO_UNIT_ID, AdRequest.Builder().build())
+
+    private fun loadInterstitialAd() = mInterstitialAd.loadAd(AdRequest.Builder().build())
+
+    fun showMobileAd() {
+        mRewardedAd.show()
+    }
+
     val TAG = this.javaClass.simpleName
     val TOKEN_ERROR = "Failed to get request token"
     val CANCEL_LOGIN = "Failed to get authorization, bundle incomplete"
 
-    private object Holder {
-        val INSTANCE = BaseActivity()
-    }
-
     companion object {
-        val baseActivity: BaseActivity by lazy { Holder.INSTANCE }
 
         var firebaseService = FirebaseService()
         val socialPurgeApp = zao.kaloglu.com.socialpurge.SocialPurgeApp.instance
@@ -62,7 +83,116 @@ open class BaseActivity : AppCompatActivity() {
         initializeScreenObject()
         initFirebase()
 
+        initAds()
         super.onCreate(savedInstanceState)
+    }
+
+    lateinit var progresDialog: Dialog
+    fun showProgressDialog() {
+        progresDialog = createSpinnerProgress(this)
+        progresDialog.show()
+    }
+
+
+    fun hideProgressDialog() {
+        progresDialog.hide()
+    }
+
+    private var mInterstitialAdShowCount = 0
+
+    protected open fun initAds() {
+        MobileAds.initialize(this)
+
+        //Rewarded
+        mRewardedAd = MobileAds.getRewardedVideoAdInstance(this)
+        mRewardedAd.rewardedVideoAdListener = object : RewardedVideoAdListener {
+            override fun onRewardedVideoAdClosed() {
+                Log.e("Admob", "RewardedAdLoaded")
+            }
+
+            override fun onRewardedVideoAdLeftApplication() {
+                Log.e("Admob", "RewardedVideoAdLeftApplication")
+            }
+
+            override fun onRewardedVideoAdLoaded() {
+                alert(
+                        "Do you want get select more items?",
+                        "Freemium limit (${socialPurgeApp.maxSelectionCount} items)"
+                ) {
+                    negativeButton("No, That is enough!", {
+                        loadInterstitialAd()
+                    })
+                    positiveButton("Yes, Show Video.", {
+                        showMobileAd()
+                    })
+                }.show()
+            }
+
+            override fun onRewardedVideoAdOpened() {
+                hideProgressDialog()
+                Log.e("Admob", "RewardedVideoAdOpened")
+            }
+
+            override fun onRewarded(rewardedItem: RewardItem?) {
+                //        Log.e("Admob", "Rewarded " + rewardedItem?.amount + " " + rewardedItem?.type)
+                socialPurgeApp.rewardCount += rewardedItem?.amount ?: 0
+                alert { "Congratulations! You can select ${socialPurgeApp.maxSelectionCount} items now!" }
+            }
+
+            override fun onRewardedVideoStarted() {
+                Log.e("Admob", "RewardedVideoStarted")
+            }
+
+            override fun onRewardedVideoAdFailedToLoad(p0: Int) {
+                Log.e("Admob", "RewardedAdFailedLoad => " + p0)
+                mInterstitialAdShowCount+=1
+                if (mInterstitialAdShowCount % 5 == 0)
+                    loadInterstitialAd()
+                else {
+                    hideProgressDialog()
+                    getSelectLimitAlert()
+                }
+            }
+        }
+
+        //Interstitial
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = AppSettings.ADMOB_INTERSTITIAL_UNIT_ID
+        mInterstitialAd.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                Log.e("Admob", "AdLoaded")
+                mInterstitialAd.show()
+                mInterstitialAdShowCount++
+            }
+
+            override fun onAdFailedToLoad(errorCode: Int) {
+                Log.e("Admob", "onAdFailedToLoad: " + errorCode)
+                getSelectLimitAlert()
+                hideProgressDialog()
+            }
+
+            override fun onAdOpened() {
+                Log.e("Admob", "AdOpened")
+                hideProgressDialog()
+            }
+
+            override fun onAdLeftApplication() {
+                Log.e("Admob", "AdLeftApplication")
+            }
+
+            override fun onAdClosed() {
+                getSelectLimitAlert()
+            }
+        }
+    }
+
+    private fun getSelectLimitAlert() {
+        alert(
+                "You can select only ${socialPurgeApp.maxSelectionCount} for a while. ",
+                "Sorry! :("
+        ) {
+            positiveButton("ok", {})
+        }.show()
     }
 
     open fun initFirebase() {
@@ -184,4 +314,15 @@ open class BaseActivity : AppCompatActivity() {
         is String -> this.getString(key, default)
         else -> ""
     }
+
+
+    fun createSpinnerProgress(context: Context): Dialog {
+
+        val dialog = Dialog(context, R.style.spinnerTheme)
+        dialog.setContentView(R.layout.progress_layout)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+        return dialog
+    }
+
 }

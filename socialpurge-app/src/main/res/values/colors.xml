@@ -9,6 +9,7 @@
     <color name="colorAccent">#D7A8A8</color>
     <!--<color name="blue">#0000ff</color>-->
 
+    <color name="black_opacity_10">#1a000000</color>
     <color name="tw__black_opacity_10" tools:override="true">#1a000000</color>
     <color name="tw__cta_border_color" tools:override="true">@android:color/white</color>
     <color name="tw__cta_text_color" tools:override="true">@android:color/white</color>
