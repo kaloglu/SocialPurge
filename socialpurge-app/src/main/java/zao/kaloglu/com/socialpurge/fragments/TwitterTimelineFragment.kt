@@ -12,7 +12,6 @@ import org.jetbrains.anko.alert
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import zao.kaloglu.com.socialpurge.SocialPurgeApp
 import zao.kaloglu.com.socialpurge.adapters.AdapterFactory
 import zao.kaloglu.com.socialpurge.adapters.TimelineAdapter
 import zao.kaloglu.com.socialpurge.components.twitter.TimelineDelegate
@@ -38,7 +37,6 @@ class TwitterTimelineFragment : TimelineFragment() {
 
     fun getInstance(@FragmentContentTypes content_type: Long = TWEET) = super.getInstance(TWITTER, content_type)
     override fun initializeScreenObjects() {
-        SocialPurgeApp.instance.getRewardedAd(context!!)
         super.initializeScreenObjects()
         select_all.setOnClickListener {
             select_all_icon.isChecked = !select_all_icon.isChecked
@@ -55,7 +53,6 @@ class TwitterTimelineFragment : TimelineFragment() {
                 ) {
                     positiveButton("YES", {
                         adapter.addAll()
-                        SocialPurgeApp.instance.showMobileAd(context)
 
                         SocialPurgeApiClient()
                                 .getSimpleGetServices()

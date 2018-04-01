@@ -67,7 +67,6 @@ abstract class BaseFragment : Fragment() {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(context, AppSettings.ADMOB_APP_ID)
         Log.e(TAG, "Fragment open.=>" + this.id )
-//        initInterstitialAd()
 
     }
 
@@ -83,15 +82,6 @@ abstract class BaseFragment : Fragment() {
         Log.d(TAG, "onFragmentCreated() called with: savedInstanceState = [$savedInstanceState]")
         initializeScreenObjects()
         designScreen()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onResume() {
@@ -148,5 +138,4 @@ abstract class BaseFragment : Fragment() {
                 .setDuration(200)
                 .setInterpolator(LinearInterpolator()).start()
     }
-
 }

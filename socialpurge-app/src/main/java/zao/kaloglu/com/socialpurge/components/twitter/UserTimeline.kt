@@ -24,7 +24,6 @@ import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
 import retrofit2.Call
-import zao.kaloglu.com.socialpurge.SocialPurgeApp
 
 /**
  * UserTimeline provides a timeline of tweets from the statuses/userTimeline API source.
@@ -39,7 +38,6 @@ class UserTimeline : BaseTimeline(), Timeline<Tweet> {
      */
     override fun next(sinceId: Long?, cb: Callback<TimelineResult<Tweet>>) {
         createUserTimelineRequest(sinceId, null).enqueue(TweetsCallback(cb))
-        SocialPurgeApp.instance.showMobileAd(null)
     }
 
     /**

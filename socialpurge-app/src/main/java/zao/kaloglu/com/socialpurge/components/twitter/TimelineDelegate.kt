@@ -31,9 +31,12 @@ import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.core.models.TweetBuilder
 import com.twitter.sdk.android.tweetui.Timeline
 import com.twitter.sdk.android.tweetui.TimelineResult
+import org.jetbrains.anko.alert
 import zao.kaloglu.com.socialpurge.adapters.TimelineAdapter
 import zao.kaloglu.com.socialpurge.fragments.BaseFragment
+import zao.kaloglu.com.socialpurge.helpers.bases.BaseActivity
 import zao.kaloglu.com.socialpurge.helpers.bases.BaseActivity.Companion.firebaseService
+import zao.kaloglu.com.socialpurge.helpers.bases.BaseActivity.Companion.socialPurgeApp
 import zao.kaloglu.com.socialpurge.models.DeleteTweetObject
 import java.util.*
 
@@ -330,8 +333,32 @@ class TimelineDelegate internal constructor(
     }
 
     private fun afterSelectionToggleAction() {
+        checkMaxSelectionCount()
         toggleSheetMenuListener?.onToggle(selectionList.size)
 
+    }
+
+    private fun checkMaxSelectionCount() {
+        val maxSelectionCount = socialPurgeApp.maxSelectionCount
+        if (selectionList.size > maxSelectionCount) {
+            if (maxSelectionCount <= 1500) {
+                (context as? BaseActivity)?.apply {
+                    showProgressDialog()
+                    loadRewardedAd()
+                }
+            } else
+                context.alert("You can select only 1500 items!", "Selection Limit :("){
+                    positiveButton("ok",{})
+                }
+
+            val templist = mutableListOf<String>()
+            templist.addAll(selectionList)
+            selectionList.clear()
+            for (i in 0..(maxSelectionCount - 1)) {
+                selectionList.add(templist[i])
+            }
+
+        }
     }
 
     class TweetDiffCallBack(

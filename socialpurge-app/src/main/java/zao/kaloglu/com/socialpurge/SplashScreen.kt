@@ -31,7 +31,9 @@ class SplashScreen : BaseActivity() {
 //            AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()
 //    )
 
+    override fun initAds(){
 
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(zao.kaloglu.com.socialpurge.R.layout.splash_screen)
@@ -176,7 +178,7 @@ class SplashScreen : BaseActivity() {
                     }
 
                     override fun failure(exception: TwitterException?) {
-                        Log.e(baseActivity.TAG, "exception", exception)
+                        Log.e(TAG, "exception", exception)
                     }
                 })
     }
