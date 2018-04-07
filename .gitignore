@@ -10,3 +10,4 @@
 !/socialpurge-app/libs/
 !/socialpurge-app/proguard-rules.pro
 /build/
+/socialpurge-app/release/output.json
