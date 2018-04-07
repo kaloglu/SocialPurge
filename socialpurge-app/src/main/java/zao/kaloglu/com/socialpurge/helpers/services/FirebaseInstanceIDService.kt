@@ -44,7 +44,7 @@ class FirebaseInstanceIDService : FirebaseInstanceIdService() {
     private fun sendRegistrationToServer(token: String?) {
 
         firebaseService.apply {
-            if (auth.currentUser == null && token.isNullOrBlank())
+            if (auth.currentUser == null || token.isNullOrBlank())
                 return@apply
 
             PROFILES?.putSingleValueEventListener(object : SimpleValueEventListener {

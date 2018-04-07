@@ -50,11 +50,11 @@ class SplashScreen : BaseActivity() {
             config.fetch(cacheSize)
                     .addOnCompleteListener { result ->
                         if (result.isSuccessful) {
-                            getTwitterSettings()?.let {
-                                Settings("twitter_", it)
-                            }
-                            getAdsSettings()?.let { Settings("ads_", it) }
                             config.activateFetched()
+                            val consumerKey = config.getString("twitter_consumer_key")
+                            val consumerSecret = config.getString("twitter_consumer_secret")
+//                            getAdsSettings()?.let { Settings("ads_", it) }
+                            twitterImplementation(consumerKey, consumerSecret)
                             loadingComplete()
 
                         } else {
@@ -100,7 +100,6 @@ class SplashScreen : BaseActivity() {
     }
 
     private fun loadingComplete() {
-        twitterImplementation()
         checkLogin()
     }
 
@@ -118,7 +117,7 @@ class SplashScreen : BaseActivity() {
                 finish()
             })
             positiveButton("Try Again", {
-                twitterImplementation()
+                //                twitterImplementation()
             })
             neutralPressed("Report", {
                 email(
@@ -130,10 +129,7 @@ class SplashScreen : BaseActivity() {
         }.show()
     }
 
-    private fun twitterImplementation() {
-        val twitterSettings = getTwitterSettings()
-        val consumerKey = twitterSettings?.getString("twitter_consumer_key", "")
-        val consumerSecret = twitterSettings?.getString("twitter_consumer_secret", "")
+    private fun twitterImplementation(consumerKey: String?, consumerSecret: String?) {
 
         if (consumerKey == "" || consumerSecret == "")
             handleException("does not get consumer keys")
